@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import fs from "node:fs";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 process.env["NTBA_FIX_350"] = 1;
@@ -8,8 +7,6 @@ const engineId = "stable-diffusion-512-v2-1";
 const apiHost = "https://api.stability.ai";
 const stabilityKey = process.env.STABILITY_KEY;
 const url = `${apiHost}/v1alpha/generation/${engineId}/text-to-image`;
-const outputFile = "./text_to_image.png";
-
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
@@ -19,12 +16,11 @@ bot.on("message", async (msg) => {
     console.log(msg.text);
     if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
         const prompt = await gptResponse("Переведи на английский:" + msg.text);
-        draw(
+        const stream = await draw(
             prompt +
                 " ,deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
         );
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-        bot.sendPhoto(chatId, outputFile);
+        bot.sendPhoto(chatId, stream);
     } else {
         bot.sendMessage(chatId, await gptResponse(msg.text + "."));
     }
@@ -75,8 +71,7 @@ const draw = async (text) => {
             return;
         }
 
-        const writeStream = fs.createWriteStream(outputFile);
-        response.body?.pipe(writeStream);
+        return response.buffer();
     } catch (e) {
         console.error(e);
     }

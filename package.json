@@ -9,7 +9,6 @@
     "dependencies": {
         "node-fetch": "^3.3.0",
         "node-telegram-bot-api": "^0.60.0",
-        "nodefs": "^0.0.2",
         "openai": "^3.1.0"
     }
 }
