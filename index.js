@@ -3,10 +3,8 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 process.env["NTBA_FIX_350"] = 1;
 
-const engineId = "stable-diffusion-512-v2-1";
-const apiHost = "https://api.stability.ai";
 const stabilityKey = process.env.STABILITY_KEY;
-const url = `${apiHost}/v1alpha/generation/${engineId}/text-to-image`;
+const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image`;
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });

@@ -4,7 +4,7 @@
     "description": "",
     "main": "index.js",
     "type": "module",
-    "author": "Max S.",
+    "author": "Max Sveshnikov",
     "license": "MIT",
     "dependencies": {
         "node-fetch": "^3.3.0",
