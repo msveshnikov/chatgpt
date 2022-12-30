@@ -7,12 +7,29 @@ process.env["NTBA_FIX_350"] = 1;
 const engineId = "stable-diffusion-512-v2-1";
 const apiHost = "https://api.stability.ai";
 const stabilityKey = process.env.STABILITY_KEY;
-if (!stabilityKey) throw new Error("Missing Stability API key.");
 const url = `${apiHost}/v1alpha/generation/${engineId}/text-to-image`;
 const outputFile = "./text_to_image.png";
 
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
+const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
+
+bot.on("message", async (msg) => {
+    const chatId = msg.chat.id;
+    console.log(msg.text);
+    if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
+        const prompt = await gptResponse("Переведи на английский:" + msg.text);
+        draw(
+            prompt +
+                " ,deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
+        );
+        await new Promise((resolve) => setTimeout(resolve, 10000));
+        bot.sendPhoto(chatId, outputFile);
+    } else {
+        bot.sendMessage(chatId, await gptResponse(msg.text + "."));
+    }
+});
+
 const gptResponse = async (prompt) => {
     try {
         const completion = await openai.createCompletion({
@@ -28,25 +45,7 @@ const gptResponse = async (prompt) => {
     }
 };
 
-const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-
-bot.on("message", async (msg) => {
-    const chatId = msg.chat.id;
-    console.log(msg.text);
-    if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
-        const prompt = await gptResponse("Переведи на английский:" + msg.text);
-        draw(
-            prompt +
-                " deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
-        );
-        await new Promise((resolve) => setTimeout(resolve, 10000));
-        bot.sendPhoto(chatId, outputFile);
-        return;
-    }
-    bot.sendMessage(chatId, await gptResponse(msg.text + "."));
-});
-
-async function draw(text) {
+const draw = async (text) => {
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -81,4 +80,4 @@ async function draw(text) {
     } catch (e) {
         console.error(e);
     }
-}
+};
