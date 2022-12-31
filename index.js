@@ -8,10 +8,13 @@ const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
+let context = "";
 
 bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
     console.log(msg.text);
+    context = context + msg.text;
+    context = context.slice(-4000);
     if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
         const prompt = await gptResponse("Переведи на английский:" + msg.text);
         const stream = await draw(
@@ -20,7 +23,7 @@ bot.on("message", async (msg) => {
         );
         bot.sendPhoto(chatId, stream);
     } else {
-        bot.sendMessage(chatId, await gptResponse(msg.text + "."));
+        bot.sendMessage(chatId, await gptResponse(context + msg.text + "."));
     }
 });
 
@@ -32,8 +35,10 @@ const gptResponse = async (prompt) => {
             max_tokens: 1000,
             temperature: 0.8,
         });
-        console.log(completion.data.choices[0].text);
-        return completion.data.choices[0].text;
+        const response = completion.data.choices[0].text;
+        console.log(response);
+        context = context + response;
+        return response;
     } catch (error) {
         return "Ошибка, сорян";
     }
