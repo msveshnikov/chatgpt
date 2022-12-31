@@ -17,9 +17,10 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(msg.text);
-        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE);
+        context[chatId] = (context[chatId] || "").slice(-CONTEXT_SIZE);
+        console.log(context[chatId]);
         if (msg.text.startsWith("/start")) {
-            bot.sendMessage(chatId, "No need in /start 😋 Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊");
+            bot.sendMessage(chatId, "Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊");
             return;
         }
         if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
