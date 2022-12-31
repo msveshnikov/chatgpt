@@ -17,6 +17,10 @@ bot.on("message", async (msg) => {
         }
         console.log(msg.text);
         context = context.slice(-1000);
+        if (msg.text.startsWith("/start")) {
+            bot.sendMessage(chatId, "No need in /start 😋 Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊");
+            return;
+        }
         if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
             // visual hemisphere (left)
             const prompt = await gptResponse("Переведи на английский:" + msg.text);
