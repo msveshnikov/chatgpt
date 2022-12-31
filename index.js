@@ -14,16 +14,25 @@ bot.on("message", async (msg) => {
     const chatId = msg.chat.id;
     console.log(msg.text);
     context = context + msg.text;
-    context = context.slice(-4000);
+    context = context.slice(-1000);
+    if (!msg.text) {
+        return;
+    }
     if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
         const prompt = await gptResponse("Переведи на английский:" + msg.text);
+        if (!prompt) {
+            return;
+        }
         const stream = await draw(
             prompt +
                 " ,deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
         );
         bot.sendPhoto(chatId, stream);
     } else {
-        bot.sendMessage(chatId, await gptResponse(context + msg.text + "."));
+        const response = await gptResponse(context + msg.text + ".");
+        if (response) {
+            bot.sendMessage(chatId, response);
+        }
     }
 });
 
@@ -40,6 +49,7 @@ const gptResponse = async (prompt) => {
         context = context + response;
         return response;
     } catch (error) {
+        console.error(error);
         return "Ошибка, сорян";
     }
 };
