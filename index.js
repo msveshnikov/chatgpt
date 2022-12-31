@@ -30,6 +30,7 @@ bot.on("message", async (msg) => {
         bot.sendPhoto(chatId, stream);
     } else {
         const response = await gptResponse(context + msg.text + ".");
+        context = context + response;
         if (response) {
             bot.sendMessage(chatId, response);
         }
@@ -46,7 +47,6 @@ const gptResponse = async (prompt) => {
         });
         const response = completion.data.choices[0].text;
         console.log(response);
-        context = context + response;
         return response;
     } catch (error) {
         console.error(error);
