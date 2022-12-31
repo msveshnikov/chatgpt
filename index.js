@@ -7,7 +7,8 @@ const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-let context = "";
+const CONTEXT_SIZE=1500;
+let context = [];
 
 bot.on("message", async (msg) => {
     try {
@@ -16,7 +17,7 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(msg.text);
-        context = context.slice(-1000);
+        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE);
         if (msg.text.startsWith("/start")) {
             bot.sendMessage(chatId, "No need in /start 😋 Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊");
             return;
@@ -34,10 +35,10 @@ bot.on("message", async (msg) => {
             bot.sendPhoto(chatId, stream);
         } else {
             // audio hemisphere (right)
-            context = context + msg.text;
-            const response = await gptResponse(context + msg.text + ".");
+            context[chatId] = context[chatId] + msg.text;
+            const response = await gptResponse(context[chatId] + msg.text + ".");
             if (response) {
-                context = context + response;
+                context[chatId] = context[chatId] + response;
                 bot.sendMessage(chatId, response);
             }
         }
