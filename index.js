@@ -7,7 +7,7 @@ const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-const CONTEXT_SIZE=1500;
+const CONTEXT_SIZE = 500; // increase can negatively affect your bill
 let context = [];
 
 bot.on("message", async (msg) => {
@@ -17,12 +17,20 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(msg.text);
-        context[chatId] = (context[chatId] || "").slice(-CONTEXT_SIZE);
-        console.log(context[chatId]);
+        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
         if (msg.text.startsWith("/start")) {
-            bot.sendMessage(chatId, "Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊");
+            bot.sendMessage(
+                chatId,
+                "Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊"
+            );
             return;
         }
+        if (msg.text === "Сброс") {
+            bot.sendMessage(chatId, "Личность уничтожена");
+            context[chatId] = "";
+            return;
+        }
+
         if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
             // visual hemisphere (left)
             const prompt = await gptResponse("Переведи на английский:" + msg.text);
@@ -43,8 +51,8 @@ bot.on("message", async (msg) => {
                 bot.sendMessage(chatId, response);
             }
         }
-    } catch (error) {
-        console.error(error);
+    } catch (e) {
+        console.error(e.message);
     }
 });
 
@@ -59,8 +67,8 @@ const gptResponse = async (prompt) => {
         const response = completion.data.choices[0].text;
         console.log(response);
         return response;
-    } catch (error) {
-        console.error(error);
+    } catch (e) {
+        console.error(e.message);
     }
 };
 
@@ -79,7 +87,7 @@ const draw = async (text) => {
                 height: 512,
                 width: 512,
                 samples: 1,
-                steps: 20,
+                steps: 30,
                 text_prompts: [
                     {
                         text: text,
@@ -90,12 +98,12 @@ const draw = async (text) => {
         });
 
         if (!response.ok) {
-            console.error(`Non-200 response: ${await response.text()}`);
+            console.error(`Stability-AI error: ${await response.text()}`);
             return;
         }
 
         return response.buffer();
     } catch (e) {
-        console.error(e);
+        console.error(e.message);
     }
 };
