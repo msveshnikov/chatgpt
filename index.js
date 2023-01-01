@@ -2,7 +2,8 @@ import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 
-const CONTEXT_SIZE = 500; // increase can negatively affect your bill
+let CONTEXT_SIZE = 500; // increase can negatively affect your bill
+let TEMPERATURE = 36.5;
 
 const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image`;
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
@@ -30,7 +31,16 @@ bot.on("message", async (msg) => {
             context[chatId] = "";
             return;
         }
-
+        if (msg.text.startsWith("Глубина контекста ")) {
+            CONTEXT_SIZE = +msg.text.slice(18);
+            bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
+            return;
+        }
+        if (msg.text.startsWith("Температура ")) {
+            TEMPERATURE = +msg.text.slice(12);
+            bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
+            return;
+        }
         if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
             // visual hemisphere (left)
             const prompt = await gptResponse("Переведи на английский:" + msg.text);
@@ -64,7 +74,7 @@ const gptResponse = async (prompt) => {
             model: "text-davinci-003",
             prompt: prompt,
             max_tokens: 1000,
-            temperature: 0.8,
+            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
         });
         const response = completion.data.choices[0].text;
         console.log(response);
