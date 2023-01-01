@@ -41,7 +41,9 @@ bot.on("message", async (msg) => {
                 prompt +
                     " ,deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
             );
-            bot.sendPhoto(chatId, stream);
+            if (stream) {
+                bot.sendPhoto(chatId, stream);
+            }
         } else {
             // audio hemisphere (right)
             context[chatId] = context[chatId] + msg.text;
