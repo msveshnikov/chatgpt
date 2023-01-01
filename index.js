@@ -1,13 +1,13 @@
 import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
-process.env["NTBA_FIX_350"] = 1;
+
+const CONTEXT_SIZE = 500; // increase can negatively affect your bill
 
 const url = `https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image`;
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-const CONTEXT_SIZE = 500; // increase can negatively affect your bill
 let context = [];
 
 bot.on("message", async (msg) => {
@@ -39,7 +39,7 @@ bot.on("message", async (msg) => {
             }
             const stream = await draw(
                 prompt +
-                    " ,deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
+                    ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
             );
             if (stream) {
                 bot.sendPhoto(chatId, stream);
@@ -74,7 +74,7 @@ const gptResponse = async (prompt) => {
     }
 };
 
-const draw = async (text) => {
+const draw = async (prompt) => {
     try {
         const response = await fetch(url, {
             method: "POST",
@@ -92,7 +92,7 @@ const draw = async (text) => {
                 steps: 30,
                 text_prompts: [
                     {
-                        text: text,
+                        text: prompt,
                         weight: 1,
                     },
                 ],
@@ -109,3 +109,5 @@ const draw = async (text) => {
         console.error(e.message);
     }
 };
+
+process.env["NTBA_FIX_350"] = 1;
