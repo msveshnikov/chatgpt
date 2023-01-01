@@ -1,6 +1,7 @@
 # chatgpt
 
 Telegram Bot with OpenAI GPT-3.5 davinci003 connection, context and Stability AI painting
+
 You have to get those APIs and set env variables:
 
 * OPENAI_KEY - https://openai.com/api/ - $18 free credit
