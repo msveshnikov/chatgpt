@@ -8,7 +8,7 @@ let TEMPERATURE = 36.5;
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-let context = [];
+const context = [];
 
 bot.on("message", async (msg) => {
     try {
@@ -25,33 +25,41 @@ bot.on("message", async (msg) => {
             );
             return;
         }
-        if (msg.text === "Сброс") {
+        if (msg.text.toLowerCase() === "сброс") {
             bot.sendMessage(chatId, "Личность уничтожена");
             context[chatId] = "";
             return;
         }
-        if (msg.text.startsWith("Глубина контекста ")) {
+        if (msg.text.toLowerCase().startsWith("глубина контекста ")) {
             CONTEXT_SIZE = +msg.text.slice(18);
             bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
             return;
         }
-        if (msg.text.startsWith("Температура ")) {
+        if (msg.text.toLowerCase().startsWith("температура ")) {
             TEMPERATURE = +msg.text.slice(12);
             bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
             return;
         }
-        if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
+        if (
+            msg.text.toLowerCase().startsWith("нарисуй") ||
+            msg.text.toLowerCase().startsWith("draw") ||
+            msg.text.toLowerCase().startsWith("paint")
+        ) {
             // visual hemisphere (left)
-            var prompt;
-            if (msg.text === "Нарисуй" || msg.text === "Draw" || msg.text === "Paint") {
-                prompt = await gptResponse(context[chatId] + " Переведи на английский своё последнее сообщение");
+            let prompt;
+            if (
+                msg.toLowerCase().text === "нарисуй" ||
+                msg.toLowerCase().text === "draw" ||
+                msg.toLowerCase().text === "paint"
+            ) {
+                prompt = await getText(context[chatId] + " Переведи на английский своё последнее сообщение");
             } else {
-                prompt = await gptResponse("Переведи на английский:" + msg.text);
+                prompt = await getText("Переведи на английский:" + msg.text);
             }
             if (!prompt) {
                 return;
             }
-            const stream = await draw(
+            const stream = await getArt(
                 prompt +
                     ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
             );
@@ -61,7 +69,7 @@ bot.on("message", async (msg) => {
         } else {
             // audio hemisphere (right)
             context[chatId] = context[chatId] + msg.text;
-            const response = await gptResponse(context[chatId] + msg.text + ".");
+            const response = await getText(context[chatId] + msg.text + ".");
             if (response) {
                 context[chatId] = context[chatId] + response;
                 bot.sendMessage(chatId, response);
@@ -72,7 +80,7 @@ bot.on("message", async (msg) => {
     }
 });
 
-const gptResponse = async (prompt) => {
+const getText = async (prompt) => {
     try {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
@@ -88,7 +96,7 @@ const gptResponse = async (prompt) => {
     }
 };
 
-const draw = async (prompt) => {
+const getArt = async (prompt) => {
     try {
         const response = await fetch(
             "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image",
