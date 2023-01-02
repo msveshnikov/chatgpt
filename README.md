@@ -13,3 +13,4 @@ You have to get those APIs and set env variables:
 http://t.me/maxsoft_chat_bot
 
 Demo will be closed as soon as free credits exhausted, so please use with care
+Extremely funny when bot is added to group chat with a few people 😂
