@@ -42,7 +42,12 @@ bot.on("message", async (msg) => {
         }
         if (msg.text.startsWith("Нарисуй") || msg.text.startsWith("Draw") || msg.text.startsWith("Paint")) {
             // visual hemisphere (left)
-            const prompt = await gptResponse("Переведи на английский:" + msg.text);
+            var prompt;
+            if (msg.text === "Нарисуй" || msg.text === "Draw" || msg.text === "Paint") {
+                prompt = await gptResponse(context[chatId] + " Переведи на английский своё последнее сообщение");
+            } else {
+                prompt = await gptResponse("Переведи на английский:" + msg.text);
+            }
             if (!prompt) {
                 return;
             }
