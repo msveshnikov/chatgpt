@@ -3,8 +3,8 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 
-let CONTEXT_SIZE = 200; // increase can negatively affect your bill
-let TEMPERATURE = 36.5;
+let CONTEXT_SIZE = 300; // increase can negatively affect your bill
+let TEMPERATURE = 38.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
@@ -20,6 +20,7 @@ bot.on("message", async (msg) => {
             if (prompt) {
                 // link between left and right hemisphere (computer vision)
                 prompt = await getText("Переведи на русский: " + prompt);
+                prompt = prompt.replace(/.*/, "").substr(1);
                 context[chatId] = context[chatId] + prompt;
                 bot.sendMessage(chatId, prompt);
             }
@@ -33,7 +34,7 @@ bot.on("message", async (msg) => {
         if (msg.text.startsWith("/start")) {
             bot.sendMessage(
                 chatId,
-                "Just start talking to me. Any language. I also can Draw or Paint anything. Понимаю команду Нарисуй что-то 😊"
+                "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
             );
             return;
         }
@@ -157,3 +158,4 @@ const getPrompt = async (photo) => {
 };
 
 process.env["NTBA_FIX_350"] = 1;
+process.env["NODE_NO_WARNINGS"] = 1;

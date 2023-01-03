@@ -7,6 +7,7 @@ You have to get those APIs and set env variables:
 * OPENAI_KEY - https://openai.com/api/ - $18 free credit
 * STABILITY_KEY - https://beta.dreamstudio.ai/membership?tab=apiKeys - $10 free credit https://api.stability.ai/docs
 * TELEGRAM_KEY - contact https://t.me/BotFather
+* REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - seems free so far
 
 
 # Demo
