@@ -11,6 +11,8 @@ const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 const context = [];
+const skip = [];
+const count = [];
 
 bot.on("message", async (msg) => {
     try {
@@ -48,6 +50,11 @@ bot.on("message", async (msg) => {
             bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
             return;
         }
+        if (msg.text.toLowerCase().startsWith("пропуск ")) {
+            skip[chatId] = +msg.text.slice(8);
+            bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+            return;
+        }
         if (msg.text.toLowerCase().startsWith("температура ")) {
             TEMPERATURE = +msg.text.slice(12);
             bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
@@ -83,6 +90,10 @@ bot.on("message", async (msg) => {
         } else {
             // audio hemisphere (right)
             context[chatId] = context[chatId] + msg.text;
+            count[chatId] = (count[chatId] ?? 0) + 1;
+            if (count[chatId] % (skip[chatId] ?? 1) != 0) {
+                return;
+            }
             const response = await getText(context[chatId] + msg.text + ".");
             if (response) {
                 context[chatId] = context[chatId] + response;
