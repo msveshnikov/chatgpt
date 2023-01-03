@@ -1,10 +1,12 @@
 import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
+import Replicate from "replicate-js";
 
-let CONTEXT_SIZE = 500; // increase can negatively affect your bill
+let CONTEXT_SIZE = 200; // increase can negatively affect your bill
 let TEMPERATURE = 36.5;
 
+const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
 const openai = new OpenAIApi(configuration);
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
@@ -13,6 +15,16 @@ const context = [];
 bot.on("message", async (msg) => {
     try {
         const chatId = msg.chat.id;
+        if (msg.photo) {
+            let prompt = await getPrompt(msg.photo);
+            if (prompt) {
+                // link between left and right hemisphere (computer vision)
+                prompt = await getText("Переведи на русский: " + prompt);
+                context[chatId] = context[chatId] + prompt;
+                bot.sendMessage(chatId, prompt);
+            }
+            return;
+        }
         if (!msg.text) {
             return;
         }
@@ -134,6 +146,14 @@ const getArt = async (prompt) => {
     } catch (e) {
         console.error(e.message);
     }
+};
+
+const getPrompt = async (photo) => {
+    const file_id = photo[photo.length - 1].file_id;
+    const fileUri = await bot.getFileLink(file_id);
+    const img2txt = await replicate.models.get("methexis-inc/img2prompt");
+    const output = await img2txt.predict({ image: fileUri });
+    return output;
 };
 
 process.env["NTBA_FIX_350"] = 1;
