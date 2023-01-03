@@ -48,9 +48,9 @@ bot.on("message", async (msg) => {
             // visual hemisphere (left)
             let prompt;
             if (
-                msg.toLowerCase().text === "нарисуй" ||
-                msg.toLowerCase().text === "draw" ||
-                msg.toLowerCase().text === "paint"
+                msg.text.toLowerCase() === "нарисуй" ||
+                msg.text.toLowerCase() === "draw" ||
+                msg.text.toLowerCase() === "paint"
             ) {
                 // link between right and left hemisphere
                 prompt = await getText(context[chatId] + " Переведи на английский своё последнее сообщение");
