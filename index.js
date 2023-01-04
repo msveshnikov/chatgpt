@@ -18,7 +18,7 @@ const opened = new Set();
 bot.on("message", async (msg) => {
     try {
         const chatId = msg.chat.id;
-        if (msg.text.startsWith("/start")) {
+        if (msg.text?.startsWith("/start")) {
             bot.sendMessage(
                 chatId,
                 "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
