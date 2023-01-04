@@ -3,13 +3,13 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 
-let CONTEXT_SIZE = 300; // increase can negatively affect your bill
+let CONTEXT_SIZE = 200; // increase can negatively affect your bill
 let TEMPERATURE = 38.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
-const configuration = new Configuration({ apiKey: process.env.OPENAI_KEY });
-const openai = new OpenAIApi(configuration);
+const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
+
 const context = [];
 const skip = [];
 const count = [];
@@ -163,9 +163,8 @@ const getArt = async (prompt) => {
 const getPrompt = async (photo) => {
     const file_id = photo[photo.length - 1].file_id;
     const fileUri = await bot.getFileLink(file_id);
-    const img2txt = await replicate.models.get("methexis-inc/img2prompt");
-    const output = await img2txt.predict({ image: fileUri });
-    return output;
+    const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
+    return img2prompt.predict({ image: fileUri });
 };
 
 process.env["NTBA_FIX_350"] = 1;
