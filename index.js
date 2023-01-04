@@ -10,13 +10,34 @@ const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 
-const context = [];
-const skip = [];
-const count = [];
+const context = {};
+const skip = {};
+const count = {};
+const opened = new Set();
 
 bot.on("message", async (msg) => {
     try {
         const chatId = msg.chat.id;
+        if (msg.text.startsWith("/start")) {
+            bot.sendMessage(
+                chatId,
+                "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
+            );
+            return;
+        }
+        if (msg.text === "Сезам откройся") {
+            bot.sendMessage(chatId, "Бот активирован");
+            opened.add(chatId);
+            return;
+        }
+        if (msg.text === "Сезам закройся") {
+            bot.sendMessage(chatId, "Бот деактивирован");
+            opened.delete(chatId);
+            return;
+        }
+        if (!opened.has(chatId)) {
+            return;
+        }
         if (msg.photo) {
             let prompt = await getPrompt(msg.photo);
             if (prompt) {
@@ -33,13 +54,6 @@ bot.on("message", async (msg) => {
         }
         console.log(msg.text);
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
-        if (msg.text.startsWith("/start")) {
-            bot.sendMessage(
-                chatId,
-                "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
-            );
-            return;
-        }
         if (msg.text.toLowerCase() === "сброс") {
             bot.sendMessage(chatId, "Личность уничтожена");
             context[chatId] = "";
