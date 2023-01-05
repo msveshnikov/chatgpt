@@ -39,6 +39,7 @@ bot.on("message", async (msg) => {
             return;
         }
         if (msg.photo) {
+            bot.sendChatAction(chatId, "typing");
             let prompt = await getPrompt(msg.photo);
             if (prompt) {
                 // link between left and right hemisphere (computer vision)
@@ -95,12 +96,12 @@ bot.on("message", async (msg) => {
             if (!prompt) {
                 return;
             }
-            const stream = await getArt(
+            const photo = await getArt(
                 prompt +
-                    ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley, daniel ljunggren, zoltan boros, gabor szikszai, howard lyon, steve argyle, winona nelson"
+                    ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley"
             );
-            if (stream) {
-                bot.sendPhoto(chatId, stream);
+            if (photo) {
+                bot.sendPhoto(chatId, photo);
             }
         } else {
             // audio hemisphere (right)
@@ -166,7 +167,7 @@ const getArt = async (prompt) => {
         );
 
         if (!response.ok) {
-            console.error(`Stability-AI error: ${await response.text()}`);
+            console.error(`Stability AI error: ${await response.text()}`);
             return;
         }
 
