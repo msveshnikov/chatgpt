@@ -81,6 +81,7 @@ bot.on("message", async (msg) => {
         ) {
             // visual hemisphere (left)
             let prompt;
+            bot.sendChatAction(chatId, "typing");
             if (
                 msg.text.toLowerCase() === "нарисуй" ||
                 msg.text.toLowerCase() === "draw" ||
@@ -108,6 +109,7 @@ bot.on("message", async (msg) => {
             if (count[chatId] % (skip[chatId] ?? 1) != 0) {
                 return;
             }
+            bot.sendChatAction(chatId, "typing");
             const response = await getText(context[chatId] + msg.text + ".");
             if (response) {
                 context[chatId] = context[chatId] + response;
