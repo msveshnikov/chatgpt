@@ -101,9 +101,9 @@ const visualToText = async (chatId, msg) => {
     if (prompt) {
         // link between left and right hemisphere (computer vision)
         prompt = await getText("Переведи на русский: " + prompt);
+        prompt = prompt.replace(/.*/, "").substr(1);
+        context[chatId] = context[chatId] + prompt;
         if (prompt) {
-            prompt = prompt.replace(/.*/, "").substr(1);
-            context[chatId] = context[chatId] + prompt;
             bot.sendMessage(chatId, prompt);
         }
     }
