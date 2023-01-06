@@ -3,7 +3,7 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 
-let CONTEXT_SIZE = 200; // increase can negatively affect your bill
+let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 38.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -18,6 +18,7 @@ const opened = new Set();
 bot.on("message", async (msg) => {
     try {
         const chatId = msg.chat.id;
+        // Technical stuff
         if (msg.text?.startsWith("/start")) {
             bot.sendMessage(
                 chatId,
@@ -38,40 +39,40 @@ bot.on("message", async (msg) => {
         if (!opened.has(chatId)) {
             return;
         }
-        if (msg.photo) {
-             // visual hemisphere (left)
-            visualToText(chatId, msg);
+        const msgL = msg.text?.toLowerCase();
+        if (msg.text) {
+            console.log(msg.text);
+            if (msgL === "сброс") {
+                bot.sendMessage(chatId, "Личность уничтожена");
+                context[chatId] = "";
+                return;
+            }
+            if (msgL.startsWith("глубина контекста ")) {
+                CONTEXT_SIZE = +msg.text.slice(18);
+                bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
+                return;
+            }
+            if (msgL.startsWith("пропуск ")) {
+                skip[chatId] = +msg.text.slice(8);
+                bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+                return;
+            }
+            if (msgL.startsWith("отвечать раз в ")) {
+                skip[chatId] = +msg.text.slice(15);
+                bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+                return;
+            }
+            if (msgL.startsWith("температура ")) {
+                TEMPERATURE = +msg.text.slice(12);
+                bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
+                return;
+            }
         }
-        if (!msg.text) {
-            return;
-        }
-        console.log(msg.text);
-        const msgL = msg.text.toLowerCase();
+        // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
-        if (msgL === "сброс") {
-            bot.sendMessage(chatId, "Личность уничтожена");
-            context[chatId] = "";
-            return;
-        }
-        if (msgL.startsWith("глубина контекста ")) {
-            CONTEXT_SIZE = +msg.text.slice(18);
-            bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
-            return;
-        }
-        if (msgL.startsWith("пропуск ")) {
-            skip[chatId] = +msg.text.slice(8);
-            bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
-            return;
-        }
-        if (msgL.startsWith("отвечать раз в ")) {
-            skip[chatId] = +msg.text.slice(15);
-            bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
-            return;
-        }
-        if (msgL.startsWith("температура ")) {
-            TEMPERATURE = +msg.text.slice(12);
-            bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
-            return;
+        if (msg.photo) {
+            // visual hemisphere (left)
+            visualToText(chatId, msg);
         }
         if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
             // visual hemisphere (left)
