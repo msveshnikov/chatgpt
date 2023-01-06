@@ -101,9 +101,11 @@ const visualToText = async (chatId, msg) => {
     if (prompt) {
         // link between left and right hemisphere (computer vision)
         prompt = await getText("Переведи на русский: " + prompt);
-        prompt = prompt.replace(/.*/, "").substr(1);
-        context[chatId] = context[chatId] + prompt;
-        bot.sendMessage(chatId, prompt);
+        if (prompt) {
+            prompt = prompt.replace(/.*/, "").substr(1);
+            context[chatId] = context[chatId] + prompt;
+            bot.sendMessage(chatId, prompt);
+        }
     }
 };
 
@@ -143,58 +145,50 @@ const textToText = async (chatId, msg) => {
 };
 
 const getText = async (prompt) => {
-    try {
-        const completion = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: prompt,
-            max_tokens: 1000,
-            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
-        });
-        const response = completion.data.choices[0].text;
-        console.log(response);
-        return response;
-    } catch (e) {
-        console.error(e.message);
-    }
+    const completion = await openai.createCompletion({
+        model: "text-davinci-003",
+        prompt: prompt,
+        max_tokens: 1000,
+        temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
+    });
+    const response = completion.data.choices[0].text;
+    console.log(response);
+    return response;
 };
 
 const getArt = async (prompt) => {
-    try {
-        const response = await fetch(
-            "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "image/png",
-                    Authorization: process.env.STABILITY_KEY,
-                },
-                body: JSON.stringify({
-                    cfg_scale: 7,
-                    clip_guidance_preset: "FAST_BLUE",
-                    height: 512,
-                    width: 512,
-                    samples: 1,
-                    steps: 30,
-                    text_prompts: [
-                        {
-                            text: prompt,
-                            weight: 1,
-                        },
-                    ],
-                }),
-            }
-        );
-
-        if (!response.ok) {
-            console.error(`Stability AI error: ${await response.text()}`);
-            return;
+    const response = await fetch(
+        "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image",
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Accept: "image/png",
+                Authorization: process.env.STABILITY_KEY,
+            },
+            body: JSON.stringify({
+                cfg_scale: 7,
+                clip_guidance_preset: "FAST_BLUE",
+                height: 512,
+                width: 512,
+                samples: 1,
+                steps: 30,
+                text_prompts: [
+                    {
+                        text: prompt,
+                        weight: 1,
+                    },
+                ],
+            }),
         }
+    );
 
-        return response.buffer();
-    } catch (e) {
-        console.error(e.message);
+    if (!response.ok) {
+        console.error(`Stability AI error: ${await response.text()}`);
+        return;
     }
+
+    return response.buffer();
 };
 
 const getPrompt = async (photo) => {
