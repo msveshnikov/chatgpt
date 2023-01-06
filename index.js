@@ -105,13 +105,13 @@ bot.on("message", async (msg) => {
             }
         } else {
             // audio hemisphere (right)
-            context[chatId] = context[chatId] + msg.text;
+            context[chatId] = context[chatId] + msg.text + ".";
             count[chatId] = (count[chatId] ?? 0) + 1;
             if (count[chatId] % (skip[chatId] ?? 1) != 0) {
                 return;
             }
             bot.sendChatAction(chatId, "typing");
-            const response = await getText(context[chatId] + msg.text + ".");
+            const response = await getText(context[chatId]);
             if (response) {
                 context[chatId] = context[chatId] + response;
                 bot.sendMessage(chatId, response);
