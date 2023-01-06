@@ -4,7 +4,7 @@ import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 38.5;
+let TEMPERATURE = 39.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -17,54 +17,12 @@ const opened = new Set();
 
 bot.on("message", async (msg) => {
     try {
-        const chatId = msg.chat.id;
         // Technical stuff
-        if (msg.text?.startsWith("/start")) {
-            bot.sendMessage(
-                chatId,
-                "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
-            );
-            return;
-        }
-        if (msg.text === "Сезам откройся") {
-            bot.sendMessage(chatId, "Бот активирован");
-            opened.add(chatId);
-            return;
-        }
-        if (msg.text === "Сезам закройся") {
-            bot.sendMessage(chatId, "Бот деактивирован");
-            opened.delete(chatId);
-            return;
-        }
-        if (!opened.has(chatId)) {
-            return;
-        }
+        const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
+        console.log(msg.text);
         if (msg.text) {
-            console.log(msg.text);
-            if (msgL === "сброс") {
-                bot.sendMessage(chatId, "Личность уничтожена");
-                context[chatId] = "";
-                return;
-            }
-            if (msgL.startsWith("глубина контекста ")) {
-                CONTEXT_SIZE = +msg.text.slice(18);
-                bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
-                return;
-            }
-            if (msgL.startsWith("пропуск ")) {
-                skip[chatId] = +msg.text.slice(8);
-                bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
-                return;
-            }
-            if (msgL.startsWith("отвечать раз в ")) {
-                skip[chatId] = +msg.text.slice(15);
-                bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
-                return;
-            }
-            if (msgL.startsWith("температура ")) {
-                TEMPERATURE = +msg.text.slice(12);
-                bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
+            if (processCommand(chatId, msgL)) {
                 return;
             }
         }
@@ -73,6 +31,9 @@ bot.on("message", async (msg) => {
         if (msg.photo) {
             // visual hemisphere (left)
             visualToText(chatId, msg);
+        }
+        if (!msg.text) {
+            return;
         }
         if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
             // visual hemisphere (left)
@@ -85,6 +46,54 @@ bot.on("message", async (msg) => {
         console.error(e.message);
     }
 });
+
+const processCommand = (chatId, msg) => {
+    if (msg.startsWith("/start")) {
+        bot.sendMessage(
+            chatId,
+            "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
+        );
+        return true;
+    }
+    if (msg === "сезам откройся") {
+        bot.sendMessage(chatId, "Бот активирован");
+        opened.add(chatId);
+        return true;
+    }
+    if (msg === "сезам закройся") {
+        bot.sendMessage(chatId, "Бот деактивирован");
+        opened.delete(chatId);
+        return true;
+    }
+    if (!opened.has(chatId)) {
+        return true;
+    }
+    if (msg === "сброс") {
+        bot.sendMessage(chatId, "Личность уничтожена");
+        context[chatId] = "";
+        return true;
+    }
+    if (msg.startsWith("глубина контекста ")) {
+        CONTEXT_SIZE = +msg.slice(18);
+        bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
+        return true;
+    }
+    if (msg.startsWith("пропуск ")) {
+        skip[chatId] = +msg.slice(8);
+        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+        return true;
+    }
+    if (msg.startsWith("отвечать раз в ")) {
+        skip[chatId] = +msg.slice(15);
+        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+        return true;
+    }
+    if (msg.startsWith("температура ")) {
+        TEMPERATURE = +msg.slice(12);
+        bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
+        return true;
+    }
+};
 
 const visualToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
