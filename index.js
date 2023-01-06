@@ -39,88 +39,98 @@ bot.on("message", async (msg) => {
             return;
         }
         if (msg.photo) {
-            bot.sendChatAction(chatId, "typing");
-            let prompt = await getPrompt(msg.photo);
-            if (prompt) {
-                // link between left and right hemisphere (computer vision)
-                prompt = await getText("Переведи на русский: " + prompt);
-                prompt = prompt.replace(/.*/, "").substr(1);
-                context[chatId] = context[chatId] + prompt;
-                bot.sendMessage(chatId, prompt);
-            }
-            return;
+             // visual hemisphere (left)
+            visualToText(chatId, msg);
         }
         if (!msg.text) {
             return;
         }
         console.log(msg.text);
+        const msgL = msg.text.toLowerCase();
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
-        if (msg.text.toLowerCase() === "сброс") {
+        if (msgL === "сброс") {
             bot.sendMessage(chatId, "Личность уничтожена");
             context[chatId] = "";
             return;
         }
-        if (msg.text.toLowerCase().startsWith("глубина контекста ")) {
+        if (msgL.startsWith("глубина контекста ")) {
             CONTEXT_SIZE = +msg.text.slice(18);
             bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
             return;
         }
-        if (msg.text.toLowerCase().startsWith("пропуск ")) {
+        if (msgL.startsWith("пропуск ")) {
             skip[chatId] = +msg.text.slice(8);
             bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
             return;
         }
-        if (msg.text.toLowerCase().startsWith("температура ")) {
+        if (msgL.startsWith("отвечать раз в ")) {
+            skip[chatId] = +msg.text.slice(15);
+            bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+            return;
+        }
+        if (msgL.startsWith("температура ")) {
             TEMPERATURE = +msg.text.slice(12);
             bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
             return;
         }
-        if (
-            msg.text.toLowerCase().startsWith("нарисуй") ||
-            msg.text.toLowerCase().startsWith("draw") ||
-            msg.text.toLowerCase().startsWith("paint")
-        ) {
+        if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
             // visual hemisphere (left)
-            let prompt;
-            bot.sendChatAction(chatId, "typing");
-            if (
-                msg.text.toLowerCase() === "нарисуй" ||
-                msg.text.toLowerCase() === "draw" ||
-                msg.text.toLowerCase() === "paint"
-            ) {
-                // link between right and left hemisphere
-                prompt = await getText(context[chatId] + " Переведи на английский своё последнее сообщение");
-            } else {
-                prompt = await getText("Переведи на английский:" + msg.text);
-            }
-            if (!prompt) {
-                return;
-            }
-            const photo = await getArt(
-                prompt +
-                    ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley"
-            );
-            if (photo) {
-                bot.sendPhoto(chatId, photo);
-            }
+            textToVisual(chatId, msgL);
         } else {
             // audio hemisphere (right)
-            context[chatId] = context[chatId] + msg.text + ".";
-            count[chatId] = (count[chatId] ?? 0) + 1;
-            if (count[chatId] % (skip[chatId] ?? 1) != 0) {
-                return;
-            }
-            bot.sendChatAction(chatId, "typing");
-            const response = await getText(context[chatId]);
-            if (response) {
-                context[chatId] = context[chatId] + response;
-                bot.sendMessage(chatId, response);
-            }
+            textToText(chatId, msg);
         }
     } catch (e) {
         console.error(e.message);
     }
 });
+
+const visualToText = async (chatId, msg) => {
+    bot.sendChatAction(chatId, "typing");
+    let prompt = await getPrompt(msg.photo);
+    if (prompt) {
+        // link between left and right hemisphere (computer vision)
+        prompt = await getText("Переведи на русский: " + prompt);
+        prompt = prompt.replace(/.*/, "").substr(1);
+        context[chatId] = context[chatId] + prompt;
+        bot.sendMessage(chatId, prompt);
+    }
+};
+
+const textToVisual = async (chatId, text) => {
+    let prompt;
+    bot.sendChatAction(chatId, "typing");
+    if (text === "нарисуй" || text === "draw" || text === "paint") {
+        // link between right and left hemisphere (painting)
+        prompt = await getText(context[chatId] + " Переведи на английский.");
+    } else {
+        prompt = await getText("Переведи на английский: " + text);
+    }
+    if (!prompt) {
+        return;
+    }
+    const photo = await getArt(
+        prompt +
+            ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley"
+    );
+    if (photo) {
+        bot.sendPhoto(chatId, photo);
+    }
+};
+
+const textToText = async (chatId, msg) => {
+    context[chatId] = context[chatId] + msg.text + ".";
+    count[chatId] = (count[chatId] ?? 0) + 1;
+    if (count[chatId] % (skip[chatId] ?? 1) != 0) {
+        return;
+    }
+    bot.sendChatAction(chatId, "typing");
+    const response = await getText(context[chatId]);
+    if (response) {
+        context[chatId] = context[chatId] + response;
+        bot.sendMessage(chatId, response);
+    }
+};
 
 const getText = async (prompt) => {
     try {
