@@ -121,7 +121,7 @@ const textToVisual = async (chatId, text) => {
     }
     const photo = await getArt(
         prompt +
-            ", deep focus, highly detailed, digital painting, artstation, smooth, sharp focus, illustration, art by magali villeneuve, ryan yee, rk post, clint cearley"
+            ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley"
     );
     if (photo) {
         bot.sendPhoto(chatId, photo);
