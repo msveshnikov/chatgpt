@@ -104,9 +104,9 @@ const visualToText = async (chatId, msg) => {
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         prompt = await getText("Переведи на русский: " + prompt);
-        prompt = prompt.replace(/.*/, "").substr(1);
-        context[chatId] = context[chatId] + prompt;
+        prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
+            context[chatId] = context[chatId] + prompt;
             bot.sendMessage(chatId, prompt);
         }
     }
