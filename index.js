@@ -97,9 +97,10 @@ const processCommand = (chatId, msg) => {
 
 const visualToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    let prompt = await getPrompt(msg.photo);
+    let prompt = await getPrompt(msg.photo, chatId);
     if (prompt) {
         // link between left and right hemisphere (computer vision)
+        bot.sendChatAction(chatId, "typing");
         prompt = await getText("Переведи на русский: " + prompt);
         prompt = prompt.replace(/.*/, "").substr(1);
         context[chatId] = context[chatId] + prompt;
@@ -121,6 +122,7 @@ const textToVisual = async (chatId, text) => {
     if (!prompt) {
         return;
     }
+    bot.sendChatAction(chatId, "typing");
     const photo = await getArt(
         prompt +
             ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley"
@@ -151,7 +153,7 @@ const getText = async (prompt) => {
         max_tokens: 1000,
         temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
     });
-    const response = completion.data.choices[0].text;
+    const response = completion?.data?.choices?.[0]?.text;
     console.log(response);
     return response;
 };
@@ -191,9 +193,10 @@ const getArt = async (prompt) => {
     return response.buffer();
 };
 
-const getPrompt = async (photo) => {
+const getPrompt = async (photo, chatId) => {
     const file_id = photo[photo.length - 1].file_id;
     const fileUri = await bot.getFileLink(file_id);
+    bot.sendChatAction(chatId, "typing");
     const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
     return img2prompt.predict({ image: fileUri });
 };
