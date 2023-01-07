@@ -13,6 +13,7 @@ const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 const context = {};
 const skip = {};
 const count = {};
+const last = {};
 const opened = new Set();
 
 bot.on("message", async (msg) => {
@@ -20,8 +21,8 @@ bot.on("message", async (msg) => {
         // Technical stuff
         const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
-        console.log(msg.text);
         if (msg.text) {
+            console.log(msg.text);
             if (processCommand(chatId, msgL)) {
                 return;
             }
@@ -101,6 +102,7 @@ const visualToText = async (chatId, msg) => {
     if (prompt) {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
+        last[chatId] = prompt;
         prompt = await getText("Переведи на русский: " + prompt);
         prompt = prompt.replace(/.*/, "").substr(1);
         context[chatId] = context[chatId] + prompt;
@@ -111,14 +113,12 @@ const visualToText = async (chatId, msg) => {
 };
 
 const textToVisual = async (chatId, text) => {
-    let prompt;
     bot.sendChatAction(chatId, "typing");
     if (text === "нарисуй" || text === "draw" || text === "paint") {
         // link between right and left hemisphere (painting)
-        prompt = await getText(context[chatId] + " Переведи на английский.");
-    } else {
-        prompt = await getText("Переведи на английский: " + text);
+        text = last[chatId];
     }
+    const prompt = await getText("Переведи на английский: " + text);
     if (!prompt) {
         return;
     }
@@ -141,6 +141,7 @@ const textToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
     const response = await getText(context[chatId]);
     if (response) {
+        last[chatId] = response;
         context[chatId] = context[chatId] + response;
         bot.sendMessage(chatId, response);
     }
