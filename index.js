@@ -4,7 +4,7 @@ import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 39.5;
+let TEMPERATURE = 36.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));

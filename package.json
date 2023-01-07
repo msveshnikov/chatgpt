@@ -1,14 +1,14 @@
 {
     "name": "chatgpt-telegram-bot",
     "version": "1.0.0",
-    "description": "",
+    "description": "Telegram Bot with OpenAI GPT-3.5 davinci003 connection, context and Stability AI painting",
     "main": "index.js",
     "type": "module",
     "author": "Max Sveshnikov",
     "license": "MIT",
     "dependencies": {
         "node-fetch": "^3.3.0",
-        "node-telegram-bot-api": "^0.60.0",
+        "node-telegram-bot-api": "^0.61.0",
         "openai": "^3.1.0",
         "replicate-js": "github:nicholascelestin/replicate-js"
     }
