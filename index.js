@@ -27,6 +27,9 @@ bot.on("message", async (msg) => {
                 return;
             }
         }
+        if (!opened.has(chatId)) {
+            return;
+        }
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
         if (msg.photo) {
@@ -64,9 +67,6 @@ const processCommand = (chatId, msg) => {
     if (msg === "сезам закройся") {
         bot.sendMessage(chatId, "Бот деактивирован");
         opened.delete(chatId);
-        return true;
-    }
-    if (!opened.has(chatId)) {
         return true;
     }
     if (msg === "сброс") {
