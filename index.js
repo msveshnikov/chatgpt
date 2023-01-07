@@ -22,7 +22,6 @@ bot.on("message", async (msg) => {
         const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
         if (msg.text) {
-            console.log(msg.text);
             if (processCommand(chatId, msgL)) {
                 return;
             }
@@ -39,6 +38,7 @@ bot.on("message", async (msg) => {
         if (!msg.text) {
             return;
         }
+        console.log(msg.text);
         if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
             // visual hemisphere (left)
             textToVisual(chatId, msgL);
