@@ -147,15 +147,19 @@ const textToText = async (chatId, msg) => {
 };
 
 const getText = async (prompt) => {
-    const completion = await openai.createCompletion({
-        model: "text-davinci-003",
-        prompt: prompt,
-        max_tokens: 1000,
-        temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
-    });
-    const response = completion?.data?.choices?.[0]?.text;
-    console.log(response);
-    return response;
+    try {
+        const completion = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: prompt,
+            max_tokens: 1000,
+            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
+        });
+        const response = completion?.data?.choices?.[0]?.text;
+        console.log(response);
+        return response;
+    } catch (e) {
+        console.error(e.message);
+    }
 };
 
 const getArt = async (prompt) => {
