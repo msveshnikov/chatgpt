@@ -5,7 +5,7 @@ import Replicate from "replicate-js";
 import google from "./search.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 36.5;
+let TEMPERATURE = 38.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -124,7 +124,7 @@ const textToVisual = async (chatId, text) => {
         // link between right and left hemisphere (painting)
         text = last[chatId];
     }
-    const prompt = await getText("Переведи на английский: " + text);
+    const prompt = await getText("Переведи на английский: " + text.replace("ребенка", ""));
     if (!prompt) {
         return;
     }
