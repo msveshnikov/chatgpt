@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
+import google from "./search.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 36.5;
@@ -26,9 +27,10 @@ bot.on("message", async (msg) => {
                 return;
             }
         }
-        if (!opened.has(chatId)) {
-            return;
-        }
+        // if (!opened.has(chatId)) {
+        //     return;
+        // }
+
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
         if (msg.photo) {
@@ -39,12 +41,16 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(msg.text);
-        if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
-            // visual hemisphere (left)
-            textToVisual(chatId, msgL);
+        if (msgL.startsWith("погугли") || msgL.startsWith("загугли")) {
+            textToGoogle(chatId, msg);
         } else {
-            // audio hemisphere (right)
-            textToText(chatId, msg);
+            if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
+                // visual hemisphere (left)
+                textToVisual(chatId, msgL);
+            } else {
+                // audio hemisphere (right)
+                textToText(chatId, msg);
+            }
         }
     } catch (e) {
         console.error(e.message);
@@ -140,6 +146,16 @@ const textToText = async (chatId, msg) => {
     }
     bot.sendChatAction(chatId, "typing");
     const response = await getText(context[chatId]);
+    if (response) {
+        last[chatId] = response;
+        context[chatId] = context[chatId] + response;
+        bot.sendMessage(chatId, response);
+    }
+};
+
+const textToGoogle = async (chatId, msg) => {
+    bot.sendChatAction(chatId, "typing");
+    const response = await google(msg.text.slice(8));
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;

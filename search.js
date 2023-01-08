@@ -1,7 +1,5 @@
 import cheerio from "cheerio";
-import axios from "axios";
-
-const searchTerm = "Путин";
+import fetch from "node-fetch";
 
 const userAgents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36",
@@ -12,21 +10,19 @@ const userAgents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
 ];
 
-const results = await scrapeSearchResults();
-console.log(results);
-
-// This function scrapes the search results from the HTML of the Google search page
-async function scrapeSearchResults() {
-    const $ = await fetchData(searchTerm);
-    return $(".UDZeY").text();
+async function google(term) {
+    console.log(term);
+    const $ = await fetchData(term);
+    return $(".UDZeY").text().replaceAll("Описание","").replaceAll("ЕЩЁ","");
 }
 
 async function fetchData(term) {
-    var randomAgent = Math.floor(Math.random() * userAgents.length);
-    const result = await axios.get(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=ru`, {
+    const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=ru`, {
         headers: {
-            "User-Agent": userAgents[randomAgent],
+            "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
         },
     });
-    return cheerio.load(result.data);
+    return cheerio.load(await result.text());
 }
+
+export default google;
