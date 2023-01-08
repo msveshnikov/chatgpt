@@ -1,4 +1,4 @@
-import cheerio from "cheerio";
+import { load } from "cheerio";
 import fetch from "node-fetch";
 
 const userAgents = [
@@ -11,9 +11,8 @@ const userAgents = [
 ];
 
 async function google(term) {
-    console.log(term);
-    const $ = await fetchData(term);
-    return $(".UDZeY").text().replaceAll("Описание","").replaceAll("ЕЩЁ","");
+    const page = await fetchData(term);
+    return page(".UDZeY").text().replaceAll("Описание", "").replaceAll("ЕЩЁ", "");
 }
 
 async function fetchData(term) {
@@ -22,7 +21,8 @@ async function fetchData(term) {
             "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
         },
     });
-    return cheerio.load(await result.text());
+    return load(await result.text());
 }
 
 export default google;
+//  console.log(await google("Путин"));

@@ -42,7 +42,7 @@ bot.on("message", async (msg) => {
         }
         console.log(msg.text);
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли")) {
-            textToGoogle(chatId, msg);
+            textToGoogle(chatId, msg.text.slice(8));
         } else {
             if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
                 // visual hemisphere (left)
@@ -155,7 +155,7 @@ const textToText = async (chatId, msg) => {
 
 const textToGoogle = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    const response = await google(msg.text.slice(8));
+    const response = await google(msg);
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
