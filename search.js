@@ -17,12 +17,10 @@ async function google(term) {
 
 async function fetchData(term) {
     const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=ru`, {
-        headers: {
-            "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)],
-        },
+        headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
     });
     return load(await result.text());
 }
 
 export default google;
-//  console.log(await google("Путин"));
+// console.log(await google("когда пасха в 2023"));
