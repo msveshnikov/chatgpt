@@ -15,7 +15,7 @@ const context = {};
 const skip = {};
 const count = {};
 const last = {};
-const opened = new Set();
+const opened = new Set([-1001596727979, -1001624504120]);
 
 bot.on("message", async (msg) => {
     try {
@@ -27,9 +27,10 @@ bot.on("message", async (msg) => {
                 return;
             }
         }
-        // if (!opened.has(chatId)) {
-        //     return;
-        // }
+        if (!opened.has(chatId)) {
+            console.log("Unauthorized access: ", chatId, msg.text);
+            return;
+        }
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
@@ -40,7 +41,7 @@ bot.on("message", async (msg) => {
         if (!msg.text) {
             return;
         }
-        console.log(msg.text);
+        console.log(chatId, msg.text);
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли")) {
             textToGoogle(chatId, msg.text.slice(8));
         } else {
