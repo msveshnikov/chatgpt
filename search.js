@@ -11,8 +11,13 @@ const userAgents = [
 ];
 
 async function google(term) {
-    const page = await fetchData(term);
-    return page(".UDZeY").text().replaceAll("Описание", "").replaceAll("ЕЩЁ", "");
+    const $ = await fetchData(term);
+    return $(".UDZeY span")
+        .map((i, element) => $(element).text())
+        .get()
+        .join(" ")
+        .replaceAll("Описание", "")
+        .replaceAll("ЕЩЁ", "");
 }
 
 async function fetchData(term) {
@@ -23,4 +28,4 @@ async function fetchData(term) {
 }
 
 export default google;
-// console.log(await google("когда пасха в 2023"));
+// console.log(await google("Шойгу"));

@@ -15,7 +15,7 @@ const context = {};
 const skip = {};
 const count = {};
 const last = {};
-const opened = new Set([-1001596727979, -1001624504120]);
+const opened = new Set([-1001596727979, -1001624504120, 1049277315]);
 
 bot.on("message", async (msg) => {
     try {
