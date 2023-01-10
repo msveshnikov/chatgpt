@@ -28,9 +28,9 @@ bot.on("message", async (msg) => {
             }
         }
         if (msg.successful_payment) {
-            console.log("Payment done ", msg.successful_payment.payload);
+            console.log("Payment done ", msg.successful_payment.payload, chatId);
             opened.add(chatId);
-            bot.sendMessage(msg.chat.id, "Payment complete! Thank you. You can use bot for 1 month from now!");
+            bot.sendMessage(chatId, "Payment complete! Thank you. You can use bot for 1 month from now!");
         }
         if (!opened.has(chatId)) {
             console.log("Unauthorized access: ", chatId, msg.text);
@@ -123,7 +123,13 @@ const sendInvoice = (chatId) => {
                 amount: 1000,
             },
         ],
-        { photo_url: "https://blog.maxsoft.tk/AI.png" }
+        {
+            photo_url: "https://blog.maxsoft.tk/AI.png",
+            need_name: false,
+            need_phone_number: false,
+            need_email: false,
+            need_shipping_address: false,
+        }
     );
 };
 
