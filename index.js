@@ -30,25 +30,11 @@ bot.on("message", async (msg) => {
         if (msg.successful_payment) {
             console.log("Payment done ", msg.successful_payment.payload);
             opened.add(chatId);
-            bot.sendMessage(msg.chat.id, "Payment complete!");
+            bot.sendMessage(msg.chat.id, "Payment complete! Thank you. You can use bot for 1 month from now!");
         }
         if (!opened.has(chatId)) {
             console.log("Unauthorized access: ", chatId, msg.text);
-            bot.sendInvoice(
-                chatId,
-                "Need payment",
-                "1-month access to ChatGPT",
-                chatId,
-                process.env.STRIPE_KEY,
-                "USD",
-                [
-                    {
-                        label: "full access",
-                        amount: 1000,
-                    },
-                ],
-                { photo_url: "https://blog.maxsoft.tk/AI.png" }
-            );
+            sendInvoice(chatId);
             return;
         }
 
@@ -121,6 +107,24 @@ const processCommand = (chatId, msg) => {
         bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
         return true;
     }
+};
+
+const sendInvoice = (chatId) => {
+    bot.sendInvoice(
+        chatId,
+        "Need payment",
+        "1-month access to ChatGPT",
+        chatId,
+        process.env.STRIPE_KEY,
+        "USD",
+        [
+            {
+                label: "full access",
+                amount: 1000,
+            },
+        ],
+        { photo_url: "https://blog.maxsoft.tk/AI.png" }
+    );
 };
 
 const visualToText = async (chatId, msg) => {
