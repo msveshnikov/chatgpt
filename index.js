@@ -29,8 +29,28 @@ bot.on("message", async (msg) => {
                 return;
             }
         }
+        if (msg.successful_payment) {
+            console.log("Payment done ", msg.successful_payment.payload);
+            opened.add(chatId);
+            bot.sendMessage(msg.chat.id, "Payment complete!");
+        }
         if (!opened.has(chatId)) {
             console.log("Unauthorized access: ", chatId, msg.text);
+            bot.sendInvoice(
+                chatId,
+                "Need payment",
+                "1-month access to ChatGPT",
+                chatId,
+                process.env.STRIPE_KEY,
+                "USD",
+                [
+                    {
+                        label: "full access",
+                        amount: 1000,
+                    },
+                ],
+                { photo_url: "https://blog.maxsoft.tk/AI.png" }
+            );
             return;
         }
 
