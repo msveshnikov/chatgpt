@@ -8,6 +8,7 @@ You have to get those APIs and set env variables:
 -   STABILITY_KEY - https://beta.dreamstudio.ai/membership?tab=apiKeys - $10 free credit https://api.stability.ai/docs
 -   REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - seems free so far, after some time $0.02 per image
 -   TELEGRAM_KEY - contact https://t.me/BotFather
+-   STRIPE_KEY - Stripe Live payment token
 
 # Demo
 
