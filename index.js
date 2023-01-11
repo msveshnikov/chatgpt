@@ -3,6 +3,7 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 import google from "./search.js";
+import fs from "fs";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 38.5;
@@ -30,6 +31,7 @@ bot.on("message", async (msg) => {
         if (msg.successful_payment) {
             console.log("Payment done ", msg.successful_payment.payload, chatId);
             opened.add(chatId);
+            fs.writeFileSync("opened", [...opened].join(' '));
             bot.sendMessage(chatId, "Payment complete! Thank you. You can use bot for 1 month from now!");
         }
         if (!opened.has(chatId)) {
@@ -75,6 +77,7 @@ const processCommand = (chatId, msg) => {
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован");
         opened.add(chatId);
+        fs.writeFileSync("opened", [...opened].join(' '));
         return true;
     }
     if (msg === "сезам закройся") {
@@ -120,7 +123,7 @@ const sendInvoice = (chatId) => {
         [
             {
                 label: "full access",
-                amount: 1000,
+                amount: 200,
             },
         ],
         {
