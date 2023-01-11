@@ -18,6 +18,10 @@ const count = {};
 const last = {};
 const opened = new Set(fs.readFileSync("opened").toString().split(" "));
 
+bot.on("pre_checkout_query", async (query) => {
+    bot.answerPreCheckoutQuery(query.id, true);
+});
+
 bot.on("message", async (msg) => {
     try {
         // Technical stuff
@@ -34,11 +38,12 @@ bot.on("message", async (msg) => {
             fs.writeFileSync("opened", [...opened].join(" "));
             bot.sendMessage(chatId, "Payment complete! Thank you. You can use bot for 1 month from now!");
         }
-        if (!opened.has(chatId)) {
-            console.log("Unauthorized access: ", chatId, msg.text);
-            sendInvoice(chatId);
-            return;
-        }
+        if (msg.pre)
+            if (!opened.has(chatId)) {
+                console.log("Unauthorized access: ", chatId, msg.text);
+                sendInvoice(chatId);
+                return;
+            }
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
