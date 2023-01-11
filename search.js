@@ -12,12 +12,14 @@ const userAgents = [
 
 async function google(term) {
     const $ = await fetchData(term);
-    return $(".UDZeY span")
-        .map((i, element) => $(element).text())
-        .get()
-        .join(" ")
-        .replaceAll("Описание", "")
-        .replaceAll("ЕЩЁ", "");
+    return (
+        $(".UDZeY span")
+            .map((i, element) => $(element).text())
+            .get()
+            .join(" ")
+            .replaceAll("Описание", "")
+            .replaceAll("ЕЩЁ", "") + $(".LGOjhe span").text()
+    );
 }
 
 async function fetchData(term) {
@@ -28,4 +30,4 @@ async function fetchData(term) {
 }
 
 export default google;
-// console.log(await google("Шойгу"));
+// console.log(await google("в какой стране находится баден-баден"));

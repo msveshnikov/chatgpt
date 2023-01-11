@@ -48,8 +48,8 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(chatId, msg.text);
-        if (msgL.startsWith("погугли") || msgL.startsWith("загугли")) {
-            textToGoogle(chatId, msg.text.slice(8));
+        if (msgL.startsWith("погугли") || msgL.startsWith("загугли")|| msgL.startsWith("google")) {
+            textToGoogle(chatId, msg.text.slice(7));
         } else {
             if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
                 // visual hemisphere (left)
