@@ -16,7 +16,7 @@ const context = {};
 const skip = {};
 const count = {};
 const last = {};
-const opened = new Set([-1001596727979, -1001624504120, 1049277315]);
+const opened = new Set(fs.readFileSync("opened").toString().split(" "));
 
 bot.on("message", async (msg) => {
     try {
@@ -31,7 +31,7 @@ bot.on("message", async (msg) => {
         if (msg.successful_payment) {
             console.log("Payment done ", msg.successful_payment.payload, chatId);
             opened.add(chatId);
-            fs.writeFileSync("opened", [...opened].join(' '));
+            fs.writeFileSync("opened", [...opened].join(" "));
             bot.sendMessage(chatId, "Payment complete! Thank you. You can use bot for 1 month from now!");
         }
         if (!opened.has(chatId)) {
@@ -50,7 +50,7 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(chatId, msg.text);
-        if (msgL.startsWith("погугли") || msgL.startsWith("загугли")|| msgL.startsWith("google")) {
+        if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7));
         } else {
             if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
@@ -77,7 +77,7 @@ const processCommand = (chatId, msg) => {
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован");
         opened.add(chatId);
-        fs.writeFileSync("opened", [...opened].join(' '));
+        fs.writeFileSync("opened", [...opened].join(" "));
         return true;
     }
     if (msg === "сезам закройся") {
