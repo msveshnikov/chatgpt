@@ -12,11 +12,24 @@ const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 
-const context = {};
-const skip = {};
+const TRIAL_COUNT = 10;
+const context = {}; // TODO: persist
+const skip = {}; // TODO: persist
 const count = {};
 const last = {};
-const opened = new Set(fs.readFileSync("opened").toString().split(" ").map(a => +a));
+let trials;
+try {
+    trials = JSON.parse(fs.readFileSync("trials").toString());
+} catch {
+    trials = {};
+}
+const opened = new Set(
+    fs
+        .readFileSync("opened")
+        .toString()
+        .split(" ")
+        .map((a) => +a)
+);
 
 bot.on("pre_checkout_query", async (query) => {
     bot.answerPreCheckoutQuery(query.id, true);
@@ -36,12 +49,17 @@ bot.on("message", async (msg) => {
             console.log("Payment done ", msg.successful_payment.payload, chatId);
             opened.add(chatId);
             fs.writeFileSync("opened", [...opened].join(" "));
-            bot.sendMessage(chatId, "Payment complete! Thank you. You can use bot for 1 month from now!");
+            bot.sendMessage(chatId, "Payment done! Thank you. Now you can use this bot for 1 month ❤️‍🔥");
+            return;
         }
         if (!opened.has(chatId)) {
-            console.log("Unauthorized access: ", chatId, msg.text);
-            sendInvoice(chatId);
-            return;
+            trials[chatId] = (trials[chatId] ?? 0) + 1;
+            fs.writeFileSync("trials", JSON.stringify(trials));
+            if (trials[chatId] > TRIAL_COUNT) {
+                console.log("Unauthorized access: ", chatId, msg.text);
+                sendInvoice(chatId);
+                return;
+            }
         }
 
         // Brain activity
@@ -162,7 +180,7 @@ const textToVisual = async (chatId, text) => {
         // link between right and left hemisphere (painting)
         text = last[chatId];
     }
-    const prompt = await getText("Переведи на английский: " + text.replace("ребенка", ""));
+    const prompt = await getText("Переведи на английский: " + text?.replace("ребенка", ""));
     if (!prompt) {
         return;
     }
