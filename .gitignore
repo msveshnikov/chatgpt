@@ -27,7 +27,7 @@ text_to_image.png
 pm2.config.js
 model.csv
 model*
-opened
-trials
-skips
-context
+opened.json
+trials.json
+skips.json
+context.json

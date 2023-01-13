@@ -1,51 +1,45 @@
 import fs from "fs";
 
+const write = (file, value) => {
+    fs.writeFileSync(file, JSON.stringify(value));
+};
+
+const read = (file) => {
+    try {
+        return JSON.parse(fs.readFileSync(file));
+    } catch {
+        return {};
+    }
+};
+
 export const writeOpened = (opened) => {
-    fs.writeFileSync("opened", [...opened].join(" "));
+    write("opened.json", opened);
 };
 
 export const readOpened = () => {
-    return new Set(
-        fs
-            .readFileSync("opened")
-            .toString()
-            .split(" ")
-            .map((a) => +a)
-    );
+    return read("opened.json");
 };
 
 export const writeTrial = (trial) => {
-    fs.writeFileSync("trials", JSON.stringify(trial));
+    write("trials.json", trial);
 };
 
 export const readTrial = () => {
-    try {
-        return JSON.parse(fs.readFileSync("trials").toString());
-    } catch {
-        return {};
-    }
+    return read("trials.json");
 };
 
 export const writeSkip = (skip) => {
-    fs.writeFileSync("skips", JSON.stringify(skip));
+    write("skips.json", skip);
 };
 
 export const readSkip = () => {
-    try {
-        return JSON.parse(fs.readFileSync("skips").toString());
-    } catch {
-        return {};
-    }
+    return read("skips.json");
 };
 
 export const writeContext = (context) => {
-    fs.writeFileSync("context", JSON.stringify(context));
+    write("context.json", context);
 };
 
 export const readContext = () => {
-    try {
-        return JSON.parse(fs.readFileSync("context").toString());
-    } catch {
-        return {};
-    }
+    return read("context.json");
 };

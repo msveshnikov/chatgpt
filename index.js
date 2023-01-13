@@ -15,7 +15,7 @@ import {
 } from "./io.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 38.5;
+let TEMPERATURE = 39.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -45,12 +45,12 @@ bot.on("message", async (msg) => {
         }
         if (msg.successful_payment) {
             console.log("Payment done ", msg.successful_payment.payload, chatId);
-            opened.add(chatId);
+            opened[chatId] = true;
             writeOpened(opened);
             bot.sendMessage(chatId, "Payment done! Thank you. Now you can use this bot for 1 month ❤️‍🔥");
             return;
         }
-        if (!opened.has(chatId)) {
+        if (!opened[chatId]) {
             trial[chatId] = (trial[chatId] ?? 0) + 1;
             writeTrial(trial);
             if (trial[chatId] > TRIAL_COUNT) {
@@ -97,13 +97,14 @@ const processCommand = (chatId, msg) => {
     }
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован");
-        opened.add(chatId);
+        opened[chatId] = true;
         writeOpened(opened);
         return true;
     }
     if (msg === "сезам закройся") {
         bot.sendMessage(chatId, "Бот деактивирован");
-        opened.delete(chatId);
+        opened[chatId] = false;
+        writeOpened(opened);
         return true;
     }
     if (msg === "сброс") {
