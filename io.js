@@ -14,11 +14,11 @@ export const readOpened = () => {
     );
 };
 
-export const writeTrials = (trials) => {
-    fs.writeFileSync("trials", JSON.stringify(trials));
+export const writeTrial = (trial) => {
+    fs.writeFileSync("trials", JSON.stringify(trial));
 };
 
-export const readTrials = () => {
+export const readTrial = () => {
     try {
         return JSON.parse(fs.readFileSync("trials").toString());
     } catch {
@@ -26,11 +26,11 @@ export const readTrials = () => {
     }
 };
 
-export const writeSkips = (skips) => {
-    fs.writeFileSync("skips", JSON.stringify(skips));
+export const writeSkip = (skip) => {
+    fs.writeFileSync("skips", JSON.stringify(skip));
 };
 
-export const readSkips = () => {
+export const readSkip = () => {
     try {
         return JSON.parse(fs.readFileSync("skips").toString());
     } catch {

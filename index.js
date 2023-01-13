@@ -6,12 +6,12 @@ import google from "./search.js";
 import {
     writeOpened,
     readOpened,
-    writeTrials,
-    readTrials,
-    writeSkips,
-    readSkips,
-    readContext,
+    writeTrial,
+    readTrial,
+    writeSkip,
+    readSkip,
     writeContext,
+    readContext,
 } from "./io.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
@@ -23,11 +23,11 @@ const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 
 const TRIAL_COUNT = 10;
 const context = readContext();
-const skips = readSkips();
-const count = {};
-const last = {};
-const trials = readTrials();
+const skip = readSkip();
+const trial = readTrial();
 const opened = readOpened();
+const last = {};
+const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
     bot.answerPreCheckoutQuery(query.id, true);
@@ -51,9 +51,9 @@ bot.on("message", async (msg) => {
             return;
         }
         if (!opened.has(chatId)) {
-            trials[chatId] = (trials[chatId] ?? 0) + 1;
-            writeTrials(trials);
-            if (trials[chatId] > TRIAL_COUNT) {
+            trial[chatId] = (trial[chatId] ?? 0) + 1;
+            writeTrial(trial);
+            if (trial[chatId] > TRIAL_COUNT) {
                 console.log("Unauthorized access: ", chatId, msg.text);
                 sendInvoice(chatId);
                 return;
@@ -117,15 +117,15 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("пропуск ")) {
-        skips[chatId] = +msg.slice(8);
-        writeSkips(skips);
-        bot.sendMessage(chatId, "Отвечать раз в " + skips[chatId]);
+        skip[chatId] = +msg.slice(8);
+        writeSkip(skip);
+        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
     if (msg.startsWith("отвечать раз в ")) {
-        skips[chatId] = +msg.slice(15);
-        writeSkips(skips);
-        bot.sendMessage(chatId, "Отвечать раз в " + skips[chatId]);
+        skip[chatId] = +msg.slice(15);
+        writeSkip(skip);
+        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
     if (msg.startsWith("температура ")) {
@@ -198,7 +198,7 @@ const textToVisual = async (chatId, text) => {
 const textToText = async (chatId, msg) => {
     context[chatId] = context[chatId] + msg.text + ".";
     count[chatId] = (count[chatId] ?? 0) + 1;
-    if (msg.text !== "Отвечай" && count[chatId] % (skips[chatId] ?? 1) != 0) {
+    if (msg.text !== "Отвечай" && count[chatId] % (skip[chatId] ?? 1) != 0) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
