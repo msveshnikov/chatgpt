@@ -3,7 +3,16 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 import google from "./search.js";
-import fs from "fs";
+import {
+    writeOpened,
+    readOpened,
+    writeTrials,
+    readTrials,
+    writeSkips,
+    readSkips,
+    readContext,
+    writeContext,
+} from "./io.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 38.5;
@@ -13,23 +22,12 @@ const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY 
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 
 const TRIAL_COUNT = 10;
-const context = {}; // TODO: persist
-const skip = {}; // TODO: persist
+const context = readContext();
+const skips = readSkips();
 const count = {};
 const last = {};
-let trials;
-try {
-    trials = JSON.parse(fs.readFileSync("trials").toString());
-} catch {
-    trials = {};
-}
-const opened = new Set(
-    fs
-        .readFileSync("opened")
-        .toString()
-        .split(" ")
-        .map((a) => +a)
-);
+const trials = readTrials();
+const opened = readOpened();
 
 bot.on("pre_checkout_query", async (query) => {
     bot.answerPreCheckoutQuery(query.id, true);
@@ -48,13 +46,13 @@ bot.on("message", async (msg) => {
         if (msg.successful_payment) {
             console.log("Payment done ", msg.successful_payment.payload, chatId);
             opened.add(chatId);
-            fs.writeFileSync("opened", [...opened].join(" "));
+            writeOpened(opened);
             bot.sendMessage(chatId, "Payment done! Thank you. Now you can use this bot for 1 month ❤️‍🔥");
             return;
         }
         if (!opened.has(chatId)) {
             trials[chatId] = (trials[chatId] ?? 0) + 1;
-            fs.writeFileSync("trials", JSON.stringify(trials));
+            writeTrials(trials);
             if (trials[chatId] > TRIAL_COUNT) {
                 console.log("Unauthorized access: ", chatId, msg.text);
                 sendInvoice(chatId);
@@ -64,6 +62,7 @@ bot.on("message", async (msg) => {
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
+        writeContext(context);
         if (msg.photo) {
             // visual hemisphere (left)
             visualToText(chatId, msg);
@@ -99,7 +98,7 @@ const processCommand = (chatId, msg) => {
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован");
         opened.add(chatId);
-        fs.writeFileSync("opened", [...opened].join(" "));
+        writeOpened(opened);
         return true;
     }
     if (msg === "сезам закройся") {
@@ -118,13 +117,15 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("пропуск ")) {
-        skip[chatId] = +msg.slice(8);
-        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+        skips[chatId] = +msg.slice(8);
+        writeSkips(skips);
+        bot.sendMessage(chatId, "Отвечать раз в " + skips[chatId]);
         return true;
     }
     if (msg.startsWith("отвечать раз в ")) {
-        skip[chatId] = +msg.slice(15);
-        bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
+        skips[chatId] = +msg.slice(15);
+        writeSkips(skips);
+        bot.sendMessage(chatId, "Отвечать раз в " + skips[chatId]);
         return true;
     }
     if (msg.startsWith("температура ")) {
@@ -197,7 +198,7 @@ const textToVisual = async (chatId, text) => {
 const textToText = async (chatId, msg) => {
     context[chatId] = context[chatId] + msg.text + ".";
     count[chatId] = (count[chatId] ?? 0) + 1;
-    if (count[chatId] % (skip[chatId] ?? 1) != 0) {
+    if (msg.text !== "Отвечай" && count[chatId] % (skips[chatId] ?? 1) != 0) {
         return;
     }
     bot.sendChatAction(chatId, "typing");

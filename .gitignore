@@ -28,3 +28,6 @@ pm2.config.js
 model.csv
 model*
 opened
+trials
+skips
+context
