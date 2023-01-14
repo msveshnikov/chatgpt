@@ -91,7 +91,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Понимаю команду Нарисуй <что-то> 😊"
+            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Or Google <something>. Понимаю команду Нарисуй <что-то> 😊"
         );
         return true;
     }
