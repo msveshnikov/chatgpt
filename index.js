@@ -3,6 +3,7 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 import google from "./search.js";
+import LanguageDetect from "languagedetect";
 import {
     writeOpened,
     readOpened,
@@ -20,6 +21,7 @@ let TEMPERATURE = 36.5;
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
+const detector = new LanguageDetect();
 
 const TRIAL_COUNT = 10;
 const context = readContext();
@@ -178,7 +180,9 @@ const visualToText = async (chatId, msg) => {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        prompt = await getText("Переведи на русский: " + prompt); //TODO: auto lang detection
+        if (detector.detect(context[chatId])[0]?.[0] !== "english") {
+            prompt = await getText("Переведи на русский: " + prompt);
+        }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
@@ -191,9 +195,11 @@ const textToVisual = async (chatId, text) => {
     bot.sendChatAction(chatId, "typing");
     if (text === "нарисуй" || text === "draw" || text === "paint") {
         // link between right and left hemisphere (painting)
-        text = last[chatId];
+        text = last[chatId]?.replace("child","");
     }
-    text = await getText("Переведи на английский: " + text?.replace("ребенка", "")); //TODO: auto lang detection
+    if (detector.detect(context[chatId])[0]?.[0] !== "english") {
+        text = await getText("Переведи на английский: " + text?.replace("ребенка", "")); 
+    }
     if (!text) {
         return;
     }
