@@ -180,7 +180,7 @@ const visualToText = async (chatId, msg) => {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        if (detector.detect(context[chatId])[0]?.[0] !== "english") {
+        if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
             prompt = await getText("Переведи на русский: " + prompt);
         }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
@@ -195,10 +195,10 @@ const textToVisual = async (chatId, text) => {
     bot.sendChatAction(chatId, "typing");
     if (text === "нарисуй" || text === "draw" || text === "paint") {
         // link between right and left hemisphere (painting)
-        text = last[chatId]?.replace("child","");
+        text = last[chatId]?.replace("child", "");
     }
-    if (detector.detect(context[chatId])[0]?.[0] !== "english") {
-        text = await getText("Переведи на английский: " + text?.replace("ребенка", "")); 
+    if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
+        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""));
     }
     if (!text) {
         return;
