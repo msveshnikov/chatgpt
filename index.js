@@ -15,7 +15,7 @@ import {
 } from "./io.js";
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 39.5;
+let TEMPERATURE = 36.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -91,8 +91,19 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Talk to me. Any language. I also can Paint <anything>. Понимаю команду Нарисуй что-то 😊"
+            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Понимаю команду Нарисуй <что-то> 😊"
         );
+        return true;
+    }
+    if (msg.startsWith("/terms")) {
+        bot.sendMessage(
+            chatId,
+            "After $2 payment you will have 1-month access to ChatGPT bot. Full functionality guaranteed (including Paint, Photo2Text, Google, etc)"
+        );
+        return true;
+    }
+    if (msg.startsWith("/support")) {
+        bot.sendMessage(chatId, "Please contact @Extender777 in case of any inquiry (refund, cancellation, etc)");
         return true;
     }
     if (msg === "сезам откройся") {
@@ -167,7 +178,7 @@ const visualToText = async (chatId, msg) => {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        prompt = await getText("Переведи на русский: " + prompt);
+        prompt = await getText("Переведи на русский: " + prompt); //TODO: auto lang detection
         prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
@@ -182,7 +193,7 @@ const textToVisual = async (chatId, text) => {
         // link between right and left hemisphere (painting)
         text = last[chatId];
     }
-    const prompt = await getText("Переведи на английский: " + text?.replace("ребенка", ""));
+    const prompt = await getText("Переведи на английский: " + text?.replace("ребенка", "")); //TODO: auto lang detection
     if (!prompt) {
         return;
     }
