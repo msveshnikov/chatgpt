@@ -210,7 +210,7 @@ const textToVisual = async (chatId, text) => {
 const textToText = async (chatId, msg) => {
     context[chatId] = context[chatId] + msg.text + ".";
     count[chatId] = (count[chatId] ?? 0) + 1;
-    if (msg.text !== "Отвечай" && count[chatId] % (skip[chatId] ?? 1) != 0) {
+    if (!msg.text.startsWith("Отвечай") && count[chatId] % (skip[chatId] ?? 1) != 0) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
