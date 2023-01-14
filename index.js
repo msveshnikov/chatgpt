@@ -193,13 +193,13 @@ const textToVisual = async (chatId, text) => {
         // link between right and left hemisphere (painting)
         text = last[chatId];
     }
-    const prompt = await getText("Переведи на английский: " + text?.replace("ребенка", "")); //TODO: auto lang detection
-    if (!prompt) {
+    text = await getText("Переведи на английский: " + text?.replace("ребенка", "")); //TODO: auto lang detection
+    if (!text) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
     const photo = await getArt(
-        prompt +
+        text +
             ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley"
     );
     if (photo) {
