@@ -46,13 +46,15 @@ bot.on("message", async (msg) => {
             }
         }
         if (msg.successful_payment) {
-            console.log("Payment done ", msg.successful_payment.payload, chatId);
-            opened[chatId] = true;
+            console.log("Payment done for ", chatId);
+            var d = new Date();
+            d.setMonth(d.getMonth() + 1);
+            opened[chatId] = d;
             writeOpened(opened);
             bot.sendMessage(chatId, "Payment done! Thank you. Now you can use this bot for 1 month ❤️‍🔥");
             return;
         }
-        if (!opened[chatId]) {
+        if (!(new Date(opened[chatId]) > new Date())) {
             trial[chatId] = (trial[chatId] ?? 0) + 1;
             writeTrial(trial);
             if (trial[chatId] > TRIAL_COUNT) {
@@ -110,7 +112,7 @@ const processCommand = (chatId, msg) => {
     }
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован");
-        opened[chatId] = true;
+        opened[chatId] = "2024-01-01T17:49:34.138Z";
         writeOpened(opened);
         return true;
     }
