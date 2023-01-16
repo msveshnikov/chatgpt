@@ -92,10 +92,17 @@ bot.on("message", async (msg) => {
 });
 
 const processCommand = (chatId, msg) => {
+    if (msg.startsWith("/commands")) {
+        bot.sendMessage(
+            chatId,
+            "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\nPaint <some>\nDraw <some>\nGoogle <some>\n/terms\n/support"
+        );
+        return true;
+    }
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Or Google <something>. Понимаю команду Нарисуй <что-то> 😊"
+            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Or Google <something>. More /commands. Понимаю команду Нарисуй <что-то> 😊"
         );
         return true;
     }
@@ -161,8 +168,8 @@ const sendInvoice = (chatId) => {
         "USD",
         [
             {
-                label: "full access",
-                amount: 200,
+                label: chatId > 0 ? "full access to 1-1 chat" : "full access to group chat",
+                amount: chatId > 0 ? 200 : 1000,
             },
         ],
         {
