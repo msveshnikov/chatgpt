@@ -95,7 +95,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/commands")) {
         bot.sendMessage(
             chatId,
-            "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\nPaint <some>\nDraw <some>\nGoogle <some>\n/terms\n/support"
+            "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\nPaint <some>\nDraw <some>\nGoogle <some>\nReset\n/terms\n/support"
         );
         return true;
     }
@@ -131,6 +131,11 @@ const processCommand = (chatId, msg) => {
     }
     if (msg === "сброс") {
         bot.sendMessage(chatId, "Личность уничтожена");
+        context[chatId] = "";
+        return true;
+    }
+    if (msg === "reset") {
+        bot.sendMessage(chatId, "Context cleared");
         context[chatId] = "";
         return true;
     }
