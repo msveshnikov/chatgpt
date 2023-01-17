@@ -120,14 +120,8 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg === "сезам откройся") {
-        bot.sendMessage(chatId, "Бот активирован");
+        bot.sendMessage(chatId, "Бот активирован до 01.01.2024");
         opened[chatId] = "2024-01-01T17:49:34.138Z";
-        writeOpened(opened);
-        return true;
-    }
-    if (msg === "сезам закройся") {
-        bot.sendMessage(chatId, "Бот деактивирован");
-        opened[chatId] = false;
         writeOpened(opened);
         return true;
     }
