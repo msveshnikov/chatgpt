@@ -18,6 +18,7 @@
 .env.test.local
 .env.production
 .env
+ecosystem.config.cjs
 
 npm-debug.log*
 yarn-debug.log*
