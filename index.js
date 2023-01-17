@@ -153,7 +153,7 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("температура ")) {
-        TEMPERATURE = +msg.slice(12);
+        TEMPERATURE = +msg.slice(12)?.replace(",",".");
         bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
         return true;
     }
@@ -169,7 +169,7 @@ const sendInvoice = (chatId) => {
         "USD",
         [
             {
-                label: chatId > 0 ? "full access to 1-1 chat" : "full access to group chat",
+                label: chatId > 0 ? "full access to P2P chat" : "full access to GROUP chat",
                 amount: chatId > 0 ? 200 : 1000,
             },
         ],
