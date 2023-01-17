@@ -53,7 +53,7 @@ bot.on("message", async (msg) => {
             d.setMonth(d.getMonth() + 1);
             opened[chatId] = d;
             writeOpened(opened);
-            bot.sendMessage(chatId, "Payment done! Thank you. Now you can use this bot for 1 month ❤️‍🔥");
+            bot.sendMessage(chatId, "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥");
             return;
         }
         if (!(new Date(opened[chatId]) > new Date())) {
@@ -104,7 +104,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Talk to me. Any language. I also can Paint <anything>. Or send me your image (~30 sec to translate to text). Or Google <something>. More /commands. Понимаю команду Нарисуй <что-то> 😊"
+            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊"
         );
         return true;
     }
