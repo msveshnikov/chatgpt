@@ -111,12 +111,12 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/terms")) {
         bot.sendMessage(
             chatId,
-            "After $2 payment you will have 1-month access to ChatGPT bot. Full functionality guaranteed (including Paint, Photo2Text, Google, etc)"
+            "After making a payment of $2, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
         );
         return true;
     }
     if (msg.startsWith("/support")) {
-        bot.sendMessage(chatId, "Please contact @Extender777 in case of any inquiry (refund, cancellation, etc)");
+        bot.sendMessage(chatId, "For any inquiries regarding refunds and cancellations please contact @Extender777");
         return true;
     }
     if (msg === "сезам откройся") {
