@@ -34,6 +34,7 @@ const last = {};
 const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
+    console.log("Checkout from ", query.from, query.order_info);
     bot.answerPreCheckoutQuery(query.id, true);
 });
 
@@ -53,7 +54,10 @@ bot.on("message", async (msg) => {
             d.setMonth(d.getMonth() + 1);
             opened[chatId] = d;
             writeOpened(opened);
-            bot.sendMessage(chatId, "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥");
+            bot.sendMessage(
+                chatId,
+                "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
+            );
             return;
         }
         if (!(new Date(opened[chatId]) > new Date())) {
@@ -153,7 +157,7 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("температура ")) {
-        TEMPERATURE = +msg.slice(12)?.replace(",",".");
+        TEMPERATURE = +msg.slice(12)?.replace(",", ".");
         bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
         return true;
     }
