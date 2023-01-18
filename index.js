@@ -268,6 +268,31 @@ const getText = async (prompt) => {
     }
 };
 
+const getTextStream = async (prompt, callback) => {
+    const completion = await openai.createCompletion(
+        {
+            model: "text-davinci-003",
+            prompt: prompt,
+            max_tokens: 1000,
+            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
+        },
+        { responseType: "stream" }
+    );
+    return new Promise((resolve) => {
+        let result = "";
+        completion.data.on("data", (data) => {
+            const json = data?.toString()?.slice(6);
+            if (json === "[DONE]\n\n") {
+                resolve(result);
+            } else {
+                const token = JSON.parse(json)?.choices?.[0]?.text;
+                result += token;
+                callback(token);
+            }
+        });
+    });
+};
+
 const getArt = async (prompt) => {
     const response = await fetch(
         "https://api.stability.ai/v1alpha/generation/stable-diffusion-512-v2-1/text-to-image",
