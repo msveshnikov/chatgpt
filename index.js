@@ -64,7 +64,7 @@ bot.on("message", async (msg) => {
             trial[chatId] = (trial[chatId] ?? 0) + 1;
             writeTrial(trial);
             if (trial[chatId] > TRIAL_COUNT) {
-                console.log("Unauthorized access: ", chatId, msg.text);
+                console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                 sendInvoice(chatId);
                 return;
             }
@@ -80,7 +80,7 @@ bot.on("message", async (msg) => {
         if (!msg.text) {
             return;
         }
-        console.log(chatId, msg.text);
+        console.log(chatId, msg?.from?.username, msg.text);
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7));
         } else {
