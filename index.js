@@ -31,7 +31,6 @@ const skip = readSkip();
 const trial = readTrial();
 const opened = readOpened();
 const last = {};
-const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
     console.log("Checkout from ", query.from, query.order_info);
@@ -60,9 +59,9 @@ bot.on("message", async (msg) => {
             );
             return;
         }
+        trial[chatId] = (trial[chatId] ?? 0) + 1;
+        writeTrial(trial);
         if (!(new Date(opened[chatId]) > new Date())) {
-            trial[chatId] = (trial[chatId] ?? 0) + 1;
-            writeTrial(trial);
             if (trial[chatId] > (chatId > 0 ? TRIAL_COUNT : 0)) {
                 console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                 sendInvoice(chatId);
@@ -230,8 +229,7 @@ const textToVisual = async (chatId, text) => {
 
 const textToText = async (chatId, msg) => {
     context[chatId] = context[chatId] + msg.text + ".";
-    count[chatId] = (count[chatId] ?? 0) + 1;
-    if (!msg.text.startsWith("Отвечай") && count[chatId] % (skip[chatId] ?? 1) != 0) {
+    if (!msg.text.startsWith("Отвечай") && trial[chatId] % (skip[chatId] ?? 1) != 0) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
