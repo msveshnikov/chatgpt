@@ -63,7 +63,7 @@ bot.on("message", async (msg) => {
         if (!(new Date(opened[chatId]) > new Date())) {
             trial[chatId] = (trial[chatId] ?? 0) + 1;
             writeTrial(trial);
-            if (trial[chatId] > TRIAL_COUNT) {
+            if (trial[chatId] > (chatId > 0 ? TRIAL_COUNT : 0)) {
                 console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                 sendInvoice(chatId);
                 return;
@@ -125,7 +125,7 @@ const processCommand = (chatId, msg) => {
     }
     if (msg === "сезам откройся") {
         bot.sendMessage(chatId, "Бот активирован до 01.01.2024");
-        opened[chatId] = "2024-01-01T17:49:34.138Z";
+        opened[chatId] = "2024-01-01T00:00:00.000Z";
         writeOpened(opened);
         return true;
     }

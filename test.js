@@ -27,4 +27,4 @@ const getText = async (prompt, callback) => {
     });
 };
 
-console.log(await getText("Who was the latest president of USA?", () => process.stdout.write(".")));
+console.log(await getText("Who was the latest president of USA?", (c) => process.stdout.write(c)));
