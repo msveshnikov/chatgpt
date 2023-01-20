@@ -330,6 +330,7 @@ const getArt = async (prompt) => {
 const getPrompt = async (photo, chatId) => {
     const file_id = photo[photo.length - 1].file_id;
     const fileUri = await bot.getFileLink(file_id);
+    console.log("Photo sent:", fileUri);
     bot.sendChatAction(chatId, "typing");
     const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
     return img2prompt.predict({ image: fileUri });

@@ -7,7 +7,7 @@ const getText = async (prompt, callback) => {
         {
             model: "text-davinci-003",
             prompt: prompt,
-            max_tokens: 100,
+            max_tokens: 1000,
             stream: true,
         },
         { responseType: "stream" }
@@ -27,4 +27,4 @@ const getText = async (prompt, callback) => {
     });
 };
 
-console.log(await getText("Who was the latest president of USA?", (c) => process.stdout.write(c)));
+console.log(await getText("Расскажи смешной анекдот", (c) => process.stdout.write(c)));
