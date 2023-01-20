@@ -81,6 +81,7 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(chatId, msg?.from?.username, msg.text);
+        msg.text = msg.text?.substring(0, 300);
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7));
         } else {
