@@ -8,7 +8,7 @@ const humans = readHumans();
 const pairRandom = (chatId) => {
     const otherId = Object.keys(trial)
         .filter((key) => trial[key] > TRIAL_COUNT + 2)
-        .filter((key) => !humans[key])[0];
+        .filter((key) => !humans[key] && key != chatId)[0];
 
     if (otherId) {
         humans[chatId] = +otherId;

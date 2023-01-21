@@ -358,7 +358,9 @@ const processHumans = (chatId, msg) => {
     if (humans[chatId]) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
         if (msg.photo) {
-            bot.sendPhoto(humans[chatId], msg.photo);
+            const file_id = msg.photo[msg.photo.length - 1].file_id;
+            console.log("Human2Human photo", chatId, file_id);
+            bot.sendPhoto(humans[chatId], file_id);
         } else {
             bot.sendMessage(humans[chatId], msg.text);
         }
@@ -369,7 +371,7 @@ const processHumans = (chatId, msg) => {
 const pairRandom = (chatId) => {
     const otherId = Object.keys(trial)
         .filter((key) => trial[key] > TRIAL_COUNT + 2)
-        .filter((key) => !humans[key])[0];
+        .filter((key) => !humans[key] && key != chatId)[0];
 
     if (otherId) {
         humans[chatId] = +otherId;

@@ -33,3 +33,4 @@ trials.json
 skips.json
 context.json
 humans.json
+*.log
