@@ -17,7 +17,7 @@ import {
     writeHumans,
 } from "./io.js";
 import dotenv from "dotenv";
-dotenv.config();
+dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 36.5;
