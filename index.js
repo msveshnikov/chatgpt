@@ -355,9 +355,13 @@ const getPrompt = async (photo, chatId) => {
 
 const processHumans = (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    if (humans[chatId] && msg.text) {
+    if (humans[chatId]) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
-        bot.sendMessage(humans[chatId], msg.text);
+        if (msg.photo) {
+            bot.sendPhoto(humans[chatId], msg.photo);
+        } else {
+            bot.sendMessage(humans[chatId], msg.text);
+        }
         return true;
     }
 };
