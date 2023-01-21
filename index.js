@@ -20,14 +20,15 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 39.5;
+let TEMPERATURE = 37.5;
+let TRIAL_COUNT = 15;
+let MAX_LENGTH = 300;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 const detector = new LanguageDetect();
 
-const TRIAL_COUNT = 15;
 const context = readContext();
 const skip = readSkip();
 const trial = readTrial();
@@ -97,7 +98,7 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(chatId, msg?.from?.username, msg.text);
-        msg.text = msg.text?.substring(0, 300);
+        msg.text = msg.text?.substring(0, MAX_LENGTH);
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7));
         } else {
@@ -355,7 +356,7 @@ const getPrompt = async (photo, chatId) => {
 
 const processHumans = (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    if (humans[chatId]) {
+    if (humans[chatId] && !opened[chatId]) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
         if (msg.photo) {
             const file_id = msg.photo[msg.photo.length - 1].file_id;
