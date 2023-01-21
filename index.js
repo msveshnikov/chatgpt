@@ -20,14 +20,14 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 36.5;
+let TEMPERATURE = 39.5;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 const detector = new LanguageDetect();
 
-const TRIAL_COUNT = 10;
+const TRIAL_COUNT = 15;
 const context = readContext();
 const skip = readSkip();
 const trial = readTrial();

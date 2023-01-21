@@ -1,4 +1,4 @@
-import { writeTrial, readTrial, writeHumans, readHumans } from "./io.js";
+import { readTrial, writeHumans, readHumans } from "./io.js";
 
 const TRIAL_COUNT = 10;
 
