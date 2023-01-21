@@ -13,6 +13,8 @@ import {
     readSkip,
     writeContext,
     readContext,
+    readHumans,
+    writeHumans,
 } from "./io.js";
 import dotenv from "dotenv";
 dotenv.config();
@@ -30,6 +32,7 @@ const context = readContext();
 const skip = readSkip();
 const trial = readTrial();
 const opened = readOpened();
+const humans = readHumans();
 const last = {};
 
 bot.on("pre_checkout_query", async (query) => {
@@ -63,9 +66,22 @@ bot.on("message", async (msg) => {
         writeTrial(trial);
         if (!(new Date(opened[chatId]) > new Date())) {
             if (trial[chatId] > (chatId > 0 ? TRIAL_COUNT : 0)) {
-                console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
-                sendInvoice(chatId);
-                return;
+                if (trial[chatId] == TRIAL_COUNT + 1) {
+                    bot.sendMessage(chatId, "https://play.google.com/store/apps/details?id=com.maxsoft.balls");
+                    return;
+                }
+                if (trial[chatId] == TRIAL_COUNT + 2) {
+                    console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
+                    sendInvoice(chatId);
+                    return;
+                }
+                if (processHumans(chatId, msg)) {
+                    return;
+                } else {
+                    pairRandom(chatId);
+                    processHumans(chatId, msg);
+                    return;
+                }
             }
         }
 
@@ -334,6 +350,28 @@ const getPrompt = async (photo, chatId) => {
     bot.sendChatAction(chatId, "typing");
     const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
     return img2prompt.predict({ image: fileUri });
+};
+
+const processHumans = (chatId, msg) => {
+    bot.sendChatAction(chatId, "typing");
+    if (humans[chatId]) {
+        console.log("Human2Human", chatId, humans[chatId], msg.text);
+        bot.sendMessage(humans[chatId], msg.text);
+        return true;
+    }
+};
+
+const pairRandom = (chatId) => {
+    const otherId = Object.keys(trial)
+        .filter((key) => trial[key] > TRIAL_COUNT + 2)
+        .filter((key) => !humans[key])[0];
+
+    if (otherId) {
+        humans[chatId] = +otherId;
+        humans[otherId] = +chatId;
+        console.log("Pair created", chatId, otherId);
+        writeHumans(humans);
+    }
 };
 
 process.env["NTBA_FIX_350"] = 1;

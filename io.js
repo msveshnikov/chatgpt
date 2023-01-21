@@ -43,3 +43,11 @@ export const writeContext = (context) => {
 export const readContext = () => {
     return read("context.json");
 };
+
+export const writeHumans = (humans) => {
+    write("humans.json", humans);
+};
+
+export const readHumans = () => {
+    return read("humans.json");
+};
