@@ -64,13 +64,14 @@ bot.on("message", async (msg) => {
         }
         trial[chatId] = (trial[chatId] ?? 0) + 1;
         writeTrial(trial);
+        const trialCount = chatId > 0 ? TRIAL_COUNT : 0;
         if (!(new Date(opened[chatId]) > new Date())) {
-            if (trial[chatId] > (chatId > 0 ? TRIAL_COUNT : 0)) {
-                if (trial[chatId] == TRIAL_COUNT + 1) {
+            if (trial[chatId] > trialCount) {
+                if (trial[chatId] == trialCount + 1) {
                     bot.sendMessage(chatId, "https://play.google.com/store/apps/details?id=com.maxsoft.balls");
                     return;
                 }
-                if (trial[chatId] == TRIAL_COUNT + 2) {
+                if (trial[chatId] == trialCount + 2) {
                     console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                     sendInvoice(chatId);
                     return;
@@ -354,7 +355,7 @@ const getPrompt = async (photo, chatId) => {
 
 const processHumans = (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    if (humans[chatId]) {
+    if (humans[chatId] && msg.text) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
         bot.sendMessage(humans[chatId], msg.text);
         return true;
