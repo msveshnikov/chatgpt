@@ -362,7 +362,9 @@ const processHumans = (chatId, msg) => {
             console.log("Human2Human photo", chatId, file_id);
             bot.sendPhoto(humans[chatId], file_id);
         } else {
-            bot.sendMessage(humans[chatId], msg.text);
+            if (msg.text) {
+                bot.sendMessage(humans[chatId], msg.text);
+            }
         }
         return true;
     }
