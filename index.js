@@ -119,7 +119,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/commands")) {
         bot.sendMessage(
             chatId,
-            "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\n/terms\n/support"
+            "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\n/payment\n/terms\n/support"
         );
         return true;
     }
@@ -135,6 +135,10 @@ const processCommand = (chatId, msg) => {
             chatId,
             "After making a payment of $2, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
         );
+        return true;
+    }
+    if (msg.startsWith("/payment")) {
+        sendInvoice(chatId);
         return true;
     }
     if (msg.startsWith("/support")) {
@@ -192,7 +196,7 @@ const sendInvoice = (chatId) => {
         [
             {
                 label: chatId > 0 ? "full access to P2P chat" : "full access to GROUP chat",
-                amount: chatId > 0 ? 200 : 1000,
+                amount: chatId > 0 ? 300 : 1000,
             },
         ],
         {
