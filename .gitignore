@@ -34,5 +34,4 @@ skips.json
 context.json
 humans.json
 *.log
-copy.cmd
-deploy.cmd
+

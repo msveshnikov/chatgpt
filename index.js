@@ -386,3 +386,4 @@ const pairRandom = (chatId) => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
+
