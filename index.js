@@ -133,7 +133,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/terms")) {
         bot.sendMessage(
             chatId,
-            "After making a payment of $2, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
+            "After making a payment of $3, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
         );
         return true;
     }
@@ -365,10 +365,3 @@ const pairRandom = (chatId) => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
-
-process.on("uncaughtException", (err) => {
-    console.error("Global exception: " + err.message);
-});
-process.on("unhandledRejection", (err) => {
-    console.error("Global exception: " + err.message);
-});
