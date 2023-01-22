@@ -362,6 +362,9 @@ const pairRandom = (chatId) => {
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
 
-process.on("uncaughtException", function (err) {
+process.on("uncaughtException", (err) => {
+    console.error("Global exception: " + err.message);
+});
+process.on("unhandledRejection", (err) => {
     console.error("Global exception: " + err.message);
 });
