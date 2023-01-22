@@ -274,7 +274,7 @@ const getText = async (prompt) => {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
-            max_tokens: 1000,
+            max_tokens: 800,
             temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
         });
         const response = completion?.data?.choices?.[0]?.text;
@@ -283,31 +283,6 @@ const getText = async (prompt) => {
     } catch (e) {
         console.error(e.message);
     }
-};
-
-const getTextStream = async (prompt, callback) => {
-    const completion = await openai.createCompletion(
-        {
-            model: "text-davinci-003",
-            prompt: prompt,
-            max_tokens: 1000,
-            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
-        },
-        { responseType: "stream" }
-    );
-    return new Promise((resolve) => {
-        let result = "";
-        completion.data.on("data", (data) => {
-            const json = data?.toString()?.slice(6);
-            if (json === "[DONE]\n\n") {
-                resolve(result);
-            } else {
-                const token = JSON.parse(json)?.choices?.[0]?.text;
-                result += token;
-                callback(token);
-            }
-        });
-    });
 };
 
 const getArt = async (prompt) => {
@@ -387,3 +362,6 @@ const pairRandom = (chatId) => {
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
 
+process.on("uncaughtException", function (err) {
+    console.error("Global exception: " + err.message);
+});
