@@ -119,14 +119,14 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/commands")) {
         bot.sendMessage(
             chatId,
-            "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\nPaint <some>\nDraw <some>\nGoogle <some>\nReset\n/terms\n/support"
+            "Paint _some_\nDraw _some_\nGoogle _some_\nReset\nНарисуй _что-то_\nЗагугли/Погугли _что-то_\nСброс\nПропуск _x_\n/terms\n/support"
         );
         return true;
     }
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊"
+            "Feel free to speak to me in any language. I can Paint _anything_ you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй _что-то_ 😊"
         );
         return true;
     }
