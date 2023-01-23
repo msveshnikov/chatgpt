@@ -1,25 +1,34 @@
-import { readTrial, writeHumans, readHumans, readOpened } from "./io.js";
+import { readTrial, readOpened } from "./io.js";
 
-const TRIAL_COUNT = 0;
-
-const trial = readTrial();
-const humans = readHumans();
 const opened = readOpened();
-const trials = readTrial();
+const trial = readTrial();
 
-const pairRandom = (chatId) => {
-    const otherId = Object.keys(trial)
-        .filter((key) => trial[key] > TRIAL_COUNT + 2)
-        .filter((key) => !humans[key] && !opened[key] && key != chatId)[0];
-
-    if (otherId) {
-        humans[chatId] = +otherId;
-        humans[otherId] = +chatId;
-        console.log("Pair created", chatId, otherId);
-        writeHumans(humans);
-    }
-};
-
-Object.keys(trial)
-    .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
-    .map((k) => console.log(k, trials[k], trials[k] * 0.005 + "$"));
+console.log("Advertising");
+console.log("-----------");
+console.log(
+    "Total " +
+        Object.keys(trial)
+            .filter((t) => !opened[t] && t != "148315039" && t != "1049277315")
+            .map((k) => {
+                //    console.log(k, trials[k], trials[k] * 0.005 + "$");
+                return trial[k] * 0.005;
+            })
+            .reduce((a, b) => a + b)
+            .toFixed(2),
+    "$"
+);
+console.log();
+console.log("Paid subscriptions");
+console.log("------------------");
+console.log(
+    "Total " +
+        Object.keys(trial)
+            .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+            .map((k) => {
+                console.log(k, trial[k], trial[k] * 0.005 + "$");
+                return trial[k] * 0.005;
+            })
+            .reduce((a, b) => a + b)
+            .toFixed(2),
+    "$"
+);
