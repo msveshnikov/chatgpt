@@ -20,3 +20,4 @@ Extremely funny when bot is added to group chat with a few people 😂
 # TODO
 
 -   Redis
+-   TON

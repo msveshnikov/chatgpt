@@ -20,7 +20,7 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 39.5;
+let TEMPERATURE = 37.5;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 
@@ -353,10 +353,18 @@ const processHumans = (chatId, msg) => {
         if (msg.photo) {
             const file_id = msg.photo[msg.photo.length - 1].file_id;
             console.log("Human2Human photo", chatId, file_id);
-            bot.sendPhoto(humans[chatId], file_id);
+            bot.sendPhoto(humans[chatId], file_id)
+                .then(() => {})
+                .catch((e) => {
+                    console.error(e.message);
+                });
         } else {
             if (msg.text) {
-                bot.sendMessage(humans[chatId], msg.text);
+                bot.sendMessage(humans[chatId], msg.text)
+                    .then(() => {})
+                    .catch((e) => {
+                        console.error(e.message);
+                    });
             }
         }
         return true;
