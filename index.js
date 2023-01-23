@@ -141,7 +141,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/terms")) {
         bot.sendMessage(
             chatId,
-            "After making a payment of $3, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
+            "After making a payment of $5, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
         );
         return true;
     }
@@ -157,6 +157,10 @@ const processCommand = (chatId, msg) => {
     }
     if (msg.startsWith("/support")) {
         bot.sendMessage(chatId, "For any inquiries regarding refunds and cancellations please contact @Extender777");
+        return true;
+    }
+    if (msg.startsWith("/usage")) {
+        bot.sendMessage(chatId, getReport());
         return true;
     }
     if (msg === "сезам приоткройся") {
@@ -210,7 +214,7 @@ const sendInvoice = (chatId) => {
         [
             {
                 label: chatId > 0 ? "full access to P2P chat" : "full access to GROUP chat",
-                amount: chatId > 0 ? 300 : 1000,
+                amount: chatId > 0 ? 500 : 1000,
             },
         ],
         {
@@ -377,7 +381,7 @@ const pairRandom = (chatId) => {
         return;
     }
     const otherId = Object.keys(trial)
-        .filter((key) => trial[key] > TRIAL_COUNT + 2)
+        .filter((key) => trial[key] > TRIAL_COUNT + 3)
         .filter((key) => !humans[key] && !opened[key] && key != chatId && key > 0)[0];
 
     if (otherId) {
@@ -386,6 +390,43 @@ const pairRandom = (chatId) => {
         console.log("Pair created", chatId, otherId);
         writeHumans(humans);
     }
+};
+
+const getReport = () => {
+    let result = "";
+    const add = (s) => {
+        result += s + "\n";
+    };
+    add("Advertising");
+    add("-----------");
+    add(
+        "Total " +
+            Object.keys(trial)
+                .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
+                .map((k) => {
+                    //    add(k, trials[k], trials[k] * 0.005 + "$");
+                    return trial[k] * 0.005;
+                })
+                .reduce((a, b) => a + b)
+                .toFixed(2),
+        "$"
+    );
+    add("");
+    add("Paid subscriptions");
+    add("------------------");
+    add(
+        "Total " +
+            Object.keys(trial)
+                .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+                .map((k) => {
+                    add(k, trial[k], trial[k] * 0.005 + "$");
+                    return trial[k] * 0.005;
+                })
+                .reduce((a, b) => a + b)
+                .toFixed(2),
+        "$"
+    );
+    return result;
 };
 
 process.env["NTBA_FIX_350"] = 1;

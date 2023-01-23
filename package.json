@@ -8,7 +8,8 @@
     "license": "MIT",
     "scripts": {
         "copy": "copy.cmd",
-        "deploy": "deploy.cmd"
+        "deploy": "deploy.cmd",
+        "report": "node test2.js" 
     },
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
