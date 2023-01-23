@@ -404,12 +404,11 @@ const getReport = () => {
             Object.keys(trial)
                 .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
                 .map((k) => {
-                    //    add(k, trials[k], trials[k] * 0.005 + "$");
                     return trial[k] * 0.005;
                 })
                 .reduce((a, b) => a + b)
-                .toFixed(2),
-        "$"
+                .toFixed(2) +
+            "$"
     );
     add("");
     add("Paid subscriptions");
@@ -419,12 +418,12 @@ const getReport = () => {
             Object.keys(trial)
                 .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
                 .map((k) => {
-                    add(k, trial[k], trial[k] * 0.005 + "$");
+                    add(k + " " + trial[k] + " " + trial[k] * 0.005 + "$");
                     return trial[k] * 0.005;
                 })
                 .reduce((a, b) => a + b)
-                .toFixed(2),
-        "$"
+                .toFixed(2) +
+            "$"
     );
     return result;
 };
