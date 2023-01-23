@@ -360,7 +360,7 @@ const processHumans = (chatId, msg) => {
 const pairRandom = (chatId) => {
     const otherId = Object.keys(trial)
         .filter((key) => trial[key] > TRIAL_COUNT + 2)
-        .filter((key) => !humans[key] && !opened[key] && key != chatId)[0];
+        .filter((key) => !humans[key] && !opened[key] && key != chatId && key > 0)[0];
 
     if (otherId) {
         humans[chatId] = +otherId;
