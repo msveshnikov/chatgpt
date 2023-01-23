@@ -6,6 +6,10 @@
     "type": "module",
     "author": "Max Sveshnikov",
     "license": "MIT",
+    "scripts": {
+        "copy": "copy.cmd",
+        "deploy": "deploy.cmd"
+    },
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
         "dotenv": "^16.0.3",
