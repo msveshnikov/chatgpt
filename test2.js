@@ -1,10 +1,11 @@
 import { readTrial, writeHumans, readHumans, readOpened } from "./io.js";
 
-const TRIAL_COUNT = 10;
+const TRIAL_COUNT = 0;
 
 const trial = readTrial();
 const humans = readHumans();
 const opened = readOpened();
+const trials = readTrial();
 
 const pairRandom = (chatId) => {
     const otherId = Object.keys(trial)
@@ -19,4 +20,6 @@ const pairRandom = (chatId) => {
     }
 };
 
-pairRandom(58602360);
+Object.keys(trial)
+    .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+    .map((k) => console.log(k, trials[k], trials[k] * 0.005 + "$"));
