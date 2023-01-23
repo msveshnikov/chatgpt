@@ -21,7 +21,7 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let TEMPERATURE = 39.5;
-let TRIAL_COUNT = 13;
+let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -152,7 +152,7 @@ const processCommand = (chatId, msg) => {
         bot.sendMessage(chatId, "For any inquiries regarding refunds and cancellations please contact @Extender777");
         return true;
     }
-    if (msg === "сезам откройся") {
+    if (msg === "сезам приоткройся") {
         bot.sendMessage(chatId, "Бот активирован до 01.01.2024");
         opened[chatId] = "2024-01-01T00:00:00.000Z";
         writeOpened(opened);
