@@ -145,6 +145,12 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("/payment")) {
+        if (detector.detect(context[chatId], 1)?.[0]?.[0] !== "english") {
+            bot.sendMessage(
+                chatId,
+                "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
+            );
+        }
         sendInvoice(chatId);
         return true;
     }
@@ -342,7 +348,7 @@ const getPrompt = async (photo, chatId) => {
 
 const processHumans = (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
-    if (humans[chatId] && !opened[chatId]) {
+    if (humans[chatId] && !opened[humans[chatId]]) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
         if (msg.photo) {
             const file_id = msg.photo[msg.photo.length - 1].file_id;
@@ -358,6 +364,9 @@ const processHumans = (chatId, msg) => {
 };
 
 const pairRandom = (chatId) => {
+    if (chatId < 0) {
+        return;
+    }
     const otherId = Object.keys(trial)
         .filter((key) => trial[key] > TRIAL_COUNT + 2)
         .filter((key) => !humans[key] && !opened[key] && key != chatId && key > 0)[0];
