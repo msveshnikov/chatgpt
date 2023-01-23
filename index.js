@@ -20,8 +20,8 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 37.5;
-let TRIAL_COUNT = 15;
+let TEMPERATURE = 39.5;
+let TRIAL_COUNT = 13;
 let MAX_LENGTH = 300;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -75,6 +75,13 @@ bot.on("message", async (msg) => {
                 if (trial[chatId] == trialCount + 2) {
                     console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                     sendInvoice(chatId);
+                    return;
+                }
+                if (trial[chatId] == trialCount + 3) {
+                    bot.sendMessage(
+                        chatId,
+                        "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
+                    );
                     return;
                 }
                 if (processHumans(chatId, msg)) {
