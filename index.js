@@ -22,7 +22,7 @@ dotenv.config({ override: true });
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
 let TEMPERATURE = 38.5;
-let TRIAL_COUNT = 5;
+let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
