@@ -5,7 +5,7 @@
     "main": "index.js",
     "type": "module",
     "author": "Max Sveshnikov",
-    "license": "MIT",
+    "license": "Commercial",
     "scripts": {
         "copy": "copy.cmd",
         "deploy": "deploy.cmd",
