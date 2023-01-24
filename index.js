@@ -61,7 +61,7 @@ bot.on("message", async (msg) => {
                 chatId,
                 "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
             );
-            bot.sendMessage(1049277315, "Произведена оплата от ", msg?.from?.username, msg?.from?.id);
+            bot.sendMessage(1049277315, "Произведена оплата от " + msg?.from?.username + " " + msg?.from?.id);
             return;
         }
         trial[chatId] = (trial[chatId] ?? 0) + 1;
