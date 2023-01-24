@@ -20,7 +20,8 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let TEMPERATURE = 37.5;
+let MAX_TOKENS = 800;
+let TEMPERATURE = 38.5;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 
@@ -179,11 +180,11 @@ const processCommand = (chatId, msg) => {
         context[chatId] = "";
         return true;
     }
-    if (msg.startsWith("глубина контекста ")) {
-        CONTEXT_SIZE = +msg.slice(18);
-        bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
-        return true;
-    }
+    // if (msg.startsWith("глубина контекста ")) {
+    //     CONTEXT_SIZE = +msg.slice(18);
+    //     bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
+    //     return true;
+    // }
     if (msg.startsWith("пропуск ")) {
         skip[chatId] = +msg.slice(8);
         writeSkip(skip);
@@ -296,7 +297,7 @@ const getText = async (prompt) => {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
-            max_tokens: 800,
+            max_tokens: MAX_TOKENS,
             temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
         });
         const response = completion?.data?.choices?.[0]?.text;
