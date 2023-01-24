@@ -29,7 +29,7 @@ const getReport = () => {
             Object.keys(trial)
                 .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
                 .map((k) => {
-                    add(k + " " + trial[k] + " " + trial[k] * 0.005 + "$");
+                    add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
                     return trial[k] * 0.005;
                 })
                 .reduce((a, b) => a + b)
