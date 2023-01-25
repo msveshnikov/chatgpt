@@ -21,5 +21,6 @@ Extremely funny when bot is added to group chat with a few people 😂
 
 -   [ ] Redis
 -   [ ] TON
--   [ ] Temperature separated
+-   [x] Temperature separated
 -   [x] Detect >600 abuse
+-   [ ] Context forget timeout

@@ -51,3 +51,11 @@ export const writeHumans = (humans) => {
 export const readHumans = () => {
     return read("humans.json");
 };
+
+export const writeTemp = (temp) => {
+    write("temp.json", temp);
+};
+
+export const readTemp = () => {
+    return read("temp.json");
+};

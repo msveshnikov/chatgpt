@@ -15,14 +15,15 @@ import {
     readContext,
     readHumans,
     writeHumans,
+    writeTemp,
+    readTemp,
 } from "./io.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TEMPERATURE = 38.5;
-let TRIAL_COUNT = 5;
+let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 
@@ -36,6 +37,7 @@ const skip = readSkip();
 const trial = readTrial();
 const opened = readOpened();
 const humans = readHumans();
+const temp = readTemp();
 const last = {};
 
 bot.on("pre_checkout_query", async (query) => {
@@ -98,6 +100,7 @@ bot.on("message", async (msg) => {
             }
         }
         if (trial[chatId] > MAX_REQUESTS) {
+            console.log("Abuse detected for ", chatId);
             bot.sendMessage(
                 chatId,
                 "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
@@ -139,7 +142,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/commands")) {
         bot.sendMessage(
             chatId,
-            "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nПропуск <x>\n/payment\n/terms\n/support"
+            "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/support"
         );
         return true;
     }
@@ -208,9 +211,10 @@ const processCommand = (chatId, msg) => {
         bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
-    if (msg.startsWith("температура ")) {
-        TEMPERATURE = +msg.slice(12)?.replace(",", ".");
-        bot.sendMessage(chatId, "Температура установлена в " + TEMPERATURE);
+    if (msg.startsWith("температура ") || msg.startsWith("temperature ")) {
+        temp[chatId] = +msg.slice(12)?.replace(",", ".");
+        writeTemp(temp);
+        bot.sendMessage(chatId, "Температура установлена в " + temp[chatId]);
         return true;
     }
 };
@@ -247,7 +251,7 @@ const visualToText = async (chatId, msg) => {
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
-            prompt = await getText("Переведи на русский: " + prompt);
+            prompt = await getText("Переведи на русский: " + prompt, 0.5);
         }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
@@ -264,7 +268,7 @@ const textToVisual = async (chatId, text) => {
         text = last[chatId]?.replace("child", "");
     }
     if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
-        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""));
+        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5);
     }
     if (!text) {
         return;
@@ -285,7 +289,7 @@ const textToText = async (chatId, msg) => {
         return;
     }
     bot.sendChatAction(chatId, "typing");
-    const response = await getText(context[chatId]);
+    const response = await getText(context[chatId], ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5);
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
@@ -303,13 +307,13 @@ const textToGoogle = async (chatId, msg) => {
     }
 };
 
-const getText = async (prompt) => {
+const getText = async (prompt, temperature) => {
     try {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
             max_tokens: MAX_TOKENS,
-            temperature: (TEMPERATURE - 36.5) / 10 + 0.5,
+            temperature: temperature,
         });
         const response = completion?.data?.choices?.[0]?.text;
         console.log(response);
