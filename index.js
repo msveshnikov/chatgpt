@@ -22,7 +22,7 @@ dotenv.config({ override: true });
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
 let TEMPERATURE = 38.5;
-let TRIAL_COUNT = 0;
+let TRIAL_COUNT = 10;
 let MAX_LENGTH = 300;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -305,6 +305,9 @@ const getText = async (prompt) => {
         return response;
     } catch (e) {
         console.error(e.message);
+        if (e.message?.includes("429") || e.message?.includes("428")) {
+            bot.sendMessage(1049277315, e.message);
+        }
     }
 };
 
@@ -353,7 +356,11 @@ const getPrompt = async (photo, chatId) => {
 };
 
 const processHumans = (chatId, msg) => {
-    bot.sendChatAction(chatId, "typing");
+    bot.sendChatAction(chatId, "typing")
+        .then(() => {})
+        .catch((e) => {
+            console.error(e.message);
+        });
     if (humans[chatId] && !opened[humans[chatId]]) {
         console.log("Human2Human", chatId, humans[chatId], msg.text);
         if (msg.photo) {
@@ -426,6 +433,10 @@ const getReport = () => {
                 .toFixed(2) +
             "$"
     );
+    add("");
+    add("Conversion");
+    add("------------------");
+    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
     return result;
 };
 

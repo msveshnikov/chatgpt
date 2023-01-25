@@ -36,6 +36,10 @@ const getReport = () => {
                 .toFixed(2) +
             "$"
     );
+    add("");
+    add("Conversion");
+    add("------------------");
+    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
     return result;
 };
 
