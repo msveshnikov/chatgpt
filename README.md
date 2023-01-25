@@ -22,4 +22,4 @@ Extremely funny when bot is added to group chat with a few people 😂
 -   Redis
 -   TON
 -   Temperature separated
--   Detect >600 abuse
+-   (/) Detect >600 abuse
