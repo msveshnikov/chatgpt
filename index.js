@@ -22,8 +22,9 @@ dotenv.config({ override: true });
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
 let TEMPERATURE = 38.5;
-let TRIAL_COUNT = 10;
+let TRIAL_COUNT = 5;
 let MAX_LENGTH = 300;
+let MAX_REQUESTS = 600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -94,6 +95,15 @@ bot.on("message", async (msg) => {
                     return;
                 }
             }
+        }
+        if (trial[chatId] > MAX_REQUESTS) {
+            bot.sendMessage(
+                chatId,
+                "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
+            );
+            trial[chatId] = 0;
+            opened[chatId] = new Date();
+            return;
         }
 
         // Brain activity
