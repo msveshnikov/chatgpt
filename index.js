@@ -88,6 +88,7 @@ bot.on("message", async (msg) => {
                     return;
                 }
                 if (processHumans(chatId, msg)) {
+                    trial[chatId] = trial[chatId] - 1;
                     return;
                 } else {
                     pairRandom(chatId);
