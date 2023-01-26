@@ -1,7 +1,8 @@
-import { readTrial, readOpened } from "./io.js";
+import { readTrial, readOpened, readContext } from "./io.js";
 
 const opened = readOpened();
 const trial = readTrial();
+const context = readContext();
 
 const getReport = () => {
     let result = "";
@@ -10,7 +11,7 @@ const getReport = () => {
     };
     add("Advertising costs");
     add("-----------");
-    const adv = Object.keys(trial)
+    const adv = Object.keys(trial).filter(k => context[k])
         .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
         .map((k) => {
             return trial[k] * 0.005;
@@ -39,7 +40,7 @@ const getReport = () => {
     add("");
     add("Conversion");
     add("------------------");
-    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
+    add((((Object.keys(opened).length - 3) / Object.keys(context).length) * 100).toFixed(2) + "%");
     return result;
 };
 

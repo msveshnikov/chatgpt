@@ -23,5 +23,5 @@ Extremely funny when bot is added to group chat with a few people 😂
 -   [ ] TON
 -   [x] Temperature separated
 -   [x] Detect >600 abuse
--   [ ] Context forget/reset timeout
+-   [x] Context forget/reset timeout
 -   [ ] Parse tokens consumed

@@ -34,5 +34,6 @@ skips.json
 context.json
 humans.json
 temp.json
+time.json
 *.log
 

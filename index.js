@@ -17,13 +17,15 @@ import {
     writeHumans,
     writeTemp,
     readTemp,
+    writeTime,
+    readTime,
 } from "./io.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 0;
+let TRIAL_COUNT = 5;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let CONTEXT_TIMEOUT = 3600;
@@ -39,6 +41,7 @@ const trial = readTrial();
 const opened = readOpened();
 const humans = readHumans();
 const temp = readTemp();
+const time = readTime();
 const last = {};
 
 bot.on("pre_checkout_query", async (query) => {
@@ -113,8 +116,16 @@ bot.on("message", async (msg) => {
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
+
         // TODO: Reset if timed out
+        if (time[chatId] && new Date() - new Date(opened[chatId]) > CONTEXT_TIMEOUT * 1000) {
+            console.log("Context reset for", chatId);
+            context[chatId] = "";
+        }
+        time[chatId] = new Date();
+        writeTime(time);
         writeContext(context);
+
         if (msg.photo) {
             // visual hemisphere (left)
             visualToText(chatId, msg);
@@ -416,6 +427,7 @@ const pairRandom = (chatId) => {
         writeHumans(humans);
     }
 };
+
 const getReport = () => {
     let result = "";
     const add = (s) => {
@@ -424,6 +436,7 @@ const getReport = () => {
     add("Advertising costs");
     add("-----------");
     const adv = Object.keys(trial)
+        .filter((k) => context[k])
         .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
         .map((k) => {
             return trial[k] * 0.005;
@@ -452,7 +465,7 @@ const getReport = () => {
     add("");
     add("Conversion");
     add("------------------");
-    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
+    add((((Object.keys(opened).length - 3) / Object.keys(context).length) * 100).toFixed(2) + "%");
     return result;
 };
 
