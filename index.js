@@ -23,9 +23,10 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 0;
+let TRIAL_COUNT = 5;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
+let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -112,6 +113,7 @@ bot.on("message", async (msg) => {
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
+        // TODO: Reset if timed out
         writeContext(context);
         if (msg.photo) {
             // visual hemisphere (left)
