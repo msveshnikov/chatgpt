@@ -269,6 +269,7 @@ const visualToText = async (chatId, msg) => {
         prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
+            writeContext(context);
             bot.sendMessage(chatId, prompt);
         }
     }
@@ -306,6 +307,7 @@ const textToText = async (chatId, msg) => {
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
+        writeContext(context);
         bot.sendMessage(chatId, response);
     }
 };
@@ -316,6 +318,7 @@ const textToGoogle = async (chatId, msg) => {
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
+        writeContext(context);
         bot.sendMessage(chatId, response);
     }
 };
