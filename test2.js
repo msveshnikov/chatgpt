@@ -8,34 +8,34 @@ const getReport = () => {
     const add = (s) => {
         result += s + "\n";
     };
-    add("Advertising");
+    add("Advertising costs");
     add("-----------");
-    add(
-        "Total " +
-            Object.keys(trial)
-                .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
-                .map((k) => {
-                    return trial[k] * 0.005;
-                })
-                .reduce((a, b) => a + b)
-                .toFixed(2) +
-            "$"
-    );
+    const adv = Object.keys(trial)
+        .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
+        .map((k) => {
+            return trial[k] * 0.005;
+        })
+        .reduce((a, b) => a + b)
+        .toFixed(2);
+    add("Total " + adv + "$");
     add("");
-    add("Paid subscriptions");
+    add("Operational costs");
     add("------------------");
-    add(
-        "Total " +
-            Object.keys(trial)
-                .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
-                .map((k) => {
-                    add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
-                    return trial[k] * 0.005;
-                })
-                .reduce((a, b) => a + b)
-                .toFixed(2) +
-            "$"
-    );
+    const operations = Object.keys(trial)
+        .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+        .map((k) => {
+            add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
+            return trial[k] * 0.005;
+        })
+        .reduce((a, b) => a + b)
+        .toFixed(2);
+    add("Total " + operations + "$");
+    add("");
+    add("Profit");
+    add("------------------");
+    const revenue=(Object.keys(opened).length - 3) * 5
+    add(revenue +"$ - "+adv+"$ - "+operations+"$ = " +(revenue-operations-adv).toFixed(2)+"$");
+
     add("");
     add("Conversion");
     add("------------------");
