@@ -118,7 +118,7 @@ bot.on("message", async (msg) => {
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
 
         // TODO: Reset if timed out
-        if (time[chatId] && new Date() - new Date(opened[chatId]) > CONTEXT_TIMEOUT * 1000) {
+        if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
             console.log("Context reset for", chatId);
             context[chatId] = "";
         }
