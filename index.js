@@ -159,7 +159,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
+            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊"
         );
         return true;
     }
@@ -460,7 +460,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+        .filter((t) => opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
             return trial[k] * 0.005;
