@@ -25,7 +25,7 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 10;
+let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let CONTEXT_TIMEOUT = 3600;
@@ -267,7 +267,11 @@ const visualToText = async (chatId, msg) => {
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
             writeContext(context);
-            bot.sendMessage(chatId, prompt);
+            bot.sendMessage(chatId, prompt)
+                .then(() => {})
+                .catch((e) => {
+                    console.error(e.message);
+                });
         }
     }
 };
@@ -305,7 +309,11 @@ const textToText = async (chatId, msg) => {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
         writeContext(context);
-        bot.sendMessage(chatId, response);
+        bot.sendMessage(chatId, response)
+            .then(() => {})
+            .catch((e) => {
+                console.error(e.message);
+            });
     }
 };
 
@@ -316,7 +324,11 @@ const textToGoogle = async (chatId, msg) => {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
         writeContext(context);
-        bot.sendMessage(chatId, response);
+        bot.sendMessage(chatId, response)
+            .then(() => {})
+            .catch((e) => {
+                console.error(e.message);
+            });
     }
 };
 
