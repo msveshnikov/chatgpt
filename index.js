@@ -25,7 +25,7 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 5;
+let TRIAL_COUNT = 10;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let CONTEXT_TIMEOUT = 3600;
@@ -116,10 +116,7 @@ bot.on("message", async (msg) => {
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
-
-        // TODO: Reset if timed out
         if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
-            console.log("Context reset for", chatId);
             context[chatId] = "";
         }
         time[chatId] = new Date();
@@ -162,7 +159,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊"
+            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
         );
         return true;
     }
