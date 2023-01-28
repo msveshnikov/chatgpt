@@ -25,7 +25,7 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 5;
+let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let CONTEXT_TIMEOUT = 3600;
@@ -45,7 +45,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    "-1001776618845": ";Отвечай вежливо; ведь ты художник и хочешь продать подписку $5😊",
+    "-1001776618845": ";Отвечай вежливо; ведь ты художник и хочешь продать подписку $5😊;",
     1049277315: ";Отвечай максимально дерзко;",
 };
 
@@ -164,7 +164,7 @@ const processCommand = (chatId, msg) => {
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊"
+            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
         );
         return true;
     }
@@ -356,7 +356,7 @@ const getText = async (prompt, temperature) => {
         return response;
     } catch (e) {
         console.error(e.message);
-        if (e.message?.includes("429") || e.message?.includes("428")) {
+        if (e.message?.includes("429")) {
             bot.sendMessage(1049277315, e.message);
         }
     }
