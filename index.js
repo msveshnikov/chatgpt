@@ -482,13 +482,13 @@ const getReport = () => {
     add("");
     add("Profit");
     add("------------------");
-    const revenue = (Object.keys(opened).length - 3) * 5;
+    const revenue = (Object.keys(opened).length - 1) * 5;
     add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
 
     add("");
     add("Conversion");
     add("------------------");
-    add((((Object.keys(opened).length - 3) / Object.keys(context).length) * 100).toFixed(2) + "%");
+    add((((Object.keys(opened).length - 1) / Object.keys(context).length) * 100).toFixed(2) + "%");
     return result;
 };
 
