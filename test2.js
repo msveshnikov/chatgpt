@@ -11,8 +11,9 @@ const getReport = () => {
     };
     add("Advertising costs");
     add("-----------");
-    const adv = Object.keys(trial).filter(k => context[k])
-        .filter((t) => !opened[t] && t != "148315039" && t != "1049277315" && t != "5966638424")
+    const adv = Object.keys(trial)
+        .filter((k) => context[k])
+        .filter((t) => !opened[t] && t != "1049277315")
         .map((k) => {
             return trial[k] * 0.005;
         })
@@ -23,7 +24,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "148315039" && t != "1049277315")
+        .filter((t) => opened[t] && t != "1049277315")
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
             return trial[k] * 0.005;
@@ -34,8 +35,8 @@ const getReport = () => {
     add("");
     add("Profit");
     add("------------------");
-    const revenue=(Object.keys(opened).length - 3) * 5
-    add(revenue +"$ - "+adv+"$ - "+operations+"$ = " +(revenue-operations-adv).toFixed(2)+"$");
+    const revenue = (Object.keys(opened).length - 3) * 5;
+    add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
 
     add("");
     add("Conversion");
