@@ -10,12 +10,10 @@ You have to get those APIs and set env variables:
 -   TELEGRAM_KEY - contact https://t.me/BotFather
 -   STRIPE_KEY - Stripe Live payment token (for $5 donations)
 
-# Demo
+# PROD
 
 http://t.me/maxsoft_chat_bot
 
-Demo will be closed as soon as free credits exhausted, so please use with care.
-Extremely funny when bot is added to group chat with a few people 😂
 
 # TODO
 

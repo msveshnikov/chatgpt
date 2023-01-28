@@ -45,7 +45,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    "-1001776618845": ";Отвечай вежливо; ведь ты художник и хочешь продать подписку😊",
+    "-1001776618845": ";Отвечай вежливо; ведь ты художник и хочешь продать подписку $5😊",
     1049277315: ";Отвечай максимально дерзко;",
 };
 
@@ -305,7 +305,10 @@ const textToVisual = async (chatId, text) => {
 
 const textToText = async (chatId, msg) => {
     context[chatId] += msg.text + ".";
-    if (!msg.text.startsWith("Отвечай") && trial[chatId] % (skip[chatId] ?? 1) != 0) {
+    if (
+        !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь")) &&
+        trial[chatId] % (skip[chatId] ?? 1) != 0
+    ) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
