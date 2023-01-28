@@ -25,7 +25,7 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 0;
+let TRIAL_COUNT = 5;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let CONTEXT_TIMEOUT = 3600;
@@ -103,7 +103,7 @@ bot.on("message", async (msg) => {
                 }
             }
         }
-        if (trial[chatId] > MAX_REQUESTS) {
+        if (chatId > 0 && trial[chatId] > MAX_REQUESTS) {
             console.log("Abuse detected for ", chatId);
             bot.sendMessage(
                 chatId,
