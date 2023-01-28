@@ -6,9 +6,28 @@ dotenv.config({ override: true });
 const bot = new TelegramBot(process.env.TELEGRAM_KEY);
 const trial = readTrial();
 
-Object.keys(trial).map((chatId) => {
+function sleep(milliseconds) {
+    const date = Date.now();
+    let currentDate = null;
+    do {
+        currentDate = Date.now();
+    } while (currentDate - date < milliseconds);
+}
+
+Object.keys(trial).map(async (chatId) => {
     console.log(chatId);
-    bot.sendMessage(chatId, "Задайте любой вопрос боту в нашей группе: https://t.me/maxsoft_chat_gpt_group 🤗")
+    sleep(1000 / 30);
+    bot.sendMessage(
+        chatId,
+        `Добрый день!
+
+Мы рады пригласить Вас присоединиться к нашей группе. Мы предлагаем Вам возможность общения с другими людьми, а также принять участие в различных интересных мероприятиях. У нас можно узнать много нового и интересного. Мы будем рады Вас приветствовать в нашей группе.
+
+Присоединяйтесь к нам!
+
+С наилучшими пожеланиями,
+https://t.me/maxsoft_chat_gpt_group 🤗`
+    )
         .then(() => {})
         .catch((e) => {
             console.error(e.message);
