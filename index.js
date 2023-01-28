@@ -44,6 +44,11 @@ const temp = readTemp();
 const time = readTime();
 const last = {};
 
+const chatSuffix = {
+    "-1001776618845": ";Отвечай вежливо; ведь ты художник и хочешь продать подписку😊",
+    1049277315: ";Отвечай максимально дерзко;",
+};
+
 bot.on("pre_checkout_query", async (query) => {
     console.log("Checkout from ", query.from);
     bot.answerPreCheckoutQuery(query.id, true);
@@ -195,7 +200,7 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg === "сброс") {
-        bot.sendMessage(chatId, "Личность уничтожена");
+        // bot.sendMessage(chatId, "Личность уничтожена");
         context[chatId] = "";
         return true;
     }
@@ -299,12 +304,15 @@ const textToVisual = async (chatId, text) => {
 };
 
 const textToText = async (chatId, msg) => {
-    context[chatId] = context[chatId] + msg.text + ".";
+    context[chatId] += msg.text + ".";
     if (!msg.text.startsWith("Отвечай") && trial[chatId] % (skip[chatId] ?? 1) != 0) {
         return;
     }
     bot.sendChatAction(chatId, "typing");
-    const response = await getText(context[chatId], ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5);
+    const response = await getText(
+        context[chatId] + (chatSuffix[chatId] ?? ""),
+        ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5
+    );
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
