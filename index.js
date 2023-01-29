@@ -62,7 +62,7 @@ bot.on("message", async (msg) => {
         const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
         if (msg.text) {
-            if (processCommand(chatId, msgL)) {
+            if (processCommand(chatId, msgL, msg.from?.language_code)) {
                 return;
             }
         }
@@ -151,18 +151,23 @@ bot.on("message", async (msg) => {
     }
 });
 
-const processCommand = (chatId, msg) => {
+const processCommand = (chatId, msg, language_code) => {
     if (msg.startsWith("/command") || msg.startsWith("/help")) {
         bot.sendMessage(
             chatId,
-            "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/support"
+            language_code == "ru"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/support"
+                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\n/payment\n/terms\n/support"
         );
         return true;
     }
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
+            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options." +
+                (language_code == "ru"
+                    ? " Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
+                    : " Our group: https://t.me/maxsoft_chat_gpt_group_en")
         );
         return true;
     }
@@ -174,7 +179,7 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("/payment")) {
-        if (msg.from?.language_code !== "en") {
+        if (language_code == "ru") {
             bot.sendMessage(
                 chatId,
                 "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
@@ -263,7 +268,7 @@ const visualToText = async (chatId, msg) => {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        if (msg.from?.language_code !== "en") {
+        if (msg.from?.language_code == "ru") {
             prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS);
         }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
@@ -285,7 +290,7 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (language_code !== "en") {
+    if (language_code != "en") {
         text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
     }
     if (!text) {
