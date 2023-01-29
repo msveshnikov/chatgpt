@@ -212,11 +212,6 @@ const processCommand = (chatId, msg, language_code) => {
         context[chatId] = "";
         return true;
     }
-    // if (msg.startsWith("глубина контекста ")) {
-    //     CONTEXT_SIZE = +msg.slice(18);
-    //     bot.sendMessage(chatId, "Глубина контекста установлена в " + CONTEXT_SIZE);
-    //     return true;
-    // }
     if (msg.startsWith("пропуск ")) {
         skip[chatId] = +msg.slice(8);
         writeSkip(skip);
