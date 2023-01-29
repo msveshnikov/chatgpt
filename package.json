@@ -9,12 +9,11 @@
     "scripts": {
         "copy": "copy.cmd",
         "deploy": "deploy.cmd",
-        "report": "node test2.js" 
+        "report": "node test2.js"
     },
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
         "dotenv": "^16.0.3",
-        "languagedetect": "^2.0.0",
         "node-fetch": "^3.3.0",
         "node-telegram-bot-api": "^0.61.0",
         "openai": "^3.1.0",

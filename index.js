@@ -3,7 +3,6 @@ import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
 import google from "./search.js";
-import LanguageDetect from "languagedetect";
 import {
     writeOpened,
     readOpened,
@@ -34,7 +33,6 @@ let CONTEXT_TIMEOUT = 3600;
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-const detector = new LanguageDetect();
 
 const context = readContext();
 const skip = readSkip();
@@ -46,8 +44,8 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    "-1001776618845": ";Отвечай вежливо - ведь ты художник и писатель и хочешь продать подписку $5😊",
-    // 1049277315: ";Отвечай максимально дерзко",
+    // "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
+    //  1049277315: "(если тебя спрашивают грубо, то отвечай словом БАН)",
 };
 
 bot.on("pre_checkout_query", async (query) => {
@@ -142,7 +140,7 @@ bot.on("message", async (msg) => {
         } else {
             if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
                 // visual hemisphere (left)
-                textToVisual(chatId, msgL);
+                textToVisual(chatId, msgL, msg.from?.language_code);
             } else {
                 // audio hemisphere (right)
                 textToText(chatId, msg);
@@ -176,7 +174,7 @@ const processCommand = (chatId, msg) => {
         return true;
     }
     if (msg.startsWith("/payment")) {
-        if (detector.detect(context[chatId], 1)?.[0]?.[0] !== "english") {
+        if (msg.from?.language_code !== "en") {
             bot.sendMessage(
                 chatId,
                 "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
@@ -265,7 +263,7 @@ const visualToText = async (chatId, msg) => {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
+        if (msg.from?.language_code !== "en") {
             prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS);
         }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
@@ -281,13 +279,13 @@ const visualToText = async (chatId, msg) => {
     }
 };
 
-const textToVisual = async (chatId, text) => {
+const textToVisual = async (chatId, text, language_code) => {
     bot.sendChatAction(chatId, "typing");
     if (text === "нарисуй" || text === "draw" || text === "paint") {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
+    if (language_code !== "en") {
         text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
     }
     if (!text) {
