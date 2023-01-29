@@ -14,7 +14,6 @@ You have to get those APIs and set env variables:
 
 http://t.me/maxsoft_chat_bot
 
-
 # TODO
 
 -   [ ] Redis
@@ -23,4 +22,4 @@ http://t.me/maxsoft_chat_bot
 -   [x] Detect >600 abuse
 -   [x] Context forget/reset timeout
 -   [ ] Parse tokens consumed
--   [ ] DDOS protection
+-   [x] DDOS protection
