@@ -10,8 +10,8 @@ const userAgents = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36",
 ];
 
-async function google(term) {
-    const $ = await fetchData(term);
+async function google(term, lang) {
+    const $ = await fetchData(term, lang);
     return (
         $(".UDZeY span")
             .map((i, element) => $(element).text())
@@ -22,12 +22,12 @@ async function google(term) {
     );
 }
 
-async function fetchData(term) {
-    const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=ru`, {
+async function fetchData(term, lang) {
+    const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=${lang}`, {
         headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
     });
     return load(await result.text());
 }
 
 export default google;
-// console.log(await google("в какой стране находится баден-баден"));
+//console.log(await google("Java", "en"));

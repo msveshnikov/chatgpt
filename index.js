@@ -136,7 +136,7 @@ bot.on("message", async (msg) => {
         console.log(chatId, msg?.from?.username, msg.text);
         msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
-            textToGoogle(chatId, msg.text.slice(7));
+            textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
         } else {
             if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
                 // visual hemisphere (left)
@@ -333,9 +333,9 @@ const textToText = async (chatId, msg) => {
     }
 };
 
-const textToGoogle = async (chatId, msg) => {
+const textToGoogle = async (chatId, msg, language_code) => {
     bot.sendChatAction(chatId, "typing");
-    const response = await google(msg);
+    const response = await google(msg, language_code);
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
