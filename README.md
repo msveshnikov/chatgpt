@@ -23,3 +23,5 @@ http://t.me/maxsoft_chat_bot
 -   [x] Context forget/reset timeout
 -   [ ] Parse tokens consumed
 -   [x] DDOS protection
+-   [ ] Language from user.language_code
+-   [ ] DDOS of RU group - 10 requests per hour to user

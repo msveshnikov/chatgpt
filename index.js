@@ -462,6 +462,12 @@ const premium = (chatId) => {
 
 const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "SUPREME"];
 let callsTimestamps = [];
+let groupUsers = {};
+
+// once per hour clean groupUsers
+setInterval(() => {
+    groupUsers = {};
+}, 1000 * 60 * 60);
 
 const protection = (msg) => {
     // ignore blacklist
@@ -475,6 +481,11 @@ const protection = (msg) => {
         if (!trial[msg?.from?.id]) {
             return true;
         }
+        groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
+        if (groupUsers[msg?.from?.id] > 10) {
+            return true;
+        }
+
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_CALLS_PER_MINUTE) {

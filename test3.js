@@ -33,3 +33,8 @@ https://t.me/maxsoft_chat_gpt_group 🤗`
             console.error(e.message);
         });
 });
+
+// bot.sendMessage(
+//     "1470248261",
+//     "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
+// );
