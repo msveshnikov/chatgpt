@@ -89,7 +89,7 @@ bot.on("message", async (msg) => {
                     sendInvoice(chatId);
                     return;
                 }
-                if (trial[chatId] == trialCount + 2) {
+                if (trial[chatId] == trialCount + 2 && msg.from?.language_code == "ru") {
                     bot.sendMessage(
                         chatId,
                         "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
@@ -470,6 +470,7 @@ setInterval(() => {
 const protection = (msg) => {
     // ignore blacklist
     if (blacklist.includes(msg?.from?.username) || blacklist.includes(msg?.from?.id)) {
+        console.log("Abuse detected for ", msg.chat.id);
         return true;
     }
 
@@ -477,6 +478,7 @@ const protection = (msg) => {
     if (msg.chat.id == "-1001776618845") {
         // do not reply if msg?.from?.id not in trials
         if (!trial[msg?.from?.id]) {
+            console.log("Abuse detected for ", msg.chat.id);
             return true;
         }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
@@ -487,8 +489,8 @@ const protection = (msg) => {
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_CALLS_PER_MINUTE) {
-            console.log("Too many requests, switching off");
-            opened[msg.chat.id] = false;
+            console.log("Abuse detected for ", msg.chat.id);
+            opened[msg.chat.id] = new Date();
             return true;
         }
     }
