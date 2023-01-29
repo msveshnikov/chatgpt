@@ -23,7 +23,7 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let MAX_TOKENS = 1000;
+let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
@@ -218,6 +218,12 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
+    if (msg.startsWith("skip ")) {
+        skip[chatId] = +msg.slice(5);
+        writeSkip(skip);
+        bot.sendMessage(chatId, "Skip " + skip[chatId]);
+        return true;
+    }
     if (msg.startsWith("отвечать раз в ")) {
         skip[chatId] = +msg.slice(15);
         writeSkip(skip);
@@ -304,7 +310,7 @@ const textToVisual = async (chatId, text, language_code) => {
 const textToText = async (chatId, msg) => {
     context[chatId] += msg.text + ".";
     if (
-        !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь")) &&
+        !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь") || msg.text.startsWith("Answer")) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
         return;
@@ -474,8 +480,8 @@ const protection = (msg) => {
         return true;
     }
 
-    // DDOS protection, call not more than 20 per minute for msg.chat.id "-1001776618845"
-    if (msg.chat.id == "-1001776618845") {
+    // DDOS protection, call not more than 20 per minute for msg.chat.id
+    if (msg.chat.id == "-1001776618845" || msg.chat.id == "1001716321937") {
         // do not reply if msg?.from?.id not in trials
         if (!trial[msg?.from?.id]) {
             console.log("Abuse detected for ", msg.chat.id);
@@ -505,7 +511,7 @@ const getReport = () => {
     add("-----------");
     const adv = Object.keys(trial)
         .filter((k) => context[k])
-        .filter((t) => !opened[t] || t == "-1001776618845")
+        .filter((t) => !opened[t] || t == "-1001776618845" || t == "1001716321937")
         .map((k) => {
             return trial[k] * 0.005;
         })
@@ -516,7 +522,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "1049277315" && t != "-1001776618845")
+        .filter((t) => opened[t] && t != "1049277315" && t != "-1001776618845" && t != "1001716321937")
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
             return trial[k] * 0.005;

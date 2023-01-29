@@ -18,14 +18,14 @@ https://t.me/maxsoft_chat_gpt_group_en
 
 # TODO
 
--   [ ] Redis
--   [ ] TON
 -   [x] Temperature separated
 -   [x] Detect >600 abuse
 -   [x] Context forget/reset timeout
 -   [x] DDOS protection
 -   [x] DDOS of RU group - 10 requests per hour to user
--   [ ] Parse tokens consumed
 -   [x] Language from user.language_code
--   [ ] Abusive speech detection
 -   [x] add EN group
+-   [ ] Parse tokens consumed
+-   [ ] Abusive speech detection
+-   [ ] Redis
+-   [ ] TON
