@@ -23,3 +23,4 @@ http://t.me/maxsoft_chat_bot
 -   [x] Detect >600 abuse
 -   [x] Context forget/reset timeout
 -   [ ] Parse tokens consumed
+-   [ ] DDOS protection

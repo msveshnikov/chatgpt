@@ -24,7 +24,7 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let MAX_TOKENS = 800;
+let MAX_TOKENS = 1000;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
@@ -45,7 +45,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    // "-1001776618845": ";Отвечай вежливо - ведь ты художник и хочешь продать подписку $5😊",
+    "-1001776618845": ";Отвечай вежливо - ведь ты художник и хочешь продать подписку $5😊",
     1049277315: ";Отвечай максимально дерзко",
 };
 
@@ -266,7 +266,7 @@ const visualToText = async (chatId, msg) => {
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
-            prompt = await getText("Переведи на русский: " + prompt, 0.5);
+            prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS);
         }
         prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
@@ -288,7 +288,7 @@ const textToVisual = async (chatId, text) => {
         text = last[chatId]?.replace("child", "");
     }
     if (detector.detect(context[chatId], 1)[0]?.[0] !== "english") {
-        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5);
+        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
     }
     if (!text) {
         return;
@@ -314,7 +314,8 @@ const textToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
     const response = await getText(
         context[chatId] + (chatSuffix[chatId] ?? ""),
-        ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5
+        ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
+        MAX_TOKENS * premium(chatId)
     );
     if (response) {
         last[chatId] = response;
@@ -343,12 +344,12 @@ const textToGoogle = async (chatId, msg) => {
     }
 };
 
-const getText = async (prompt, temperature) => {
+const getText = async (prompt, temperature, max_tokens) => {
     try {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
             prompt: prompt,
-            max_tokens: MAX_TOKENS,
+            max_tokens: max_tokens,
             temperature: temperature,
         });
         const response = completion?.data?.choices?.[0]?.text;
@@ -451,6 +452,14 @@ const pairRandom = (chatId) => {
     }
 };
 
+const premium = (chatId) => {
+    if (opened[chatId] && chatId > 0) {
+        return 2;
+    } else {
+        return 1;
+    }
+};
+
 const getReport = () => {
     let result = "";
     const add = (s) => {
@@ -460,7 +469,7 @@ const getReport = () => {
     add("-----------");
     const adv = Object.keys(trial)
         .filter((k) => context[k])
-        .filter((t) => !opened[t] && t != "1049277315")
+        .filter((t) => !opened[t] || t == "-1001776618845")
         .map((k) => {
             return trial[k] * 0.005;
         })
@@ -471,7 +480,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "1049277315")
+        .filter((t) => opened[t] && t != "1049277315" && t != "-1001776618845")
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
             return trial[k] * 0.005;
