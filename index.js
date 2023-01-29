@@ -28,6 +28,7 @@ let MAX_TOKENS = 1000;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
+let MAX_CALLS_PER_MINUTE = 20;
 let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -46,7 +47,7 @@ const last = {};
 
 const chatSuffix = {
     "-1001776618845": ";Отвечай вежливо - ведь ты художник и хочешь продать подписку $5😊",
-    1049277315: ";Отвечай максимально дерзко",
+    // 1049277315: ";Отвечай максимально дерзко",
 };
 
 bot.on("pre_checkout_query", async (query) => {
@@ -56,6 +57,9 @@ bot.on("pre_checkout_query", async (query) => {
 
 bot.on("message", async (msg) => {
     try {
+        if (protection(msg)) {
+            return;
+        }
         // Technical stuff
         const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
@@ -83,15 +87,11 @@ bot.on("message", async (msg) => {
         if (!(new Date(opened[chatId]) > new Date())) {
             if (trial[chatId] > trialCount) {
                 if (trial[chatId] == trialCount + 1) {
-                    bot.sendMessage(chatId, "https://play.google.com/store/apps/details?id=com.maxsoft.balls");
-                    return;
-                }
-                if (trial[chatId] == trialCount + 2) {
                     console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                     sendInvoice(chatId);
                     return;
                 }
-                if (trial[chatId] == trialCount + 3) {
+                if (trial[chatId] == trialCount + 2) {
                     bot.sendMessage(
                         chatId,
                         "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
@@ -120,7 +120,7 @@ bot.on("message", async (msg) => {
         }
 
         // Brain activity
-        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE) ?? "";
+        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
         if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
             context[chatId] = "";
         }
@@ -136,7 +136,7 @@ bot.on("message", async (msg) => {
             return;
         }
         console.log(chatId, msg?.from?.username, msg.text);
-        msg.text = msg.text?.substring(0, MAX_LENGTH);
+        msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7));
         } else {
@@ -154,7 +154,7 @@ bot.on("message", async (msg) => {
 });
 
 const processCommand = (chatId, msg) => {
-    if (msg.startsWith("/commands")) {
+    if (msg.startsWith("/command") || msg.startsWith("/help")) {
         bot.sendMessage(
             chatId,
             "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\nНарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/support"
@@ -457,6 +457,31 @@ const premium = (chatId) => {
         return 2;
     } else {
         return 1;
+    }
+};
+
+const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "SUPREME"];
+let callsTimestamps = [];
+
+const protection = (msg) => {
+    // ignore blacklist
+    if (blacklist.includes(msg?.from?.username) || blacklist.includes(msg?.from?.id)) {
+        return true;
+    }
+
+    // DDOS protection, call not more than 20 per minute for msg.chat.id "-1001776618845"
+    if (msg.chat.id == "-1001776618845") {
+        // do not reply if msg?.from?.id not in trials
+        if (!trial[msg?.from?.id]) {
+            return true;
+        }
+        callsTimestamps.push(Date.now());
+        callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
+        if (callsTimestamps.length >= MAX_CALLS_PER_MINUTE) {
+            console.log("Too many requests, switching off");
+            opened[msg.chat.id] = false;
+            return true;
+        }
     }
 };
 
