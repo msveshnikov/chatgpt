@@ -27,7 +27,8 @@ let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
-let MAX_MESSAGES_PER_MINUTE = 20;
+let MAX_PER_MINUTE = 20;
+let MAX_PER_HOUR = 10;
 let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -500,13 +501,13 @@ const protection = (msg) => {
             return true;
         }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
-        if (groupUsers[msg?.from?.id] > 10) {
+        if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
         }
 
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
-        if (callsTimestamps.length >= MAX_MESSAGES_PER_MINUTE) {
+        if (callsTimestamps.length >= MAX_PER_MINUTE) {
             console.log("Abuse [1 minute] detected for ", msg.chat.id);
             console.log("Switching off this chat");
             opened[msg.chat.id] = new Date();
