@@ -397,7 +397,7 @@ const getArt = async (prompt) => {
     );
 
     if (!response.ok) {
-        console.error(`Stability AI error: ${await response.text()}`);
+        console.error(`Stability AI error: ${(await response.text()).substring(0, 300)}`);
         return;
     }
 
@@ -479,10 +479,11 @@ setInterval(() => {
 const protection = (msg) => {
     //if username is Extender777, allow all and switch on server
     if (msg?.from?.username == "Extender777") {
-        console.log("Switching on this chat");
+        console.log("Switching on this chat ", msg.chat.id);
         var d = new Date();
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
+        writeOpened(opened);
         return false;
     }
 
