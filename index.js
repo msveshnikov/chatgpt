@@ -27,7 +27,7 @@ let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
-let MAX_MESSAGES_PER_MINUTE = 30;
+let MAX_MESSAGES_PER_MINUTE = 20;
 let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -44,7 +44,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
+     "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
     //  1049277315: "(если тебя спрашивают грубо, то отвечай словом БАН)",
 };
 
@@ -93,7 +93,7 @@ bot.on("message", async (msg) => {
                     bot.sendMessage(
                         chatId,
                         msg.from?.language_code == "ru"
-                            ? "Извините, что мы не можем предоставить вам приватный триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Также мы приносим извинения за отмену услуги обращения к живому оператору в связи с многочисленными жалобами. Мы ценим ваше понимание и извиняемся за доставленные неудобства. Приглашаем вас присоединиться к нашей группе для ознакомления с возможностями бота 😊 https://t.me/maxsoft_chat_gpt_group"
+                            ? "Извините, что мы не можем предоставить вам приватный триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе для ознакомления с возможностями бота 😊 https://t.me/maxsoft_chat_gpt_group"
                             : "Sorry we can't provide you with a private trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to get acquainted with the capabilities of the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
                     );
                     return;
@@ -479,7 +479,6 @@ setInterval(() => {
 const protection = (msg) => {
     //if username is Extender777, allow all and switch on server
     if (msg?.from?.username == "Extender777") {
-        console.log("Switching on this chat ", msg.chat.id);
         var d = new Date();
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
@@ -494,7 +493,7 @@ const protection = (msg) => {
     }
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
-    if (msg.chat.id == "-1001776618845" || msg.chat.id == "1001716321937") {
+    if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
         // do not reply if msg?.from?.id not in trials
         if (!trial[msg?.from?.id]) {
             console.log("Abuse [no trial] detected for ", msg.chat.id);
