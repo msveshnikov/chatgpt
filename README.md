@@ -12,9 +12,9 @@ You have to get those APIs and set env variables:
 
 # PROD
 
-https://t.me/maxsoft_chat_bot
-https://t.me/maxsoft_chat_gpt_group
-https://t.me/maxsoft_chat_gpt_group_en
+-   https://t.me/maxsoft_chat_bot
+    = https://t.me/maxsoft_chat_gpt_group
+    = https://t.me/maxsoft_chat_gpt_group_en
 
 # TODO
 
