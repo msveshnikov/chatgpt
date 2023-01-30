@@ -35,6 +35,6 @@ function sleep(milliseconds) {
 // });
 
 bot.sendMessage(
-    "324800735",
+    "-867287835",
     "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
 );

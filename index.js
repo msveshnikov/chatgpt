@@ -27,7 +27,7 @@ let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
-let MAX_CALLS_PER_MINUTE = 20;
+let MAX_MESSAGES_PER_MINUTE = 20;
 let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -92,7 +92,7 @@ bot.on("message", async (msg) => {
                 if (trial[chatId] == trialCount + 2 && msg.from?.language_code == "ru") {
                     bot.sendMessage(
                         chatId,
-                        "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
+                        "Извините, что мы не можем предоставить вам приватный триал из-за большого наплыва пользователей. Также мы приносим извинения за отмену услуги обращения к живому оператору в связи с многочисленными жалобами. Мы ценим ваше понимание и извиняемся за доставленные неудобства. Приглашаем вас присоединиться к нашей группе 😊 https://t.me/maxsoft_chat_gpt_group"
                     );
                     return;
                 }
@@ -412,6 +412,7 @@ const getPrompt = async (photo, chatId) => {
 };
 
 const processHumans = (chatId, msg) => {
+    return true;
     bot.sendChatAction(chatId, "typing")
         .then(() => {})
         .catch((e) => {
@@ -464,7 +465,7 @@ const premium = (chatId) => {
     }
 };
 
-const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "SUPREME"];
+const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "SUPREME", "zixstass"];
 let callsTimestamps = [];
 let groupUsers = {};
 
@@ -494,7 +495,7 @@ const protection = (msg) => {
 
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
-        if (callsTimestamps.length >= MAX_CALLS_PER_MINUTE) {
+        if (callsTimestamps.length >= MAX_MESSAGES_PER_MINUTE) {
             console.log("Abuse detected for ", msg.chat.id);
             opened[msg.chat.id] = new Date();
             return true;
@@ -511,7 +512,7 @@ const getReport = () => {
     add("-----------");
     const adv = Object.keys(trial)
         .filter((k) => context[k])
-        .filter((t) => !opened[t] || t == "-1001776618845" || t == "1001716321937")
+        .filter((t) => !opened[t] || t == "-1001776618845" || t == "-1001716321937")
         .map((k) => {
             return trial[k] * 0.005;
         })
@@ -522,7 +523,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "1049277315" && t != "-1001776618845" && t != "1001716321937")
+        .filter((t) => opened[t] && t != "-1001776618845" && t != "-1001716321937")
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
             return trial[k] * 0.005;
