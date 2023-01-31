@@ -69,7 +69,7 @@ bot.on("message", async (msg) => {
             }
         }
         if (msg.successful_payment) {
-            console.log("Payment done for ", chatId);
+            console.log("Payment done for ", chatId, msg.successful_payment.invoice_payload);
             var d = new Date();
             d.setMonth(d.getMonth() + 1);
             opened[chatId] = d;
@@ -80,7 +80,10 @@ bot.on("message", async (msg) => {
                     ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
                     : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
             );
-            bot.sendMessage(1049277315, "Произведена оплата от " + msg?.from?.username + " " + msg?.from?.id);
+            bot.sendMessage(
+                1049277315,
+                "Произведена оплата от " + msg?.from?.username + " " + msg?.from?.id + " " + chatId
+            );
             return;
         }
         trial[chatId] = (trial[chatId] ?? 0) + 1;
@@ -321,7 +324,7 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (language_code != "en") {
+    if (language_code != "en" && !text.startsWith("draw")) {
         text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
     }
     if (!text) {
@@ -330,7 +333,9 @@ const textToVisual = async (chatId, text, language_code) => {
     bot.sendChatAction(chatId, "typing");
     const photo = await getArt(
         text +
-            ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley"
+            (text.startsWith("draw")
+                ? ""
+                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley")
     );
     if (photo) {
         bot.sendPhoto(chatId, photo);
