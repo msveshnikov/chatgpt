@@ -27,6 +27,7 @@ let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
+let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 20;
 let MAX_PER_HOUR = 10;
 let CONTEXT_TIMEOUT = 3600;
@@ -45,7 +46,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    // "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
+    "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
     1049277315: "(отвечай дерзко, как гопник)",
 };
 
@@ -111,8 +112,14 @@ bot.on("message", async (msg) => {
                 }
             }
         }
-        if (chatId > 0 && trial[chatId] > MAX_REQUESTS) {
-            console.log("Abuse detected for ", chatId);
+        if (
+            (chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
+            (chatId < 0 &&
+                trial[chatId] > MAX_GROUP_REQUESTS &&
+                chatId != "-1001776618845" &&
+                chatId != "-1001716321937")
+        ) {
+            console.error("Abuse detected for ", chatId);
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
@@ -509,7 +516,7 @@ const protection = (msg) => {
 
     // ignore blacklist
     if (blacklist.includes(msg?.from?.username) || blacklist.includes(msg?.from?.id)) {
-        console.log("Abuse [blaclist] detected for ", msg.chat.id);
+        console.error("Abuse [blacklist] detected for ", msg.chat.id);
         return true;
     }
 
@@ -517,7 +524,7 @@ const protection = (msg) => {
     if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
         // do not reply if msg?.from?.id not in trials
         if (!trial[msg?.from?.id]) {
-            console.log("Abuse [no trial] detected for ", msg.chat.id);
+            console.error("Abuse [no trial] detected for ", msg.chat.id);
             return true;
         }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
@@ -528,8 +535,8 @@ const protection = (msg) => {
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_PER_MINUTE) {
-            console.log("Abuse [1 minute] detected for ", msg.chat.id);
-            console.log("Switching off this chat");
+            console.error("Abuse [1 minute] detected for ", msg.chat.id);
+            console.error("Switching off this chat");
             opened[msg.chat.id] = new Date();
             return true;
         }
