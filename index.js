@@ -527,11 +527,11 @@ const protection = (msg) => {
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
     if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
-        // do not reply if msg?.from?.id not in trials
-        if (!trial[msg?.from?.id]) {
-            console.error("Abuse [no trial] detected for ", msg.chat.id);
-            return true;
-        }
+        // // do not reply if msg?.from?.id not in trials
+        // if (!trial[msg?.from?.id]) {
+        //     console.error("Abuse [no trial] detected for ", msg.chat.id);
+        //     return true;
+        // }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
