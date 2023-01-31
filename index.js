@@ -75,7 +75,9 @@ bot.on("message", async (msg) => {
             writeOpened(opened);
             bot.sendMessage(
                 chatId,
-                "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
+                msg.from?.language_code == "ru"
+                    ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
+                    : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
             );
             bot.sendMessage(1049277315, "Произведена оплата от " + msg?.from?.username + " " + msg?.from?.id);
             return;
@@ -113,7 +115,9 @@ bot.on("message", async (msg) => {
             console.log("Abuse detected for ", chatId);
             bot.sendMessage(
                 chatId,
-                "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
+                msg.from?.language_code == "ru"
+                    ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
+                    : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
             );
             trial[chatId] = 0;
             opened[chatId] = new Date();
@@ -159,28 +163,39 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/support"
-                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\n/payment\n/terms\n/support"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/terms_group\n/support"
+                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\n/payment\n/terms\n/terms_group\n/support"
         );
         return true;
     }
     if (msg.startsWith("/start")) {
         bot.sendMessage(
             chatId,
-            "Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use the /commands for more options." +
-                (language_code == "ru"
-                    ? " Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
-                    : " Our group: https://t.me/maxsoft_chat_gpt_group_en")
+            language_code == "ru"
+                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст (это может занять до 30 секунд). Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
+                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use /help for more options 😊 Join our group: https://t.me/maxsoft_chat_gpt_group_en"
+        );
+        return true;
+    }
+    if (msg.startsWith("/terms_group")) {
+        bot.sendMessage(
+            chatId,
+            language_code == "ru"
+                ? "После оплаты подписки $10 вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением 1000 запросов в месяц (при превышении лимита бот потребует оплату подписки снова)"
+                : "After making a payment of $10, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of 1000 requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)"
         );
         return true;
     }
     if (msg.startsWith("/terms")) {
         bot.sendMessage(
             chatId,
-            "After making a payment of $5, you will have access to the ChatGPT bot for one month, with full features including Paint, Photo2Text, Google, and more"
+            language_code == "ru"
+                ? "После оплаты подписки $5 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
+                : "After making a payment of $5, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
         );
         return true;
     }
+
     if (msg.startsWith("/payment")) {
         if (language_code == "ru") {
             bot.sendMessage(
@@ -192,7 +207,12 @@ const processCommand = (chatId, msg, language_code) => {
         return true;
     }
     if (msg.startsWith("/support")) {
-        bot.sendMessage(chatId, "For any inquiries regarding refunds and cancellations please contact @Extender777");
+        bot.sendMessage(
+            chatId,
+            language_code == "ru"
+                ? "Если у вас возникли проблемы с оплатой, пожалуйста, напишите мне в личные сообщения @Extender777"
+                : "For any inquiries regarding refunds and cancellations please contact @Extender777"
+        );
         return true;
     }
     if (msg.startsWith("/usage")) {
