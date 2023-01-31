@@ -46,7 +46,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    // "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
+    "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
     1049277315: "(отвечай дерзко, как гопник)",
 };
 
@@ -342,17 +342,25 @@ const textToVisual = async (chatId, text, language_code) => {
     }
 };
 
+const getSeldom = (s) => {
+    if (Math.random() < 0.3) {
+        return s;
+    }
+    return "";
+};
+
 const textToText = async (chatId, msg) => {
     context[chatId] += msg.text + ".";
     if (
         !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь") || msg.text.startsWith("Answer")) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
+        trial[chatId] = trial[chatId] - 1;
         return;
     }
     bot.sendChatAction(chatId, "typing");
     const response = await getText(
-        context[chatId] + (chatSuffix[chatId] ?? ""),
+        context[chatId] + getSeldom(chatSuffix[chatId] ?? ""),
         ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
         MAX_TOKENS * premium(chatId)
     );
@@ -527,11 +535,11 @@ const protection = (msg) => {
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
     if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
-        // // do not reply if msg?.from?.id not in trials
-        // if (!trial[msg?.from?.id]) {
-        //     console.error("Abuse [no trial] detected for ", msg.chat.id);
-        //     return true;
-        // }
+        // do not reply if msg?.from?.id not in trials
+        if (!trial[msg?.from?.id]) {
+            console.error("Abuse [no trial] detected for ", msg.chat.id);
+            return true;
+        }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
