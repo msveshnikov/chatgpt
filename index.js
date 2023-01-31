@@ -46,7 +46,7 @@ const time = readTime();
 const last = {};
 
 const chatSuffix = {
-    "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
+    // "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
     1049277315: "(отвечай дерзко, как гопник)",
 };
 
@@ -233,7 +233,7 @@ const processCommand = (chatId, msg, language_code) => {
         return true;
     }
     if (msg === "сброс") {
-        // bot.sendMessage(chatId, "Личность уничтожена");
+        bot.sendMessage(chatId, "Личность уничтожена");
         context[chatId] = "";
         return true;
     }
