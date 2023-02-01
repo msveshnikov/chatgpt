@@ -26,11 +26,12 @@ let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian c
 let MAX_TOKENS = 800;
 let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
-let MAX_REQUESTS = 600;
+let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
-let MAX_PER_MINUTE = 20;
-let MAX_PER_HOUR = 7;
+let MAX_PER_MINUTE = 15;
+let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
+const REQUEST_PRICE = 0.008;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -67,7 +68,7 @@ bot.on("message", async (msg) => {
             console.log("Payment done for ", chatId, msg.successful_payment.invoice_payload);
             var d = new Date();
             d.setMonth(d.getMonth() + 1);
-            opened[chatId] = d;
+            opened[msg.successful_payment.invoice_payload ?? chatId] = d;
             writeOpened(opened);
             bot.sendMessage(
                 chatId,
@@ -77,7 +78,12 @@ bot.on("message", async (msg) => {
             );
             bot.sendMessage(
                 1049277315,
-                "Произведена оплата от " + msg?.from?.username + " " + msg?.from?.id + " " + chatId
+                "Произведена оплата от " +
+                    msg?.from?.username +
+                    " " +
+                    msg?.from?.id +
+                    " " +
+                    msg.successful_payment.invoice_payload
             );
             return;
         }
@@ -86,20 +92,14 @@ bot.on("message", async (msg) => {
         const trialCount = chatId > 0 ? TRIAL_COUNT : 0;
         if (!(new Date(opened[chatId]) > new Date())) {
             if (trial[chatId] > trialCount) {
-                if (trial[chatId] == trialCount + 1) {
-                    console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
-                    sendInvoice(chatId);
-                    return;
-                }
-                if (trial[chatId] == trialCount + 2) {
-                    bot.sendMessage(
-                        chatId,
-                        msg.from?.language_code == "ru"
-                            ? "Извините, что мы не можем предоставить вам приватный триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
-                            : "Sorry we can't provide you with a private trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
-                    );
-                    return;
-                }
+                console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
+                sendInvoice(chatId);
+                bot.sendMessage(
+                    chatId,
+                    msg.from?.language_code == "ru"
+                        ? "К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
+                        : "Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
+                );
                 trial[chatId] = trial[chatId] - 1;
                 return;
             }
@@ -513,7 +513,7 @@ const getReport = () => {
         .filter((k) => context[k])
         .filter((t) => !opened[t] || t == "-1001776618845" || t == "-1001716321937")
         .map((k) => {
-            return trial[k] * 0.005;
+            return trial[k] * REQUEST_PRICE;
         })
         .reduce((a, b) => a + b)
         .toFixed(2);
@@ -524,8 +524,8 @@ const getReport = () => {
     const operations = Object.keys(trial)
         .filter((t) => opened[t] && t != "-1001776618845" && t != "-1001716321937")
         .map((k) => {
-            add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
-            return trial[k] * 0.005;
+            add(k + " " + trial[k] + " " + (trial[k] * REQUEST_PRICE).toFixed(2) + "$");
+            return trial[k] * REQUEST_PRICE;
         })
         .reduce((a, b) => a + b)
         .toFixed(2);
