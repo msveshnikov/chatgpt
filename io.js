@@ -44,12 +44,12 @@ export const readContext = () => {
     return read("context.json");
 };
 
-export const writeHumans = (humans) => {
-    write("humans.json", humans);
+export const writeChatSuffix = (suffix) => {
+    write("suffix.json", suffix);
 };
 
-export const readHumans = () => {
-    return read("humans.json");
+export const readChatSuffix = () => {
+    return read("suffix.json");
 };
 
 export const writeTemp = (temp) => {

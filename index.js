@@ -12,8 +12,8 @@ import {
     readSkip,
     writeContext,
     readContext,
-    readHumans,
-    writeHumans,
+    readChatSuffix,
+    writeChatSuffix,
     writeTemp,
     readTemp,
     writeTime,
@@ -29,7 +29,7 @@ let MAX_LENGTH = 300;
 let MAX_REQUESTS = 600;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 20;
-let MAX_PER_HOUR = 10;
+let MAX_PER_HOUR = 7;
 let CONTEXT_TIMEOUT = 3600;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -40,15 +40,10 @@ const context = readContext();
 const skip = readSkip();
 const trial = readTrial();
 const opened = readOpened();
-const humans = readHumans();
 const temp = readTemp();
 const time = readTime();
+const chatSuffix = readChatSuffix();
 const last = {};
-
-const chatSuffix = {
-    "-1001776618845": "(Отвечай вежливо - ты художник и писатель и хочешь продать подписку за $5)",
-    1049277315: "(отвечай дерзко, как гопник)",
-};
 
 bot.on("pre_checkout_query", async (query) => {
     console.log("Checkout from ", query.from);
@@ -105,14 +100,8 @@ bot.on("message", async (msg) => {
                     );
                     return;
                 }
-                if (processHumans(chatId, msg)) {
-                    trial[chatId] = trial[chatId] - 1;
-                    return;
-                } else {
-                    pairRandom(chatId);
-                    processHumans(chatId, msg);
-                    return;
-                }
+                trial[chatId] = trial[chatId] - 1;
+                return;
             }
         }
         if (
@@ -263,6 +252,18 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
+    if (msg === "режим" || msg === "режим обычный") {
+        chatSuffix[chatId] = "";
+        writeChatSuffix(chatSuffix);
+        bot.sendMessage(chatId, "Режим обычный");
+        return true;
+    }
+    if (msg.startsWith("режим ")) {
+        chatSuffix[chatId] = "(" + msg.slice(6) + ")";
+        writeChatSuffix(chatSuffix);
+        bot.sendMessage(chatId, "Режим установлен");
+        return true;
+    }
     if (msg.startsWith("температура ") || msg.startsWith("temperature ")) {
         temp[chatId] = +msg.slice(12)?.replace(",", ".");
         writeTemp(temp);
@@ -342,13 +343,6 @@ const textToVisual = async (chatId, text, language_code) => {
     }
 };
 
-const getSeldom = (s) => {
-    if (Math.random() < 0.3) {
-        return s;
-    }
-    return "";
-};
-
 const textToText = async (chatId, msg) => {
     context[chatId] += msg.text + ".";
     if (
@@ -360,7 +354,7 @@ const textToText = async (chatId, msg) => {
     }
     bot.sendChatAction(chatId, "typing");
     const response = await getText(
-        context[chatId] + getSeldom(chatSuffix[chatId] ?? ""),
+        context[chatId] + chatSuffix[chatId] ?? "",
         ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
         MAX_TOKENS * premium(chatId)
     );
@@ -454,52 +448,6 @@ const getPrompt = async (photo, chatId) => {
     return img2prompt.predict({ image: fileUri });
 };
 
-const processHumans = (chatId, msg) => {
-    return true;
-    bot.sendChatAction(chatId, "typing")
-        .then(() => {})
-        .catch((e) => {
-            console.error(e.message);
-        });
-    if (humans[chatId] && !opened[humans[chatId]]) {
-        console.log("Human2Human", chatId, humans[chatId], msg.text);
-        if (msg.photo) {
-            const file_id = msg.photo[msg.photo.length - 1].file_id;
-            console.log("Human2Human photo", chatId, file_id);
-            bot.sendPhoto(humans[chatId], file_id)
-                .then(() => {})
-                .catch((e) => {
-                    console.error(e.message);
-                });
-        } else {
-            if (msg.text) {
-                bot.sendMessage(humans[chatId], msg.text)
-                    .then(() => {})
-                    .catch((e) => {
-                        console.error(e.message);
-                    });
-            }
-        }
-        return true;
-    }
-};
-
-const pairRandom = (chatId) => {
-    if (chatId < 0) {
-        return;
-    }
-    const otherId = Object.keys(trial)
-        .filter((key) => trial[key] > TRIAL_COUNT + 3)
-        .filter((key) => !humans[key] && !opened[key] && key != chatId && key > 0)[0];
-
-    if (otherId) {
-        humans[chatId] = +otherId;
-        humans[otherId] = +chatId;
-        console.log("Pair created", chatId, otherId);
-        writeHumans(humans);
-    }
-};
-
 const premium = (chatId) => {
     if (opened[chatId] && chatId > 0) {
         return 2;
@@ -535,11 +483,10 @@ const protection = (msg) => {
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
     if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
-        // do not reply if msg?.from?.id not in trials
-        if (!trial[msg?.from?.id]) {
-            console.error("Abuse [no trial] detected for ", msg.chat.id);
-            return true;
-        }
+        // // do not reply if msg?.from?.id not in trials
+        // if (!trial[msg?.from?.id]) {
+        //     return true;
+        // }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
@@ -549,7 +496,6 @@ const protection = (msg) => {
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_PER_MINUTE) {
             console.error("Abuse [1 minute] detected for ", msg.chat.id);
-            console.error("Switching off this chat");
             opened[msg.chat.id] = new Date();
             return true;
         }

@@ -32,7 +32,7 @@ opened.json
 trials.json
 skips.json
 context.json
-humans.json
+suffix.json
 temp.json
 time.json
 *.log
