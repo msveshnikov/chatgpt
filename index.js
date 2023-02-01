@@ -325,8 +325,8 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (language_code != "en" && !text.startsWith("draw")) {
-        text = await getText("Переведи на английский: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
+    if (language_code != "en" && !text?.startsWith("draw")) {
+        text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
     }
     if (!text) {
         return;
@@ -334,7 +334,7 @@ const textToVisual = async (chatId, text, language_code) => {
     bot.sendChatAction(chatId, "typing");
     const photo = await getArt(
         text +
-            (text.startsWith("draw")
+            (text?.startsWith("draw")
                 ? ""
                 : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley")
     );

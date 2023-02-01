@@ -6,15 +6,11 @@ dotenv.config({ override: true });
 const bot = new TelegramBot(process.env.TELEGRAM_KEY);
 const trial = readTrial();
 
-function sleep(milliseconds) {
-    const date = Date.now();
-    let currentDate = null;
-    do {
-        currentDate = Date.now();
-    } while (currentDate - date < milliseconds);
-}
-
-Object.keys(trial).map(async (chatId) => {
+// every 50 milliseconds pop one element from trial
+const users = Object.keys(trial);
+setInterval(() => {
+    const chatId = users.pop();
+    if (!chatId) return;
     console.log(chatId);
     sleep(1000 / 20);
     bot.sendMessage(
@@ -32,7 +28,7 @@ https://t.me/maxsoft_chat_gpt_group 🤗`
         .catch((e) => {
             console.error(e.message);
         });
-});
+}, 50);
 
 // bot.sendMessage(
 //     "-867287835",
