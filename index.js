@@ -92,7 +92,7 @@ bot.on("message", async (msg) => {
         const trialCount = chatId > 0 ? TRIAL_COUNT : 0;
         if (!(new Date(opened[chatId]) > new Date())) {
             if (trial[chatId] > trialCount) {
-                console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
+                // console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
                 sendInvoice(chatId);
                 bot.sendMessage(
                     chatId,
@@ -139,7 +139,7 @@ bot.on("message", async (msg) => {
         if (!msg.text) {
             return;
         }
-        console.log(chatId, msg?.from?.username, msg.text);
+        // console.log(chatId, msg?.from?.username, msg.text);
         msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
@@ -336,7 +336,7 @@ const textToVisual = async (chatId, text, language_code) => {
         text +
             (text?.startsWith("draw")
                 ? ""
-                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration, by ryan yee, by clint cearley")
+                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration") //, by ryan yee, by clint cearley")
     );
     if (photo) {
         bot.sendPhoto(chatId, photo);
@@ -394,7 +394,7 @@ const getText = async (prompt, temperature, max_tokens) => {
             temperature: temperature,
         });
         const response = completion?.data?.choices?.[0]?.text;
-        console.log(response);
+        // console.log(response);
         return response;
     } catch (e) {
         console.error(e.message);
@@ -442,7 +442,6 @@ const getArt = async (prompt) => {
 const getPrompt = async (photo, chatId) => {
     const file_id = photo[photo.length - 1].file_id;
     const fileUri = await bot.getFileLink(file_id);
-    console.log("Photo sent:", fileUri);
     bot.sendChatAction(chatId, "typing");
     const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
     return img2prompt.predict({ image: fileUri });
@@ -533,13 +532,13 @@ const getReport = () => {
     add("");
     add("Profit");
     add("------------------");
-    const revenue = (Object.keys(opened).length - 1) * 5;
+    const revenue = (Object.keys(opened).length - 3) * 5;
     add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
 
     add("");
     add("Conversion");
     add("------------------");
-    add((((Object.keys(opened).length - 1) / Object.keys(context).length) * 100).toFixed(2) + "%");
+    add((((Object.keys(opened).length - 3) / Object.keys(context).length) * 100).toFixed(2) + "%");
     return result;
 };
 
