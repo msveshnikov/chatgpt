@@ -28,7 +28,7 @@ let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
-let MAX_PER_MINUTE = 15;
+let MAX_PER_MINUTE = 20;
 let MAX_PER_HOUR = 10;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0063;
@@ -351,11 +351,15 @@ const textToText = async (chatId, msg) => {
         return;
     }
     bot.sendChatAction(chatId, "typing");
+    const intervalId = setInterval(() => {
+        bot.sendChatAction(chatId, "typing");
+      }, 5000);
     const response = await getText(
         context[chatId] + chatSuffix[chatId] ?? "",
         ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
         MAX_TOKENS * premium(chatId)
     );
+    clearInterval(intervalId);
     if (response) {
         last[chatId] = response;
         context[chatId] = context[chatId] + response;
