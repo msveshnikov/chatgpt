@@ -68,14 +68,14 @@ bot.on("message", async (msg) => {
         if (msg.successful_payment) {
             console.log("Payment done for ", chatId, msg.successful_payment.invoice_payload);
             var d = new Date();
-            d.setMonth(d.getMonth() + 1);
+            d.setMonth(d.getMonth() + 2);
             opened[msg.successful_payment.invoice_payload ?? chatId] = d;
             writeOpened(opened);
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
-                    ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
-                    : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
+                    ? "Оплата произведена! Спасибо. Бот теперь доступен два месяца !!! ❤️‍🔥"
+                    : "Payment complete! Thank you. This bot is now available for use for a period of two months !!! ❤️‍🔥"
             );
             bot.sendMessage(
                 1049277315,
@@ -274,7 +274,7 @@ const sendInvoice = (chatId) => {
     bot.sendInvoice(
         chatId,
         "Need payment",
-        "1-month access to ChatGPT",
+        "2-month access to ChatGPT",
         chatId,
         process.env.STRIPE_KEY,
         "USD",
