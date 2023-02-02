@@ -29,9 +29,10 @@ let MAX_LENGTH = 300;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
-let MAX_PER_HOUR = 5;
+let MAX_PER_HOUR = 10;
 let CONTEXT_TIMEOUT = 3600;
-const REQUEST_PRICE = 0.008;
+let REQUEST_PRICE = 0.0063;
+let PROMO = ["-1001776618845", "-1001716321937"];
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -106,10 +107,7 @@ bot.on("message", async (msg) => {
         }
         if (
             (chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
-            (chatId < 0 &&
-                trial[chatId] > MAX_GROUP_REQUESTS &&
-                chatId != "-1001776618845" &&
-                chatId != "-1001716321937")
+            (chatId < 0 && trial[chatId] > MAX_GROUP_REQUESTS && !PROMO.includes(String(chatId)))
         ) {
             console.error("Abuse detected for ", chatId);
             bot.sendMessage(
@@ -481,7 +479,7 @@ const protection = (msg) => {
     }
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
-    if (msg.chat.id == "-1001776618845" || msg.chat.id == "-1001716321937") {
+    if (PROMO.includes(String(msg.chat.id))) {
         // // do not reply if msg?.from?.id not in trials
         // if (!trial[msg?.from?.id]) {
         //     return true;
@@ -510,7 +508,7 @@ const getReport = () => {
     add("-----------");
     const adv = Object.keys(trial)
         .filter((k) => context[k])
-        .filter((t) => !opened[t] || t == "-1001776618845" || t == "-1001716321937")
+        .filter((t) => !opened[t] || PROMO.includes(t))
         .map((k) => {
             return trial[k] * REQUEST_PRICE;
         })
@@ -521,7 +519,7 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "-1001776618845" && t != "-1001716321937")
+        .filter((t) => opened[t] && !PROMO.includes(t))
         .map((k) => {
             add(k + " " + trial[k] + " " + (trial[k] * REQUEST_PRICE).toFixed(2) + "$");
             return trial[k] * REQUEST_PRICE;

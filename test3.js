@@ -12,7 +12,6 @@ setInterval(() => {
     const chatId = users.pop();
     if (!chatId) return;
     console.log(chatId);
-    sleep(1000 / 20);
     bot.sendMessage(
         chatId,
         `Добрый день!

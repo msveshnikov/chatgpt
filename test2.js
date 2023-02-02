@@ -1,9 +1,10 @@
 import { readTrial, readOpened, readContext } from "./io.js";
+const REQUEST_PRICE = 0.0063;
+let PROMO = ["-1001776618845", "-1001716321937"];
 
 const opened = readOpened();
 const trial = readTrial();
 const context = readContext();
-
 const getReport = () => {
     let result = "";
     const add = (s) => {
@@ -13,9 +14,9 @@ const getReport = () => {
     add("-----------");
     const adv = Object.keys(trial)
         .filter((k) => context[k])
-        .filter((t) => !opened[t] && t != "1049277315")
+        .filter((t) => !opened[t] || PROMO.includes(t))
         .map((k) => {
-            return trial[k] * 0.005;
+            return trial[k] * REQUEST_PRICE;
         })
         .reduce((a, b) => a + b)
         .toFixed(2);
@@ -24,10 +25,10 @@ const getReport = () => {
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
-        .filter((t) => opened[t] && t != "1049277315")
+        .filter((t) => opened[t] && !PROMO.includes(t))
         .map((k) => {
-            add(k + " " + trial[k] + " " + (trial[k] * 0.005).toFixed(2) + "$");
-            return trial[k] * 0.005;
+            add(k + " " + trial[k] + " " + (trial[k] * REQUEST_PRICE).toFixed(2) + "$");
+            return trial[k] * REQUEST_PRICE;
         })
         .reduce((a, b) => a + b)
         .toFixed(2);
@@ -46,3 +47,5 @@ const getReport = () => {
 };
 
 console.log(getReport());
+console.log(PROMO.includes("-1001716321937"));
+console.log(PROMO.includes(String(-1001716321937)));
