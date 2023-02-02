@@ -28,10 +28,10 @@ let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
-let MAX_PER_MINUTE = 20;
-let MAX_PER_HOUR = 10;
+let MAX_PER_MINUTE = 15;
+let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
-let REQUEST_PRICE = 0.0063;
+let REQUEST_PRICE = 0.0066;
 let PROMO = ["-1001776618845", "-1001716321937"];
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -160,8 +160,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36,5 .. 41,5\nПропуск <x>\n/payment\n/terms\n/terms_group\n/support"
-                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36,5 .. 41,5\n/payment\n/terms\n/terms_group\n/support"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nРежим <притворяйся кем-то>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nMode <pretend>\n/payment\n/terms\n/terms_group\n/status\n/support"
         );
         return true;
     }
@@ -216,6 +216,19 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(chatId, getReport());
         return true;
     }
+    if (msg.startsWith("/status")) {
+        bot.sendMessage(
+            chatId,
+            language_code == "ru"
+                ? opened[chatId]
+                    ? "Ваша подписка активна до " + opened[chatId]
+                    : "У вас есть нет подписки"
+                : opened[chatId]
+                ? "You have active subscription until " + opened[chatId]
+                : "You have no subscription"
+        );
+        return true;
+    }
     if (msg === "сезам приоткройся") {
         bot.sendMessage(chatId, "Бот активирован до 01.01.2024");
         opened[chatId] = "2024-01-01T00:00:00.000Z";
@@ -260,6 +273,18 @@ const processCommand = (chatId, msg, language_code) => {
         chatSuffix[chatId] = "(" + msg.slice(6) + ")";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Режим установлен");
+        return true;
+    }
+    if (msg === "mode" || msg === "mode usual") {
+        chatSuffix[chatId] = "";
+        writeChatSuffix(chatSuffix);
+        bot.sendMessage(chatId, "Usual mode");
+        return true;
+    }
+    if (msg.startsWith("mode ")) {
+        chatSuffix[chatId] = "(" + msg.slice(5) + ")";
+        writeChatSuffix(chatSuffix);
+        bot.sendMessage(chatId, "Mode set");
         return true;
     }
     if (msg.startsWith("температура ") || msg.startsWith("temperature ")) {
@@ -353,7 +378,7 @@ const textToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
     const intervalId = setInterval(() => {
         bot.sendChatAction(chatId, "typing");
-      }, 5000);
+    }, 5000);
     const response = await getText(
         context[chatId] + chatSuffix[chatId] ?? "",
         ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
