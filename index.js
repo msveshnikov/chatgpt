@@ -222,7 +222,7 @@ const processCommand = (chatId, msg, language_code) => {
             language_code == "ru"
                 ? opened[chatId]
                     ? "Ваша подписка активна до " + opened[chatId]
-                    : "У вас есть нет подписки"
+                    : "У вас нет подписки"
                 : opened[chatId]
                 ? "You have active subscription until " + opened[chatId]
                 : "You have no subscription"
