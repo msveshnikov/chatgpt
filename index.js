@@ -24,7 +24,6 @@ dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 800;
-let TRIAL_COUNT = 0;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
@@ -90,26 +89,22 @@ bot.on("message", async (msg) => {
         }
         trial[chatId] = (trial[chatId] ?? 0) + 1;
         writeTrial(trial);
-        const trialCount = chatId > 0 ? TRIAL_COUNT : 0;
         if (!(new Date(opened[chatId]) > new Date())) {
-            if (trial[chatId] > trialCount) {
-                // console.log("Unauthorized access: ", chatId, msg?.from?.username, msg.text);
-                sendInvoice(chatId);
-                bot.sendMessage(
-                    chatId,
-                    msg.from?.language_code == "ru"
-                        ? "К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
-                        : "Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
-                );
-                trial[chatId] = trial[chatId] - 1;
-                return;
-            }
+            sendInvoice(chatId);
+            bot.sendMessage(
+                chatId,
+                msg.from?.language_code == "ru"
+                    ? "К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
+                    : "Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
+            );
+            trial[chatId] = trial[chatId] - 1;
+            return;
         }
         if (
             (chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
             (chatId < 0 && trial[chatId] > MAX_GROUP_REQUESTS && !PROMO.includes(String(chatId)))
         ) {
-            console.error("Abuse detected for ", chatId);
+            console.error("Abuse detected for paid account", chatId);
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
@@ -160,8 +155,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nРежим <притворяйся кем-то>\n/payment\n/terms\n/terms_group\n/status\n/support"
-                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nMode <pretend>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nРежим <притворись что ты ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nMode <pretend you are ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
         );
         return true;
     }
@@ -169,8 +164,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст (это может занять до 30 секунд). Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд. Понимаю команду Нарисуй <что-то> 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
-                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text (this may take up to 30 seconds). I can search Google for any information you need. Use /help for more options 😊 Join our group: https://t.me/maxsoft_chat_gpt_group_en"
+                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
+                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 Join our group: https://t.me/maxsoft_chat_gpt_group_en"
         );
         return true;
     }
@@ -220,10 +215,10 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? opened[chatId]
+                ? opened[chatId] && new Date(opened[chatId]) > new Date()
                     ? "Ваша подписка активна до " + opened[chatId]
                     : "У вас нет подписки"
-                : opened[chatId]
+                : opened[chatId] && new Date(opened[chatId]) > new Date()
                 ? "You have active subscription until " + opened[chatId]
                 : "You have no subscription"
         );
@@ -498,6 +493,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
+        groupUsers = {};
         return false;
     }
 
@@ -536,7 +532,6 @@ const getReport = () => {
     add("Advertising costs");
     add("-----------");
     const adv = Object.keys(trial)
-        .filter((k) => context[k])
         .filter((t) => !opened[t] || PROMO.includes(t))
         .map((k) => {
             return trial[k] * REQUEST_PRICE;
@@ -565,7 +560,7 @@ const getReport = () => {
     add("");
     add("Conversion");
     add("------------------");
-    add((((Object.keys(opened).length - 3) / Object.keys(context).length) * 100).toFixed(2) + "%");
+    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
     return result;
 };
 
