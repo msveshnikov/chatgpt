@@ -191,12 +191,6 @@ const processCommand = (chatId, msg, language_code) => {
     }
 
     if (msg.startsWith("/payment")) {
-        if (language_code == "ru") {
-            bot.sendMessage(
-                chatId,
-                "https://vc.ru/u/1075657-denis-zelenykh/576110-kak-oplatit-podpisku-midjourney-iz-rossii"
-            );
-        }
         sendInvoice(chatId);
         return true;
     }
@@ -318,15 +312,22 @@ const sendInvoice = (chatId) => {
 
 const visualToText = async (chatId, msg) => {
     bot.sendChatAction(chatId, "typing");
+    const intervalId = setInterval(() => {
+        bot.sendChatAction(chatId, "typing")
+            .then(() => {})
+            .catch((e) => {
+                console.error(e.message);
+            });
+    }, 2000);
     let prompt = await getPrompt(msg.photo, chatId);
+    clearInterval(intervalId);
     if (prompt) {
         // link between left and right hemisphere (computer vision)
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         if (msg.from?.language_code == "ru") {
-            prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS);
+            prompt = await translate(prompt, "ru");
         }
-        prompt = prompt?.replace(/.*/, "")?.substr(1);
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
             writeContext(context);
@@ -346,7 +347,7 @@ const textToVisual = async (chatId, text, language_code) => {
         text = last[chatId]?.replace("child", "");
     }
     if (language_code != "en" && !text?.startsWith("draw")) {
-        text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS);
+        text = await translate(text?.replace("ребенка", ""), "en");
     }
     if (!text) {
         return;
@@ -356,7 +357,7 @@ const textToVisual = async (chatId, text, language_code) => {
         text +
             (text?.startsWith("draw")
                 ? ""
-                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration") //, by ryan yee, by clint cearley")
+                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration")
     );
     if (photo) {
         bot.sendPhoto(chatId, photo);
@@ -383,7 +384,7 @@ const textToText = async (chatId, msg) => {
             .catch((e) => {
                 console.error(e.message);
             });
-    }, 1000);
+    }, 2000);
     let prompt = context[chatId] + chatSuffix[chatId] ?? "";
     if (english) {
         prompt = await translate(msg.text, "en");
