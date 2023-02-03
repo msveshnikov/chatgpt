@@ -390,14 +390,14 @@ const textToText = async (chatId, msg) => {
     }, 1000);
     let prompt = context[chatId] + chatSuffix[chatId] ?? "";
     if (viaEnglish) {
-        prompt = await translate(prompt, "en");
-        console.log("viaEnglish prompt en", prompt);
+        prompt = await translate(msg.text, "en");
     }
-    let response = await getText(prompt, ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5, MAX_TOKENS * premium(chatId));
-    if (viaEnglish) {
-        console.log("viaEnglish response en", response);
+    let response;
+    if (prompt) {
+        response = await getText(prompt, ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5, MAX_TOKENS * premium(chatId));
+    }
+    if (viaEnglish && response) {
         response = await translate(response, msg.from?.language_code);
-        console.log("viaEnglish response ru", response);
     }
     clearInterval(intervalId);
     if (response) {
@@ -545,15 +545,19 @@ const protection = (msg) => {
 };
 
 const translate = async (text, target) => {
-    const request = {
-        parent: `projects/burger-20dea/locations/global`,
-        contents: [text],
-        mimeType: "text/plain",
-        targetLanguageCode: target,
-    };
+    try {
+        const request = {
+            parent: `projects/burger-20dea/locations/global`,
+            contents: [text],
+            mimeType: "text/plain",
+            targetLanguageCode: target,
+        };
 
-    const [response] = await translation.translateText(request);
-    return response.translations[0]?.translatedText;
+        const [response] = await translation.translateText(request);
+        return response.translations[0]?.translatedText;
+    } catch (e) {
+        console.error(e.message);
+    }
 };
 
 const getReport = () => {
