@@ -3,19 +3,16 @@ const translationClient = new TranslationServiceClient();
 
 process.env["GOOGLE_APPLICATION_CREDENTIALS"] = "./google.json";
 
-const projectId = "burger-20dea";
-const location = "global";
-
-async function translate(text, target) {
+const translate = async (text, target) => {
     const request = {
-        parent: `projects/${projectId}/locations/${location}`,
+        parent: `projects/burger-20dea/locations/global`,
         contents: [text],
         mimeType: "text/plain",
         targetLanguageCode: target,
     };
 
     const [response] = await translationClient.translateText(request);
-    return response.translations[0].translatedText;
-}
+    return response.translations[0]?.translatedText;
+};
 
 console.log(await translate("Hello, world!", "ru"));

@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { TranslationServiceClient } from "@google-cloud/translate";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
@@ -36,6 +37,7 @@ let PROMO = ["-1001776618845", "-1001716321937"];
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
+const translation = new TranslationServiceClient();
 
 const context = readContext();
 const skip = readSkip();
@@ -362,6 +364,10 @@ const textToVisual = async (chatId, text, language_code) => {
 };
 
 const textToText = async (chatId, msg) => {
+    const viaEnglish = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
+    if (viaEnglish) {
+        msg.text = msg.text.slice(17);
+    }
     context[chatId] += msg.text + ".";
     if (
         !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь") || msg.text.startsWith("Answer")) &&
@@ -382,11 +388,17 @@ const textToText = async (chatId, msg) => {
                 console.error(e.message);
             });
     }, 1000);
-    const response = await getText(
-        context[chatId] + chatSuffix[chatId] ?? "",
-        ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
-        MAX_TOKENS * premium(chatId)
-    );
+    let prompt = context[chatId] + chatSuffix[chatId] ?? "";
+    if (viaEnglish) {
+        prompt = await translate(prompt, "en");
+        console.log("viaEnglish prompt en", prompt);
+    }
+    let response = await getText(prompt, ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5, MAX_TOKENS * premium(chatId));
+    if (viaEnglish) {
+        console.log("viaEnglish response en", response);
+        response = await translate(response, msg.from?.language_code);
+        console.log("viaEnglish response ru", response);
+    }
     clearInterval(intervalId);
     if (response) {
         last[chatId] = response;
@@ -532,6 +544,18 @@ const protection = (msg) => {
     }
 };
 
+const translate = async (text, target) => {
+    const request = {
+        parent: `projects/burger-20dea/locations/global`,
+        contents: [text],
+        mimeType: "text/plain",
+        targetLanguageCode: target,
+    };
+
+    const [response] = await translation.translateText(request);
+    return response.translations[0]?.translatedText;
+};
+
 const getReport = () => {
     let result = "";
     const add = (s) => {
@@ -574,3 +598,4 @@ const getReport = () => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
+process.env["GOOGLE_APPLICATION_CREDENTIALS"] = "./google.json";
