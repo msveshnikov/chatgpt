@@ -364,8 +364,8 @@ const textToVisual = async (chatId, text, language_code) => {
 };
 
 const textToText = async (chatId, msg) => {
-    const viaEnglish = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
-    if (viaEnglish) {
+    const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
+    if (english) {
         msg.text = msg.text.slice(17);
     }
     context[chatId] += msg.text + ".";
@@ -376,11 +376,7 @@ const textToText = async (chatId, msg) => {
         trial[chatId] = trial[chatId] - 1;
         return;
     }
-    bot.sendChatAction(chatId, "typing")
-        .then(() => {})
-        .catch((e) => {
-            console.error(e.message);
-        });
+    bot.sendChatAction(chatId, "typing");
     const intervalId = setInterval(() => {
         bot.sendChatAction(chatId, "typing")
             .then(() => {})
@@ -389,14 +385,14 @@ const textToText = async (chatId, msg) => {
             });
     }, 1000);
     let prompt = context[chatId] + chatSuffix[chatId] ?? "";
-    if (viaEnglish) {
+    if (english) {
         prompt = await translate(msg.text, "en");
     }
     let response;
     if (prompt) {
         response = await getText(prompt, ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5, MAX_TOKENS * premium(chatId));
     }
-    if (viaEnglish && response) {
+    if (english && response) {
         response = await translate(response, msg.from?.language_code);
     }
     clearInterval(intervalId);
