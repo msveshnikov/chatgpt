@@ -370,10 +370,18 @@ const textToText = async (chatId, msg) => {
         trial[chatId] = trial[chatId] - 1;
         return;
     }
-    bot.sendChatAction(chatId, "typing");
+    bot.sendChatAction(chatId, "typing")
+        .then(() => {})
+        .catch((e) => {
+            console.error(e.message);
+        });
     const intervalId = setInterval(() => {
-        bot.sendChatAction(chatId, "typing");
-    }, 5000);
+        bot.sendChatAction(chatId, "typing")
+            .then(() => {})
+            .catch((e) => {
+                console.error(e.message);
+            });
+    }, 1000);
     const response = await getText(
         context[chatId] + chatSuffix[chatId] ?? "",
         ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,

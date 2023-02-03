@@ -12,6 +12,7 @@
         "report": "node test2.js"
     },
     "dependencies": {
+        "@google-cloud/translate": "^7.1.0",
         "cheerio": "^1.0.0-rc.12",
         "dotenv": "^16.0.3",
         "node-fetch": "^3.3.0",

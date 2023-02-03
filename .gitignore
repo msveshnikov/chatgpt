@@ -35,5 +35,6 @@ context.json
 suffix.json
 temp.json
 time.json
+google.json
 *.log
 
