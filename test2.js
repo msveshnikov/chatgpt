@@ -1,10 +1,10 @@
-import { readTrial, readOpened, readContext, writeTrial, writeContext } from "./io.js";
+import { readTrial, readOpened } from "./io.js";
 const REQUEST_PRICE = 0.0063;
 let PROMO = ["-1001776618845", "-1001716321937"];
 
 const opened = readOpened();
 const trial = readTrial();
-const context = readContext();
+
 
 const getReport = () => {
     let result = "";

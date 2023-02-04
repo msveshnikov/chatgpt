@@ -75,7 +75,7 @@ bot.on("message", async (msg) => {
             opened[msg.successful_payment.invoice_payload ?? chatId] = d;
             writeOpened(opened);
             bot.sendMessage(
-                chatId,
+                msg.successful_payment.invoice_payload ?? chatId,
                 msg.from?.language_code == "ru"
                     ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
                     : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
@@ -231,11 +231,15 @@ const processCommand = (chatId, msg, language_code) => {
     if (msg === "сброс") {
         bot.sendMessage(chatId, "Личность уничтожена");
         context[chatId] = "";
+        chatSuffix[chatId] = "";
+        writeChatSuffix(chatSuffix);
         return true;
     }
     if (msg === "reset") {
         bot.sendMessage(chatId, "Context cleared");
         context[chatId] = "";
+        chatSuffix[chatId] = "";
+        writeChatSuffix(chatSuffix);
         return true;
     }
     if (msg.startsWith("пропуск ")) {
@@ -258,6 +262,7 @@ const processCommand = (chatId, msg, language_code) => {
     }
     if (msg === "режим" || msg === "режим обычный") {
         chatSuffix[chatId] = "";
+        context[chatId] = "";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Режим обычный");
         return true;
@@ -265,6 +270,7 @@ const processCommand = (chatId, msg, language_code) => {
     if (msg.startsWith("режим ")) {
         chatSuffix[chatId] = "(" + msg.slice(6) + ")";
         writeChatSuffix(chatSuffix);
+        context[chatId] = "";
         bot.sendMessage(chatId, "Режим установлен");
         return true;
     }
@@ -355,7 +361,7 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (language_code != "en" && !text?.startsWith("draw")) {
+    if ((language_code != "en" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
         text = await translate(text?.replace("ребенка", ""), "en");
     }
     if (!text) {
@@ -384,6 +390,7 @@ const textToText = async (chatId, msg) => {
         ) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
+        trial[chatId] = trial[chatId] - 1;
         return;
     }
     const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
@@ -501,7 +508,7 @@ const getPrompt = async (photo, chatId) => {
 
 const premium = (chatId) => {
     if (opened[chatId] && chatId > 0) {
-        return 2;
+        return 1.5;
     } else {
         return 1;
     }
