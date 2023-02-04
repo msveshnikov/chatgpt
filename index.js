@@ -118,6 +118,8 @@ bot.on("message", async (msg) => {
             );
             trial[chatId] = 0;
             opened[chatId] = new Date();
+            writeTrial(trial);
+            writeOpened(opened);
             return;
         }
 
