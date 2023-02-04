@@ -92,13 +92,13 @@ bot.on("message", async (msg) => {
         trial[chatId] = (trial[chatId] ?? 0) + 1;
         writeTrial(trial);
         if (!(new Date(opened[chatId]) > new Date())) {
-            sendInvoice(chatId);
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
                     ? "К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
                     : "Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
             );
+            sendInvoice(chatId, msg.from?.language_code);
             trial[chatId] = trial[chatId] - 1;
             return;
         }
@@ -191,7 +191,7 @@ const processCommand = (chatId, msg, language_code) => {
     }
 
     if (msg.startsWith("/payment")) {
-        sendInvoice(chatId);
+        sendInvoice(chatId, language_code);
         return true;
     }
     if (msg.startsWith("/support")) {
@@ -286,17 +286,24 @@ const processCommand = (chatId, msg, language_code) => {
     }
 };
 
-const sendInvoice = (chatId) => {
+const sendInvoice = (chatId, language_code) => {
     bot.sendInvoice(
         chatId,
-        "Need payment",
-        "1-month access to ChatGPT",
+        language_code == "ru" ? "Требуется оплата" : "Need payment",
+        language_code == "ru" ? "Подписка ChatGPT на 1 месяц" : "1-month access to ChatGPT",
         chatId,
         process.env.STRIPE_KEY,
         "USD",
         [
             {
-                label: chatId > 0 ? "full access to P2P chat" : "full access to GROUP chat",
+                label:
+                    chatId > 0
+                        ? language_code == "ru"
+                            ? "Полный доступ к P2P чату"
+                            : "full access to P2P chat"
+                        : language_code == "ru"
+                        ? "Полный доступ к групповому чату"
+                        : "full access to GROUP chat",
                 amount: chatId > 0 ? 500 : 1000,
             },
         ],
@@ -371,7 +378,12 @@ const textToText = async (chatId, msg) => {
     }
     context[chatId] += msg.text + ".";
     if (
-        !(msg.text.startsWith("Отвечай") || msg.text.startsWith("Ответь") || msg.text.startsWith("Answer")) &&
+        !(
+            msg.text?.toLowerCase()?.startsWith("отвечай") ||
+            msg.text?.toLowerCase()?.startsWith("ответь") ||
+            msg.text?.toLowerCase()?.startsWith("answer") ||
+            msg.text?.toLowerCase()?.startsWith("через английский")
+        ) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
         trial[chatId] = trial[chatId] - 1;
