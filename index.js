@@ -33,6 +33,8 @@ let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
 let PROMO = ["-1001776618845", "-1001716321937"];
+let ADMIN = "Extender777";
+let GOOGLE_PROJECT = "projects/burger-20dea/locations/global";
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
@@ -184,8 +186,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "После оплаты подписки $5 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
-                : "After making a payment of $5, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
+                ? "После оплаты подписки $15 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
+                : "After making a payment of $15, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
         );
         return true;
     }
@@ -198,8 +200,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Если у вас возникли проблемы с оплатой, пожалуйста, напишите мне в личные сообщения @Extender777"
-                : "For any inquiries regarding refunds and cancellations please contact @Extender777"
+                ? `Если у вас возникли проблемы с оплатой, пожалуйста, напишите мне в личные сообщения @${ADMIN}`
+                : `For any inquiries regarding refunds and cancellations please contact @${ADMIN}`
         );
         return true;
     }
@@ -304,7 +306,7 @@ const sendInvoice = (chatId, language_code) => {
                         : language_code == "ru"
                         ? "Полный доступ к групповому чату"
                         : "full access to GROUP chat",
-                amount: chatId > 0 ? 500 : 1000,
+                amount: chatId > 0 ? 1000 : 1500,
             },
         ],
         {
@@ -382,7 +384,6 @@ const textToText = async (chatId, msg) => {
         ) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
-//        trial[chatId] = trial[chatId] - 1;
         return;
     }
     const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
@@ -516,8 +517,8 @@ setInterval(() => {
 }, 1000 * 60 * 60);
 
 const protection = (msg) => {
-    //if username is Extender777, allow all and switch on server
-    if (msg?.from?.username == "Extender777") {
+    //if user is admin, allow all and switch on server
+    if (msg?.from?.username == ADMIN) {
         var d = new Date();
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
@@ -534,10 +535,10 @@ const protection = (msg) => {
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
     if (PROMO.includes(String(msg.chat.id))) {
-        // // do not reply if msg?.from?.id not in trials
-        // if (!trial[msg?.from?.id]) {
-        //     return true;
-        // }
+        // do not reply if msg?.from?.id not in trials
+        if (!trial[msg?.from?.id]) {
+            return true;
+        }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
@@ -556,7 +557,7 @@ const protection = (msg) => {
 const translate = async (text, target) => {
     try {
         const request = {
-            parent: `projects/burger-20dea/locations/global`,
+            parent: GOOGLE_PROJECT,
             contents: [text],
             mimeType: "text/plain",
             targetLanguageCode: target,
