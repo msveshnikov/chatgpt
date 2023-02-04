@@ -26,6 +26,7 @@ dotenv.config({ override: true });
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
 let MAX_TOKENS = 700;
 let MAX_LENGTH = 300;
+let PREMIUM = 1.5;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
@@ -508,7 +509,7 @@ const getPrompt = async (photo, chatId) => {
 
 const premium = (chatId) => {
     if (opened[chatId] && chatId > 0) {
-        return 1.5;
+        return PREMIUM;
     } else {
         return 1;
     }
