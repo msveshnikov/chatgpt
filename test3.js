@@ -7,8 +7,8 @@ const bot = new TelegramBot(process.env.TELEGRAM_KEY);
 const trial = readTrial();
 const opened = readOpened();
 
-// every 50 milliseconds pop one element from trial
 const users = Object.keys(trial).filter((chatId) => !opened[chatId]);
+// every 50 milliseconds pop one element from trial
 setInterval(() => {
     const chatId = users.pop();
     if (!chatId) return;

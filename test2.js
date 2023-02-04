@@ -5,7 +5,6 @@ let PROMO = ["-1001776618845", "-1001716321937"];
 const opened = readOpened();
 const trial = readTrial();
 
-
 const getReport = () => {
     let result = "";
     const add = (s) => {

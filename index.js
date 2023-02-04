@@ -218,15 +218,9 @@ const processCommand = (chatId, msg, language_code) => {
                     ? "Ваша подписка активна до " + opened[chatId]
                     : "У вас нет подписки"
                 : opened[chatId] && new Date(opened[chatId]) > new Date()
-                ? "You have active subscription until " + opened[chatId]
+                ? "You have an active subscription until " + opened[chatId]
                 : "You have no subscription"
         );
-        return true;
-    }
-    if (msg === "сезам приоткройся") {
-        bot.sendMessage(chatId, "Бот активирован до 01.01.2024");
-        opened[chatId] = "2024-01-01T00:00:00.000Z";
-        writeOpened(opened);
         return true;
     }
     if (msg === "сброс") {
@@ -261,6 +255,7 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(chatId, "Отвечать раз в " + skip[chatId]);
         return true;
     }
+
     if (msg === "режим" || msg === "режим обычный") {
         chatSuffix[chatId] = "";
         context[chatId] = "";
@@ -270,23 +265,26 @@ const processCommand = (chatId, msg, language_code) => {
     }
     if (msg.startsWith("режим ")) {
         chatSuffix[chatId] = "(" + msg.slice(6) + ")";
-        writeChatSuffix(chatSuffix);
         context[chatId] = "";
+        writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Режим установлен");
         return true;
     }
     if (msg === "mode" || msg === "mode usual") {
         chatSuffix[chatId] = "";
+        context[chatId] = "";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Usual mode");
         return true;
     }
     if (msg.startsWith("mode ")) {
         chatSuffix[chatId] = "(" + msg.slice(5) + ")";
+        context[chatId] = "";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Mode set");
         return true;
     }
+
     if (msg.startsWith("температура ") || msg.startsWith("temperature ")) {
         temp[chatId] = +msg.slice(12)?.replace(",", ".");
         writeTemp(temp);
@@ -531,7 +529,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
-        groupUsers = {};
+        //  groupUsers = {};
         return false;
     }
 
