@@ -9,6 +9,8 @@ You have to get those APIs and set env variables:
 -   REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - $0.02 per image
 -   TELEGRAM_KEY - contact https://t.me/BotFather
 -   STRIPE_KEY - Stripe Live payment token (for $5 payments)
+-   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled
+-   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
 
 # PROD
 

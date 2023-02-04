@@ -34,7 +34,7 @@ let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
 let PROMO = ["-1001776618845", "-1001716321937"];
 let ADMIN = "Extender777";
-let GOOGLE_PROJECT = "projects/burger-20dea/locations/global";
+let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
