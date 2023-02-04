@@ -24,7 +24,7 @@ import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let MAX_TOKENS = 800;
+let MAX_TOKENS = 700;
 let MAX_LENGTH = 300;
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
@@ -372,10 +372,6 @@ const textToVisual = async (chatId, text, language_code) => {
 };
 
 const textToText = async (chatId, msg) => {
-    const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
-    if (english) {
-        msg.text = msg.text.slice(17);
-    }
     context[chatId] += msg.text + ".";
     if (
         !(
@@ -386,8 +382,12 @@ const textToText = async (chatId, msg) => {
         ) &&
         trial[chatId] % (skip[chatId] ?? 1) != 0
     ) {
-        trial[chatId] = trial[chatId] - 1;
+//        trial[chatId] = trial[chatId] - 1;
         return;
+    }
+    const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
+    if (english) {
+        msg.text = msg.text.slice(17);
     }
     bot.sendChatAction(chatId, "typing");
     const intervalId = setInterval(() => {

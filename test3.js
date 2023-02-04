@@ -1,13 +1,14 @@
 import TelegramBot from "node-telegram-bot-api";
-import { readTrial } from "./io.js";
+import { readTrial, readOpened } from "./io.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
 const bot = new TelegramBot(process.env.TELEGRAM_KEY);
 const trial = readTrial();
+const opened = readOpened();
 
 // every 50 milliseconds pop one element from trial
-const users = Object.keys(trial);
+const users = Object.keys(trial).filter((chatId) => !opened[chatId]);
 setInterval(() => {
     const chatId = users.pop();
     if (!chatId) return;
