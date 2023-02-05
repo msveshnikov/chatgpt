@@ -1,9 +1,10 @@
-import { readTrial, readOpened } from "./io.js";
+import { readTrial, readOpened, readMoney } from "./io.js";
 const REQUEST_PRICE = 0.0063;
 let PROMO = ["-1001776618845", "-1001716321937"];
 
 const opened = readOpened();
 const trial = readTrial();
+const money = readMoney();
 
 const getReport = () => {
     let result = "";
@@ -33,6 +34,20 @@ const getReport = () => {
         .toFixed(2);
     add("Total " + operations + "$");
     add("");
+
+    add("Money");
+    add("------------------");
+     const totalMoney=Object.keys(opened)
+        .filter((t) => money[t] && !PROMO.includes(t))
+        .map((k) => {
+            add(k + " " + money[k].toFixed(2) + "$");
+            return money[k];
+        })
+        .reduce((a, b) => a + b)
+        .toFixed(2);
+    add("Money " + totalMoney + "$");
+    add("");
+
     add("Profit");
     add("------------------");
     const revenue = (Object.keys(opened).length - 3) * 5;

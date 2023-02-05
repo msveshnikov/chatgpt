@@ -626,6 +626,20 @@ const getReport = () => {
         .toFixed(2);
     add("Total " + operations + "$");
     add("");
+
+    add("Money");
+    add("------------------");
+    const totalMoney = Object.keys(opened)
+        .filter((t) => money[t] && !PROMO.includes(t))
+        .map((k) => {
+            add(k + " " + money[k].toFixed(2) + "$");
+            return money[k];
+        })
+        .reduce((a, b) => a + b)
+        .toFixed(2);
+    add("Money " + totalMoney + "$");
+    add("");
+
     add("Profit");
     add("------------------");
     const revenue = (Object.keys(opened).length - 3) * 5;

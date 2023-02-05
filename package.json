@@ -9,7 +9,7 @@
     "scripts": {
         "copy": "copy.cmd",
         "deploy": "deploy.cmd",
-        "report": "node test2.js"
+        "report": "node report.js"
     },
     "dependencies": {
         "@google-cloud/translate": "^7.1.0",
