@@ -512,7 +512,7 @@ const getArt = async (prompt) => {
     );
 
     if (!response.ok) {
-        console.error(`Stability AI error: ${(await response.text()).substring(0, 200)}`);
+        console.error(`Stability AI error: ${(await response.text())?.split("\n")?.[0]?.substring(0, 200)}`);
         return;
     }
 
