@@ -67,3 +67,11 @@ export const writeTime = (temp) => {
 export const readTime = () => {
     return read("time.json");
 };
+
+export const writeMoney = (money) => {
+    write("money.json", money);
+};
+
+export const readMoney = () => {
+    return read("money.json");
+};

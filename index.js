@@ -19,6 +19,8 @@ import {
     readTemp,
     writeTime,
     readTime,
+    writeMoney,
+    readMoney,
 } from "./io.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
@@ -28,6 +30,7 @@ let MAX_TOKENS = 700;
 let MAX_LENGTH = 300;
 let PREMIUM = 1.5;
 let MAX_REQUESTS = 500;
+let MAX_MONEY = 3.0;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
 let MAX_PER_HOUR = 5;
@@ -48,6 +51,7 @@ const trial = readTrial();
 const opened = readOpened();
 const temp = readTemp();
 const time = readTime();
+const money = readMoney();
 const chatSuffix = readChatSuffix();
 const last = {};
 
@@ -412,7 +416,12 @@ const textToText = async (chatId, msg) => {
     }
     let response;
     if (prompt) {
-        response = await getText(prompt, ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5, MAX_TOKENS * premium(chatId));
+        response = await getText(
+            prompt,
+            ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
+            MAX_TOKENS * premium(chatId),
+            chatId
+        );
     }
     if (english && response) {
         response = await translate(response, msg.from?.language_code);
@@ -445,7 +454,7 @@ const textToGoogle = async (chatId, msg, language_code) => {
     }
 };
 
-const getText = async (prompt, temperature, max_tokens) => {
+const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
         const completion = await openai.createCompletion({
             model: "text-davinci-003",
@@ -454,6 +463,11 @@ const getText = async (prompt, temperature, max_tokens) => {
             temperature: temperature,
         });
         const response = completion?.data?.choices?.[0]?.text;
+        const spent = (completion?.data?.usage?.total_tokens / 1000) * 0.02;
+        if (spent) {
+            money[chatId] = (money[chatId] ?? 0) + spent;
+            writeMoney(money);
+        }
         // console.log(response);
         return response;
     } catch (e) {
@@ -515,7 +529,7 @@ const premium = (chatId) => {
     }
 };
 
-const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "SUPREME", "zixstass"];
+const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "glockmasters", "zixstass"];
 let callsTimestamps = [];
 let groupUsers = {};
 

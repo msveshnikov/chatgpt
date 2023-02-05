@@ -27,7 +27,5 @@ You have to get those APIs and set env variables:
 -   [x] DDOS of RU group - 10 requests per hour to user
 -   [x] Language from user.language_code
 -   [x] add EN group
--   [ ] Parse tokens consumed
+-   [x] Parse tokens consumed to money.json
 -   [ ] Abusive speech detection
--   [ ] Redis
--   [ ] TON
