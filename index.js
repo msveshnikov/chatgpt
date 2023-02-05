@@ -126,8 +126,10 @@ bot.on("message", async (msg) => {
             );
             trial[chatId] = 0;
             opened[chatId] = new Date();
+            money[chatId] = 0;
             writeTrial(trial);
             writeOpened(opened);
+            writeMoney(money);
             return;
         }
 
