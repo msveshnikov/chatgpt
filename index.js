@@ -39,6 +39,7 @@ let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
 let PROMO = ["-1001776618845", "-1001716321937"];
 let ADMIN = "Extender777";
+let ADMIN2 = "LadyJustice7";
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -187,8 +188,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 Наша группа: https://t.me/maxsoft_chat_gpt_group"
-                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 Join our group: https://t.me/maxsoft_chat_gpt_group_en"
+                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 \n\nНаша группа: https://t.me/maxsoft_chat_gpt_group"
+                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 \n\nJoin our group: https://t.me/maxsoft_chat_gpt_group_en"
         );
         return true;
     }
@@ -559,7 +560,7 @@ setInterval(() => {
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
-    if (msg?.from?.username == ADMIN) {
+    if (msg?.from?.username == ADMIN || msg?.from?.username == ADMIN2) {
         var d = new Date();
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
