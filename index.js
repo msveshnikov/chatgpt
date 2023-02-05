@@ -31,6 +31,7 @@ let MAX_LENGTH = 300;
 let PREMIUM = 1.5;
 let MAX_REQUESTS = 500;
 let MAX_MONEY = 3.0;
+let MAX_GROUP_MONEY = 6.0;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
 let MAX_PER_HOUR = 5;
@@ -110,8 +111,11 @@ bot.on("message", async (msg) => {
             return;
         }
         if (
-            (chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
-            (chatId < 0 && trial[chatId] > MAX_GROUP_REQUESTS && !PROMO.includes(String(chatId)))
+            !PROMO.includes(String(chatId)) &&
+            ((chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
+                (chatId > 0 && money[chatId] > MAX_MONEY) ||
+                (chatId < 0 && money[chatId] > MAX_GROUP_MONEY) ||
+                (chatId < 0 && trial[chatId] > MAX_GROUP_REQUESTS))
         ) {
             console.error("Abuse detected for paid account", chatId);
             bot.sendMessage(
@@ -506,7 +510,7 @@ const getArt = async (prompt) => {
     );
 
     if (!response.ok) {
-        console.error(`Stability AI error: ${(await response.text()).substring(0, 300)}`);
+        console.error(`Stability AI error: ${(await response.text()).substring(0, 200)}`);
         return;
     }
 
@@ -557,10 +561,10 @@ const protection = (msg) => {
 
     // DDOS protection, call not more than 20 per minute for msg.chat.id
     if (PROMO.includes(String(msg.chat.id))) {
-        // do not reply if msg?.from?.id not in trials
-        if (!trial[msg?.from?.id]) {
-            return true;
-        }
+        // // do not reply if msg?.from?.id not in trials
+        // if (!trial[msg?.from?.id]) {
+        //     return true;
+        // }
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
