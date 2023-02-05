@@ -28,4 +28,3 @@ You have to get those APIs and set env variables:
 -   [x] Language from user.language_code
 -   [x] add EN group
 -   [x] Parse tokens consumed to money.json
--   [ ] Abusive speech detection

@@ -56,6 +56,7 @@ const time = readTime();
 const money = readMoney();
 const chatSuffix = readChatSuffix();
 const last = {};
+const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
     if (query.total_amount < 1000) {
@@ -405,6 +406,7 @@ const textToVisual = async (chatId, text, language_code) => {
 };
 
 const textToText = async (chatId, msg) => {
+    count[chatId] = (count[chatId] ?? 0) + 1;
     context[chatId] += msg.text + ".";
     if (
         !(
@@ -413,7 +415,7 @@ const textToText = async (chatId, msg) => {
             msg.text?.toLowerCase()?.startsWith("answer") ||
             msg.text?.toLowerCase()?.startsWith("через английский")
         ) &&
-        trial[chatId] % (skip[chatId] ?? 1) != 0
+        count[chatId] % (skip[chatId] ?? 1) != 0
     ) {
         trial[chatId] = trial[chatId] - 1;
         return;
