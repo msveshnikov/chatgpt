@@ -303,10 +303,17 @@ const processCommand = (chatId, msg, language_code) => {
         return true;
     }
 
-    if (msg.startsWith("температура ") || msg.startsWith("temperature ")) {
+    if (msg.startsWith("температура ")) {
         temp[chatId] = +msg.slice(12)?.replace(",", ".");
         writeTemp(temp);
         bot.sendMessage(chatId, "Температура установлена в " + temp[chatId]);
+        return true;
+    }
+
+    if (msg.startsWith("temperature ")) {
+        temp[chatId] = +msg.slice(12)?.replace(",", ".");
+        writeTemp(temp);
+        bot.sendMessage(chatId, "Temperature set to " + temp[chatId]);
         return true;
     }
 };
