@@ -57,6 +57,12 @@ const chatSuffix = readChatSuffix();
 const last = {};
 
 bot.on("pre_checkout_query", async (query) => {
+    if (query.total_amount < 1000) {
+        bot.answerPreCheckoutQuery(query.id, false, {
+            error_message: "Please update invoice using /payment command 😊",
+        });
+        return;
+    }
     console.log("Checkout from ", query.from);
     bot.answerPreCheckoutQuery(query.id, true);
 });
@@ -630,7 +636,7 @@ const getReport = () => {
     add("Money");
     add("------------------");
     const totalMoney = Object.keys(opened)
-        .filter((t) => money[t] && !PROMO.includes(t))
+        .filter((t) => money[t])
         .map((k) => {
             add(k + " " + money[k].toFixed(2) + "$");
             return money[k];
