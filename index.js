@@ -21,7 +21,7 @@ import {
     readTime,
     writeMoney,
     readMoney,
-} from "./io.js";
+} from "./db.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 

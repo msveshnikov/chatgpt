@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import { readTrial, readOpened } from "./io.js";
+import { readTrial, readOpened } from "./db.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 

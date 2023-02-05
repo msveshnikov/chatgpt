@@ -1,4 +1,4 @@
-import { readTrial, readOpened, readMoney } from "./io.js";
+import { readTrial, readOpened, readMoney } from "./db.js";
 const REQUEST_PRICE = 0.0063;
 let PROMO = ["-1001776618845", "-1001716321937"];
 
