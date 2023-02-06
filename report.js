@@ -37,8 +37,8 @@ const getReport = () => {
 
     add("Money");
     add("------------------");
-     const totalMoney=Object.keys(opened)
-        .filter((t) => money[t] && !PROMO.includes(t))
+    const totalMoney = Object.keys(opened)
+        .filter((t) => money[t])
         .map((k) => {
             add(k + " " + money[k].toFixed(2) + "$");
             return money[k];
@@ -50,7 +50,7 @@ const getReport = () => {
 
     add("Profit");
     add("------------------");
-    const revenue = (Object.keys(opened).length - 3) * 5;
+    const revenue = Object.keys(opened).length * 5;
     add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
 
     add("");

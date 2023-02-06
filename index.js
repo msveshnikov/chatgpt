@@ -658,7 +658,7 @@ const getReport = () => {
 
     add("Profit");
     add("------------------");
-    const revenue = (Object.keys(opened).length - 3) * 5;
+    const revenue = Object.keys(opened).length * 5;
     add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
 
     add("");

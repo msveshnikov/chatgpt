@@ -27,6 +27,7 @@ text_to_image.png
 pm2.config.js
 model.csv
 model*
+
 opened.json
 trials.json
 skips.json
