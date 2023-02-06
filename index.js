@@ -130,6 +130,10 @@ bot.on("message", async (msg) => {
                     ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
                     : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
             );
+            bot.sendMessage(
+                1049277315,
+                "Abuse detected for paid account " + chatId + " trials= " + trial[chatId] + " money= " + money[chatId]
+            );
             trial[chatId] = 0;
             opened[chatId] = new Date();
             money[chatId] = 0;
@@ -492,9 +496,9 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
         return response;
     } catch (e) {
         console.error(e.message);
-        if (e.message?.includes("429")) {
-            bot.sendMessage(1049277315, e.message);
-        }
+        // if (e.message?.includes("429")) {
+        //     bot.sendMessage(1049277315, e.message);
+        // }
     }
 };
 
@@ -590,6 +594,7 @@ const protection = (msg) => {
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_PER_MINUTE) {
             console.error("Abuse [1 minute] detected for ", msg.chat.id);
+            bot.sendMessage(1049277315, "Abuse [1 minute] detected for " + chatId);
             opened[msg.chat.id] = new Date();
             return true;
         }
