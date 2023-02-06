@@ -12,6 +12,13 @@ You have to get those APIs and set env variables:
 -   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled
 -   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
 
+-   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
+-   GROUP_EN=https://t.me/maxsoft_chat_gpt_group_en
+-   ADMIN=Extender777
+-   ADMIN2=LadyJustice7
+-   PROMO_RU=-1001776618845
+-   PROME_EN=-1001716321937
+
 # PROD
 
 -   https://t.me/maxsoft_chat_bot
@@ -21,7 +28,7 @@ You have to get those APIs and set env variables:
 # TODO
 
 -   [x] Temperature separated
--   [x] Detect >600 abuse
+-   [x] Detect >500 abuse
 -   [x] Context forget/reset timeout
 -   [x] DDOS protection
 -   [x] DDOS of RU group - 10 requests per hour to user
