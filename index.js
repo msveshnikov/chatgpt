@@ -37,9 +37,7 @@ let MAX_PER_MINUTE = 15;
 let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
-let PROMO = ["-1001776618845", "-1001716321937"];
-let ADMIN = "Extender777";
-let ADMIN2 = "LadyJustice7";
+let PROMO = [process.env.PROMO_RU, process.env.PROMO_EN];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -111,8 +109,8 @@ bot.on("message", async (msg) => {
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
-                    ? "К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 https://t.me/maxsoft_chat_gpt_group"
-                    : "Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 https://t.me/maxsoft_chat_gpt_group_en"
+                    ? `К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
+                    : `Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
             );
             sendInvoice(chatId, msg.from?.language_code);
             trial[chatId] = trial[chatId] - 1;
@@ -221,8 +219,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? `Если у вас возникли проблемы с оплатой, пожалуйста, напишите мне в личные сообщения @${ADMIN}`
-                : `For any inquiries regarding refunds and cancellations please contact @${ADMIN}`
+                ? `Если у вас возникли проблемы с оплатой, пожалуйста, напишите мне в личные сообщения @${process.env.ADMIN}`
+                : `For any inquiries regarding refunds and cancellations please contact @${process.env.ADMIN}`
         );
         return true;
     }
@@ -562,7 +560,7 @@ setInterval(() => {
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
-    if (msg?.from?.username == ADMIN || msg?.from?.username == ADMIN2) {
+    if (msg?.from?.username == process.env.ADMIN || msg?.from?.username == process.env.ADMIN2) {
         var d = new Date();
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
