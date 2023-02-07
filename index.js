@@ -57,7 +57,7 @@ const last = {};
 const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
-    if (query.total_amount < 1000) {
+    if (query.total_amount < 700) {
         bot.answerPreCheckoutQuery(query.id, false, {
             error_message: "Please update invoice using /payment command 😊",
         });
@@ -209,8 +209,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "После оплаты подписки $10 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
-                : "After making a payment of $10, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
+                ? "После оплаты подписки $7 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
+                : "After making a payment of $7, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
         );
         return true;
     }
@@ -340,7 +340,7 @@ const sendInvoice = (chatId, language_code) => {
                         : language_code == "ru"
                         ? "Полный доступ к групповому чату"
                         : "full access to GROUP chat",
-                amount: chatId > 0 ? 1000 : 1500,
+                amount: chatId > 0 ? 700 : 1500,
             },
         ],
         {
@@ -585,6 +585,12 @@ const protection = (msg) => {
         // if (!trial[msg?.from?.id]) {
         //     return true;
         // }
+
+        // if reply, return true
+        if (msg?.reply_to_message) {
+            return true;
+        }
+        
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
