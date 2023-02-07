@@ -17,13 +17,26 @@ const getText = async (prompt, callback) => {
     return new Promise((resolve) => {
         let result = "";
         completion.data.on("data", (data) => {
-            const json = data?.toString()?.slice(6);
-            if (json === "[DONE]\n\n") {
-                resolve(result);
-            } else {
-                const token = JSON.parse(json)?.choices?.[0]?.text;
-                result += token;
-                callback(token);
+            const lines = data
+                ?.toString()
+                ?.split("\n")
+                .filter((line) => line.trim() !== "");
+            for (const line of lines) {
+                const message = line.replace(/^data: /, "");
+                if (message == "[DONE]") {
+                    resolve(result);
+                } else {
+                    let token;
+                    try {
+                        token = JSON.parse(message)?.choices?.[0]?.text;
+                    } catch {
+                        console.log("ERROR", json);
+                    }
+                    result += token;
+                    if (token) {
+                        callback(token);
+                    }
+                }
             }
         });
     });
