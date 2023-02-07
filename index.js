@@ -34,7 +34,7 @@ let MAX_MONEY = 3.0;
 let MAX_GROUP_MONEY = 6.0;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
-let MAX_PER_HOUR = 5;
+let MAX_PER_HOUR = 10;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
 let PROMO = [process.env.PROMO_RU, process.env.PROMO_EN];
@@ -75,7 +75,7 @@ bot.on("message", async (msg) => {
         // Technical stuff
         const chatId = msg.chat.id;
         const msgL = msg.text?.toLowerCase();
-        if (msg.text) {
+        if (msgL) {
             if (processCommand(chatId, msgL, msg.from?.language_code)) {
                 return;
             }
@@ -103,8 +103,6 @@ bot.on("message", async (msg) => {
             );
             return;
         }
-        trial[chatId] = (trial[chatId] ?? 0) + 1;
-        writeTrial(trial);
         if (!(new Date(opened[chatId]) > new Date())) {
             bot.sendMessage(
                 chatId,
@@ -113,7 +111,6 @@ bot.on("message", async (msg) => {
                     : `Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
             );
             sendInvoice(chatId, msg.from?.language_code);
-            trial[chatId] = trial[chatId] - 1;
             return;
         }
         if (
@@ -142,6 +139,9 @@ bot.on("message", async (msg) => {
             writeMoney(money);
             return;
         }
+
+        trial[chatId] = (trial[chatId] ?? 0) + 1;
+        writeTrial(trial);
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
@@ -569,7 +569,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
-        //  groupUsers = {};
+        groupUsers = {};
         return false;
     }
 
