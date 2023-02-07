@@ -34,7 +34,7 @@ let MAX_MONEY = 3.0;
 let MAX_GROUP_MONEY = 6.0;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_PER_MINUTE = 15;
-let MAX_PER_HOUR = 10;
+let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
 let PROMO = [process.env.PROMO_RU, process.env.PROMO_EN];
@@ -569,7 +569,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
-        groupUsers = {};
+        // groupUsers = {};
         return false;
     }
 
