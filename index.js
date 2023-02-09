@@ -109,8 +109,16 @@ bot.on("message", async (msg) => {
                 msg.from?.language_code == "ru"
                     ? `К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
                     : `Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
-            );
-            sendInvoice(chatId, msg.from?.language_code);
+            )
+                .then(() => {})
+                .catch((e) => {
+                    console.error(e.message);
+                });
+            sendInvoice(chatId, msg.from?.language_code)
+                .then(() => {})
+                .catch((e) => {
+                    console.error(e.message);
+                });
             return;
         }
         if (
@@ -590,7 +598,7 @@ const protection = (msg) => {
         if (msg?.reply_to_message) {
             return true;
         }
-        
+
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
