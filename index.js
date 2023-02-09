@@ -397,7 +397,7 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if ((language_code != "en" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
+    if ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
         text = await translate(text?.replace("ребенка", ""), "en");
     }
     if (!text) {
