@@ -93,7 +93,7 @@ bot.on("message", async (msg) => {
                     : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
             );
             bot.sendMessage(
-                1049277315,
+                process.env.ADMIN_ID,
                 "Произведена оплата от " +
                     msg?.from?.username +
                     " " +
@@ -136,7 +136,7 @@ bot.on("message", async (msg) => {
                     : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
             );
             bot.sendMessage(
-                1049277315,
+                process.env.ADMIN_ID,
                 "Abuse detected for paid account " + chatId + " trials= " + trial[chatId] + " money= " + money[chatId]
             );
             trial[chatId] = 0;
@@ -505,7 +505,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
     } catch (e) {
         console.error(e.message);
         // if (e.message?.includes("429")) {
-        //     bot.sendMessage(1049277315, e.message);
+        //     bot.sendMessage(process.env.ADMIN_ID, e.message);
         // }
     }
 };
@@ -608,7 +608,7 @@ const protection = (msg) => {
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
         if (callsTimestamps.length >= MAX_PER_MINUTE) {
             console.error("Abuse [1 minute] detected for ", msg.chat.id);
-            bot.sendMessage(1049277315, "Abuse [1 minute] detected for " + chatId);
+            bot.sendMessage(process.env.ADMIN_ID, "Abuse [1 minute] detected for " + chatId);
             opened[msg.chat.id] = new Date();
             return true;
         }
