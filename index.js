@@ -114,11 +114,7 @@ bot.on("message", async (msg) => {
                 .catch((e) => {
                     console.error(e.message);
                 });
-            sendInvoice(chatId, msg.from?.language_code)
-                .then(() => {})
-                .catch((e) => {
-                    console.error(e.message);
-                });
+            sendInvoice(chatId, msg.from?.language_code);
             return;
         }
         if (
@@ -358,7 +354,11 @@ const sendInvoice = (chatId, language_code) => {
             need_email: false,
             need_shipping_address: false,
         }
-    );
+    )
+        .then(() => {})
+        .catch((e) => {
+            console.error(e.message);
+        });
 };
 
 const visualToText = async (chatId, msg) => {
@@ -587,7 +587,7 @@ const protection = (msg) => {
         return true;
     }
 
-    // DDOS protection, call not more than 20 per minute for msg.chat.id
+    // DDOS protection, call not more than 15 per minute for msg.chat.id
     if (PROMO.includes(String(msg.chat.id))) {
         // // do not reply if msg?.from?.id not in trials
         // if (!trial[msg?.from?.id]) {
