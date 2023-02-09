@@ -8,8 +8,7 @@
     "license": "Commercial",
     "scripts": {
         "copy": "copy.cmd",
-        "deploy": "deploy.cmd",
-        "report": "node report.js"
+        "deploy": "deploy.cmd"
     },
     "dependencies": {
         "@google-cloud/translate": "^7.1.0",

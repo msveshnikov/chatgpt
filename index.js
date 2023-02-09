@@ -30,14 +30,16 @@ let MAX_TOKENS = 700;
 let MAX_LENGTH = 300;
 let PREMIUM = 1.5;
 let MAX_REQUESTS = 500;
+let MAX_GROUP_REQUESTS = 1000;
 let MAX_MONEY = 3.0;
 let MAX_GROUP_MONEY = 6.0;
-let MAX_GROUP_REQUESTS = 1000;
+let PRICE = 7;
+let GROUP_PRICE = 15;
 let MAX_PER_MINUTE = 15;
 let MAX_PER_HOUR = 5;
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.0066;
-let PROMO = [process.env.PROMO_RU, process.env.PROMO_EN];
+let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -57,7 +59,7 @@ const last = {};
 const count = {};
 
 bot.on("pre_checkout_query", async (query) => {
-    if (query.total_amount < 700) {
+    if (query.total_amount < PRICE * 100) {
         bot.answerPreCheckoutQuery(query.id, false, {
             error_message: "Please update invoice using /payment command 😊",
         });
@@ -90,7 +92,7 @@ bot.on("message", async (msg) => {
                 msg.successful_payment.invoice_payload ?? chatId,
                 msg.from?.language_code == "ru"
                     ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
-                    : "Payment complete! Thank you. This bot is now available for use for a period of one month ❤️‍🔥"
+                    : "Payment complete! Thank you. This bot is now available for a period of one month ❤️‍🔥"
             );
             bot.sendMessage(
                 process.env.ADMIN_ID,
@@ -107,8 +109,8 @@ bot.on("message", async (msg) => {
             bot.sendMessage(
                 chatId,
                 msg.from?.language_code == "ru"
-                    ? `К сожалению, мы не можем предоставить вам триал из-за большого наплыва пользователей. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
-                    : `Sorry we can't provide you with a trial due to the large influx of users. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
+                    ? `К сожалению, мы не можем предоставить вам триал. Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
+                    : `Sorry we can't provide you with a trial. Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
             )
                 .then(() => {})
                 .catch((e) => {
@@ -204,8 +206,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "После оплаты подписки $15 вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением 1000 запросов в месяц (при превышении лимита бот потребует оплату подписки снова)"
-                : "After making a payment of $15, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of 1000 requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)"
+                ? `После оплаты подписки $${GROUP_PRICE} вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением 1000 запросов в месяц (при превышении лимита бот потребует оплату подписки снова)`
+                : `After making a payment of $${GROUP_PRICE}, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of 1000 requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)`
         );
         return true;
     }
@@ -213,8 +215,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "После оплаты подписки $7 в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений"
-                : "After making a payment of $7, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations"
+                ? `После оплаты подписки $${PRICE} в течение месяца вы можете использовать все функции бота, включая Нарисуй, Загугли, и другие без каких-либо ограничений`
+                : `After making a payment of $${PRICE}, you will have access to the ChatGPT bot for one month, with full features (including Paint, Photo2Text, Google, and more) without any limitations`
         );
         return true;
     }
@@ -344,7 +346,7 @@ const sendInvoice = (chatId, language_code) => {
                         : language_code == "ru"
                         ? "Полный доступ к групповому чату"
                         : "full access to GROUP chat",
-                amount: chatId > 0 ? 700 : 1500,
+                amount: chatId > 0 ? PRICE * 100 : GROUP_PRICE * 100,
             },
         ],
         {
