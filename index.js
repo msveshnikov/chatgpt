@@ -188,8 +188,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nРежим <притворись что ты ...>\nЧерез английский <запрос>\n/payment\n/terms\n/terms_group\n/status\n/support"
-                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nMode <pretend you are ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nОтвечай\nРежим <притворись что ты ...>\nЧерез английский <запрос>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nAnswer\nMode <pretend you are ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
         );
         return true;
     }
@@ -206,8 +206,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? `После оплаты подписки $${GROUP_PRICE} вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением 1000 запросов в месяц (при превышении лимита бот потребует оплату подписки снова)`
-                : `After making a payment of $${GROUP_PRICE}, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of 1000 requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)`
+                ? `После оплаты подписки $${GROUP_PRICE} вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением ${MAX_GROUP_REQUESTS} запросов в месяц (при превышении лимита бот потребует оплату подписки снова)`
+                : `After making a payment of $${GROUP_PRICE}, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of ${MAX_GROUP_REQUESTS}  requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)`
         );
         return true;
     }

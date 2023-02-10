@@ -32,7 +32,7 @@ You have to get those APIs and set env variables:
 -   [x] Detect >500 abuse
 -   [x] Context forget/reset timeout
 -   [x] DDOS protection
--   [x] DDOS of RU group - 10 requests per hour to user
+-   [x] DDOS of RU group - 5 requests per hour to user
 -   [x] Language from user.language_code
 -   [x] add EN group
 -   [x] Parse tokens consumed to money.json
