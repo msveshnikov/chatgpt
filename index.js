@@ -165,7 +165,9 @@ bot.on("message", async (msg) => {
         if (!msg.text) {
             return;
         }
+
         // console.log(chatId, msg?.from?.username, msg.text);
+        
         msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
             textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
@@ -413,6 +415,7 @@ const textToVisual = async (chatId, text, language_code) => {
                 : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration")
     );
     if (photo) {
+        money[chatId] = (money[chatId] ?? 0) + 0.002;
         bot.sendPhoto(chatId, photo);
     }
 };
@@ -563,7 +566,6 @@ const premium = (chatId) => {
     }
 };
 
-const blacklist = ["5889128020", "junklz", "drovorub_UI", "lucky_12345_lucky", "BELIAL_00", "glockmasters", "zixstass"];
 let callsTimestamps = [];
 let groupUsers = {};
 
@@ -583,19 +585,8 @@ const protection = (msg) => {
         return false;
     }
 
-    // ignore blacklist
-    if (blacklist.includes(msg?.from?.username) || blacklist.includes(msg?.from?.id)) {
-        console.error("Abuse [blacklist] detected for ", msg.chat.id);
-        return true;
-    }
-
     // DDOS protection, call not more than 15 per minute for msg.chat.id
     if (PROMO.includes(String(msg.chat.id))) {
-        // // do not reply if msg?.from?.id not in trials
-        // if (!trial[msg?.from?.id]) {
-        //     return true;
-        // }
-
         // if reply, return true
         if (msg?.reply_to_message) {
             return true;
@@ -638,17 +629,19 @@ const getReport = () => {
     const add = (s) => {
         result += s + "\n";
     };
-    add("Advertising costs");
-    add("-----------");
-    const adv = Object.keys(trial)
-        .filter((t) => !opened[t] || PROMO.includes(t))
-        .map((k) => {
-            return trial[k] * REQUEST_PRICE;
-        })
-        .reduce((a, b) => a + b)
-        .toFixed(2);
-    add("Total " + adv + "$");
-    add("");
+
+    // add("Advertising costs");
+    // add("-----------");
+    // const adv = Object.keys(trial)
+    //     .filter((t) => !opened[t] || PROMO.includes(t))
+    //     .map((k) => {
+    //         return trial[k] * REQUEST_PRICE;
+    //     })
+    //     .reduce((a, b) => a + b)
+    //     .toFixed(2);
+    // add("Total " + adv + "$");
+    // add("");
+
     add("Operational costs");
     add("------------------");
     const operations = Object.keys(trial)
@@ -678,12 +671,24 @@ const getReport = () => {
     add("Profit");
     add("------------------");
     const revenue = Object.keys(opened).length * 5;
-    add(revenue + "$ - " + adv + "$ - " + operations + "$ = " + (revenue - operations - adv).toFixed(2) + "$");
+    add(
+        revenue +
+            "$ - " +
+            adv +
+            "$ - " +
+            operations +
+            "$ - " +
+            totalMoney +
+            "$ = " +
+            (revenue - operations - totalMoney).toFixed(2) +
+            "$"
+    );
 
-    add("");
-    add("Conversion");
-    add("------------------");
-    add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
+    // add("");
+    // add("Conversion");
+    // add("------------------");
+    // add((((Object.keys(opened).length - 3) / Object.keys(trial).length) * 100).toFixed(2) + "%");
+
     return result;
 };
 
