@@ -292,7 +292,7 @@ const processCommand = (chatId, msg, language_code) => {
         return true;
     }
     if (msg.startsWith("режим ")) {
-        chatSuffix[chatId] = "(" + msg.slice(6) + ")";
+        chatSuffix[chatId] = "(" + msg.substring(6, 100) + ")";
         context[chatId] = "";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Режим установлен");
@@ -306,7 +306,7 @@ const processCommand = (chatId, msg, language_code) => {
         return true;
     }
     if (msg.startsWith("mode ")) {
-        chatSuffix[chatId] = "(" + msg.slice(5) + ")";
+        chatSuffix[chatId] = "(" + msg?.substring(5, 100) + ")";
         context[chatId] = "";
         writeChatSuffix(chatSuffix);
         bot.sendMessage(chatId, "Mode set");
@@ -579,7 +579,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
-        // groupUsers = {};
+        groupUsers = {};
         return false;
     }
 

@@ -8,7 +8,7 @@ const trial = readTrial();
 const opened = readOpened();
 
 const users = Object.keys(trial).filter((chatId) => !opened[chatId]);
-// every 50 milliseconds pop one element from trial
+// every 100 milliseconds pop one element from trial
 setInterval(() => {
     const chatId = users.pop();
     if (!chatId) return;
@@ -28,6 +28,6 @@ https://t.me/maxsoft_chat_gpt_group 🤗`
         .catch((e) => {
             console.error(e.message);
         });
-}, 50);
+}, 100);
 
 
