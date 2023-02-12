@@ -593,6 +593,16 @@ const protection = (msg) => {
             return true;
         }
 
+        //if msg contains оежим or сброс, return true
+        if (
+            msg?.text?.toLowerCase()?.startsWith("режим") ||
+            msg?.text?.toLowerCase()?.startsWith("сброс") ||
+            msg?.text?.toLowerCase()?.startsWith("mode") ||
+            msg?.text?.toLowerCase()?.startsWith("reset")
+        ) {
+            return true;
+        }
+
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
         if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
             return true;
