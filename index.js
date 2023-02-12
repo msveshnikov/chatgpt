@@ -586,6 +586,10 @@ const protection = (msg) => {
         return false;
     }
 
+    if (msg?.text?.toLowerCase()?.startsWith("usage")) {
+        return true;
+    }
+
     // DDOS protection, call not more than 15 per minute for msg.chat.id
     if (PROMO.includes(String(msg.chat.id))) {
         // if reply, return true
@@ -597,8 +601,10 @@ const protection = (msg) => {
         if (
             msg?.text?.toLowerCase()?.startsWith("режим") ||
             msg?.text?.toLowerCase()?.startsWith("сброс") ||
+            msg?.text?.toLowerCase()?.startsWith("пропуск") ||
             msg?.text?.toLowerCase()?.startsWith("mode") ||
-            msg?.text?.toLowerCase()?.startsWith("reset")
+            msg?.text?.toLowerCase()?.startsWith("reset") ||
+            msg?.text?.toLowerCase()?.startsWith("skip")
         ) {
             return true;
         }
