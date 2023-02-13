@@ -29,17 +29,21 @@ let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian c
 let MAX_TOKENS = 700;
 let MAX_LENGTH = 300;
 let PREMIUM = 1.5;
+
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
 let MAX_MONEY = 4.0;
 let MAX_GROUP_MONEY = 8.0;
 let PRICE = 7;
 let GROUP_PRICE = 15;
-let MAX_PER_MINUTE = 15;
-let MAX_PER_HOUR = 5;
+
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.01;
 let IMAGE_PRICE = 0.002;
+let OCR_PRICE = 0.02;
+
+let PROMO_MAX_PER_MINUTE = 15;
+let PROMO_MAX_PER_HOUR = 5;
 let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
@@ -92,8 +96,8 @@ bot.on("message", async (msg) => {
             bot.sendMessage(
                 msg.successful_payment.invoice_payload ?? chatId,
                 msg.from?.language_code == "ru"
-                    ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️‍🔥"
-                    : "Payment complete! Thank you. This bot is now available for a period of one month ❤️‍🔥"
+                    ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️"
+                    : "Payment complete! Thank you. This bot is now available for a period of one month ❤️"
             );
             bot.sendMessage(
                 process.env.ADMIN_ID,
@@ -375,10 +379,12 @@ const visualToText = async (chatId, msg) => {
                 console.error(e.message);
             });
     }, 2000);
-    let prompt = await getPrompt(msg.photo, chatId);
+    let prompt = await getPrompt(msg.photo);
     clearInterval(intervalId);
     if (prompt) {
         // link between left and right hemisphere (computer vision)
+        money[chatId] = (money[chatId] ?? 0) + OCR_PRICE;
+        writeMoney(money);
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         if (msg.from?.language_code == "ru") {
@@ -417,6 +423,7 @@ const textToVisual = async (chatId, text, language_code) => {
     );
     if (photo) {
         money[chatId] = (money[chatId] ?? 0) + IMAGE_PRICE;
+        writeMoney(money);
         bot.sendPhoto(chatId, photo);
     }
 };
@@ -551,10 +558,9 @@ const getArt = async (prompt) => {
     return response.buffer();
 };
 
-const getPrompt = async (photo, chatId) => {
+const getPrompt = async (photo) => {
     const file_id = photo[photo.length - 1].file_id;
     const fileUri = await bot.getFileLink(file_id);
-    bot.sendChatAction(chatId, "typing");
     const img2prompt = await replicate.models.get("methexis-inc/img2prompt");
     return img2prompt.predict({ image: fileUri });
 };
@@ -610,13 +616,13 @@ const protection = (msg) => {
         }
 
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
-        if (groupUsers[msg?.from?.id] > MAX_PER_HOUR) {
+        if (groupUsers[msg?.from?.id] > PROMO_MAX_PER_HOUR) {
             return true;
         }
 
         callsTimestamps.push(Date.now());
         callsTimestamps = callsTimestamps.filter((stamp) => Date.now() - stamp < 60000);
-        if (callsTimestamps.length >= MAX_PER_MINUTE) {
+        if (callsTimestamps.length >= PROMO_MAX_PER_MINUTE) {
             console.error("Abuse [1 minute] detected for ", msg.chat.id);
             bot.sendMessage(process.env.ADMIN_ID, "Abuse [1 minute] detected for " + chatId);
             opened[msg.chat.id] = new Date();
