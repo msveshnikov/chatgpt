@@ -674,15 +674,15 @@ const getReport = () => {
             add(k + " " + money[k].toFixed(2) + "$");
             return money[k];
         })
-        .reduce((a, b) => a + b)
-        .toFixed(2);
-    add("Money " + totalMoney + "$");
+        .reduce((a, b) => a + b);
+    add("Money " + totalMoney.toFixed(2) + "$");
     add("");
 
     add("Profit");
     add("------------------");
     const revenue = Object.keys(opened).length * 5;
-    add(revenue + "$ - " + operations + "$ = " + (revenue - operations).toFixed(2) + "$");
+    const spent = 7 + 30 + 5 + 40;
+    add(revenue + "$ - " + (totalMoney + spent).toFixed(2) + "$ = " + (revenue - totalMoney - spent).toFixed(2) + "$");
 
     return result;
 };
