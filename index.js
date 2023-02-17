@@ -110,6 +110,10 @@ bot.on("message", async (msg) => {
             );
             return;
         }
+
+        trial[chatId] = (trial[chatId] ?? 0) + 1;
+        writeTrial(trial);
+
         if (!(new Date(opened[chatId]) > new Date())) {
             bot.sendMessage(
                 chatId,
@@ -150,9 +154,6 @@ bot.on("message", async (msg) => {
             writeMoney(money);
             return;
         }
-
-        trial[chatId] = (trial[chatId] ?? 0) + 1;
-        writeTrial(trial);
 
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
