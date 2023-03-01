@@ -39,6 +39,7 @@ let GROUP_PRICE = 15;
 
 let CONTEXT_TIMEOUT = 3600;
 let REQUEST_PRICE = 0.01;
+let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
 let OCR_PRICE = 0.02;
 
@@ -502,14 +503,17 @@ const textToGoogle = async (chatId, msg, language_code) => {
 
 const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
-        const completion = await openai.createCompletion({
-            model: "text-davinci-003",
-            prompt: prompt,
-            max_tokens: max_tokens,
+        const completion = await openai.createChatCompletion({
+            model: "gpt-3.5-turbo",
+            messages: 
+            [
+                {"role": "user", "content": prompt},
+            ],
+            // max_tokens: max_tokens,
             temperature: temperature,
         });
-        const response = completion?.data?.choices?.[0]?.text;
-        const spent = (completion?.data?.usage?.total_tokens / 1000) * 0.02;
+        const response = completion?.data?.choices?.[0]?.message?.content;
+        const spent = (completion?.data?.usage?.total_tokens / 1000) * OPENAI_PRICE;
         if (spent) {
             money[chatId] = (money[chatId] ?? 0) + spent;
             writeMoney(money);

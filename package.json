@@ -5,18 +5,18 @@
     "main": "index.js",
     "type": "module",
     "author": "Max Sveshnikov",
-    "license": "Commercial",
+    "license": "MIT",
     "scripts": {
         "copy": "copy.cmd",
         "deploy": "deploy.cmd"
     },
     "dependencies": {
-        "@google-cloud/translate": "^7.1.1",
+        "@google-cloud/translate": "^7.2.0",
         "cheerio": "^1.0.0-rc.12",
         "dotenv": "^16.0.3",
         "node-fetch": "^3.3.0",
         "node-telegram-bot-api": "^0.61.0",
-        "openai": "^3.1.0",
+        "openai": "^3.2.0",
         "replicate-js": "github:nicholascelestin/replicate-js"
     }
 }
