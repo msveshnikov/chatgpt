@@ -4,7 +4,7 @@ Telegram Bot with OpenAI GPT-3.5 gpt-3.5-turbo connection, context, Stability AI
 
 You have to get those APIs and set env variables:
 
--   OPENAI_KEY - https://openai.com/api/ - $18 free credit, $0.02 per 1K tokens (1K Russian chars), ~$0.01 per response
+-   OPENAI_KEY - https://openai.com/api/ - $18 free credit, $0.002 per 1K tokens (1K Russian chars), ~$0.002 per response
 -   STABILITY_KEY - https://beta.dreamstudio.ai/membership?tab=apiKeys - $10 free credit https://api.stability.ai/docs, $0.002 per image
 -   REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - $0.02 per image
 -   TELEGRAM_KEY - contact https://t.me/BotFather
