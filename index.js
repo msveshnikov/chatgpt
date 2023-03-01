@@ -25,20 +25,20 @@ import {
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
-let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
-let MAX_TOKENS = 700;
+let CONTEXT_SIZE = 400; // increase can negatively affect your bill, 1 Russian char == 1 token
+let MAX_TOKENS = 1000;
 let MAX_LENGTH = 300;
-let PREMIUM = 1.5;
+let PREMIUM = 2.0;
 
 let MAX_REQUESTS = 500;
 let MAX_GROUP_REQUESTS = 1000;
-let MAX_MONEY = 4;
-let MAX_GROUP_MONEY = 8;
-let PRICE = 7;
-let GROUP_PRICE = 15;
+let MAX_MONEY = 3;
+let MAX_GROUP_MONEY = 6;
+let PRICE = 5;
+let GROUP_PRICE = 10;
 
 let CONTEXT_TIMEOUT = 3600;
-let REQUEST_PRICE = 0.01;
+let REQUEST_PRICE = 0.005;
 let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
 let OCR_PRICE = 0.02;
