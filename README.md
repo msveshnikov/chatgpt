@@ -1,6 +1,6 @@
 # chatgpt
 
-Telegram Bot with OpenAI GPT-3.5 davinci003 connection, context, Stability AI painting and Google scraping
+Telegram Bot with OpenAI GPT-3.5 gpt-3.5-turbo connection, context, Stability AI painting and Google scraping
 
 You have to get those APIs and set env variables:
 
