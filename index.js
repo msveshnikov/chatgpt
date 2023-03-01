@@ -173,7 +173,7 @@ bot.on("message", async (msg) => {
             return;
         }
 
-        // console.log(chatId, msg?.from?.username, msg.text);
+        console.log(chatId, msg?.from?.username, msg.text);
 
         msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
@@ -505,10 +505,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            messages: 
-            [
-                {"role": "user", "content": prompt},
-            ],
+            messages: [{ role: "user", content: prompt }],
             // max_tokens: max_tokens,
             temperature: temperature,
         });
@@ -518,7 +515,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
             money[chatId] = (money[chatId] ?? 0) + spent;
             writeMoney(money);
         }
-        // console.log(response);
+        console.log(response);
         return response;
     } catch (e) {
         console.error(e.message);
@@ -660,19 +657,6 @@ const getReport = () => {
 
     add("Operational costs");
     add("------------------");
-    const operations = Object.keys(trial)
-        .filter((t) => opened[t] && !PROMO.includes(t))
-        .map((k) => {
-            add(k + " " + trial[k] + " " + (trial[k] * REQUEST_PRICE).toFixed(2) + "$");
-            return trial[k] * REQUEST_PRICE;
-        })
-        .reduce((a, b) => a + b)
-        .toFixed(2);
-    add("Total " + operations + "$");
-    add("");
-
-    add("Money");
-    add("------------------");
     const totalMoney = Object.keys(opened)
         .filter((t) => money[t])
         .map((k) => {
@@ -680,14 +664,13 @@ const getReport = () => {
             return money[k];
         })
         .reduce((a, b) => a + b);
-    add("Money " + totalMoney.toFixed(2) + "$");
+    add("Total " + totalMoney.toFixed(2) + "$");
     add("");
 
     add("Profit");
     add("------------------");
-    const revenue = Object.keys(opened).length * 5;
-    const spent = 7 + 30 + 5 + 40;
-    add(revenue + "$ - " + (totalMoney + spent).toFixed(2) + "$ = " + (revenue - totalMoney - spent).toFixed(2) + "$");
+    const revenue = Object.keys(opened).length * PRICE;
+    add(revenue + "$ - " + totalMoney.toFixed(2) + "$ = " + (revenue - totalMoney).toFixed(2) + "$");
 
     return result;
 };
