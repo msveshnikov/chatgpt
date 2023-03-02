@@ -30,8 +30,6 @@ let MAX_TOKENS = 1000;
 let MAX_LENGTH = 300;
 let PREMIUM = 2.0;
 
-let MAX_REQUESTS = 500;
-let MAX_GROUP_REQUESTS = 1000;
 let MAX_MONEY = 3;
 let MAX_GROUP_MONEY = 6;
 let PRICE = 5;
@@ -130,10 +128,7 @@ bot.on("message", async (msg) => {
         }
         if (
             !PROMO.includes(String(chatId)) &&
-            ((chatId > 0 && trial[chatId] > MAX_REQUESTS) ||
-                (chatId > 0 && money[chatId] > MAX_MONEY) ||
-                (chatId < 0 && money[chatId] > MAX_GROUP_MONEY) ||
-                (chatId < 0 && trial[chatId] > MAX_GROUP_REQUESTS))
+            ((chatId > 0 && money[chatId] > MAX_MONEY) || (chatId < 0 && money[chatId] > MAX_GROUP_MONEY))
         ) {
             console.error("Abuse detected for paid account", chatId);
             bot.sendMessage(
@@ -172,7 +167,7 @@ bot.on("message", async (msg) => {
             return;
         }
 
-        console.log(chatId, msg?.from?.username, msg.text);
+        // console.log(chatId, msg?.from?.username, msg.text);
 
         msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
         if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
@@ -214,8 +209,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? `После оплаты подписки $${GROUP_PRICE} вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие - с ограничением ${MAX_GROUP_REQUESTS} запросов в месяц (при превышении лимита бот потребует оплату подписки снова)`
-                : `After making a payment of $${GROUP_PRICE}, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more) with limitations of ${MAX_GROUP_REQUESTS}  requests per month (when the limit is exceeded, the bot will ask you to pay for subscription again)`
+                ? `После оплаты подписки $${GROUP_PRICE} вы можете использовать все функции ChatGPT бота в течение месяца для всей группы (без ограничения количества людей), включая Нарисуй, Загугли, и другие.`
+                : `After making a payment of $${GROUP_PRICE}, you will have access to the ChatGPT bot for one month for entire group (unlimited numer of people), with full features (including Paint, Photo2Text, Google, and more)`
         );
         return true;
     }
@@ -514,7 +509,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
             money[chatId] = (money[chatId] ?? 0) + spent;
             writeMoney(money);
         }
-        console.log(response);
+        // console.log(response);
         return response;
     } catch (e) {
         console.error(e.message);
