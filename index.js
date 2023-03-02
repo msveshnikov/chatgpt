@@ -41,7 +41,7 @@ let IMAGE_PRICE = 0.002;
 let OCR_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
-let PROMO_MAX_PER_HOUR = 5;
+let PROMO_MAX_PER_HOUR = 10;
 let PROMO = [process.env.GROUP_RU_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
@@ -500,7 +500,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
         const completion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }],
-            // max_tokens: max_tokens,
+            max_tokens: max_tokens,
             temperature: temperature,
         });
         const response = completion?.data?.choices?.[0]?.message?.content;
