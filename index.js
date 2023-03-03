@@ -200,8 +200,8 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 \n\nНаша группа: https://t.me/maxsoft_chat_gpt_group"
-                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 \n\nJoin our group: https://t.me/maxsoft_chat_gpt_group_en"
+                ? `Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 \n\nНаша группа: ${process.env.GROUP_RU}`
+                : `Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 \n\nJoin our group: ${process.env.GROUP_EN}`
         );
         return true;
     }
