@@ -13,11 +13,11 @@ You have to get those APIs and set env variables:
 -   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
 
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
--   GROUP_RU_ID=-1001776618845
+-   GROUP_RU_ID=xxxx
 -   GROUP_EN=https://t.me/maxsoft_chat_gpt_group_en
--   GROUP_EN_ID=-1001716321937
+-   GROUP_EN_ID=xxxx
 -   ADMIN=Extender777
--   ADMIN_ID=123456789
+-   ADMIN_ID=xxxx
 -   ADMIN2=
 
 # PROD
