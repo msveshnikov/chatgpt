@@ -42,7 +42,7 @@ let OCR_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
 let PROMO_MAX_PER_HOUR = 10;
-let PROMO = [process.env.GROUP_RU_ID];
+let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
@@ -117,7 +117,7 @@ bot.on("message", async (msg) => {
                 chatId,
                 msg.from?.language_code == "ru"
                     ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
-                    : `Full functionality will appear after payment ❤️`
+                    : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
             )
                 .then(() => {})
                 .catch((e) => {
@@ -201,7 +201,7 @@ const processCommand = (chatId, msg, language_code) => {
             chatId,
             language_code == "ru"
                 ? "Привет! Я ChatGPT бот. Я могу говорить с вами на любом языке. Я могу нарисовать все что вы хотите. Вы также можете отправить мне изображение, и я переведу его в текст. Я могу искать в Google любую информацию, которая вам нужна. Используйте /help для списка команд 😊 \n\nНаша группа: https://t.me/maxsoft_chat_gpt_group"
-                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 "
+                : "Hello! I'm ChatGPT. Feel free to speak to me in any language. I can Paint <anything> you want. You can also send me an image, and I will translate it to text. I can search Google for any information you need. Use /help for more options 😊 \n\nJoin our group: https://t.me/maxsoft_chat_gpt_group_en"
         );
         return true;
     }

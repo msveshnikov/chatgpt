@@ -14,6 +14,8 @@ You have to get those APIs and set env variables:
 
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
 -   GROUP_RU_ID=-1001776618845
+-   GROUP_EN=https://t.me/maxsoft_chat_gpt_group_en
+-   GROUP_EN_ID=-1001716321937
 -   ADMIN=Extender777
 -   ADMIN_ID=123456789
 -   ADMIN2=
@@ -22,6 +24,7 @@ You have to get those APIs and set env variables:
 
 -   https://t.me/maxsoft_chat_bot
     -   https://t.me/maxsoft_chat_gpt_group
+    -   https://t.me/maxsoft_chat_gpt_group_en
 
 # TODO
 
