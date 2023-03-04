@@ -12,6 +12,7 @@ You have to get those APIs and set env variables:
 -   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled
 -   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
 
+Optional (for promotion):
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
 -   GROUP_RU_ID=xxxx
 -   GROUP_EN=https://t.me/maxsoft_chat_gpt_group_en
