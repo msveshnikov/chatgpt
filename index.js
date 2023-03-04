@@ -41,7 +41,7 @@ let IMAGE_PRICE = 0.002;
 let OCR_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
-let PROMO_MAX_PER_HOUR = 10;
+let PROMO_MAX_PER_HOUR = 5;
 let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
