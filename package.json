@@ -16,7 +16,7 @@
         "dotenv": "^16.0.3",
         "node-fetch": "^3.3.0",
         "node-telegram-bot-api": "^0.61.0",
-        "openai": "^3.2.0",
+        "openai": "^3.2.1",
         "replicate-js": "github:nicholascelestin/replicate-js"
     }
 }
