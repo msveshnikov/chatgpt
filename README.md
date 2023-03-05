@@ -25,6 +25,8 @@ Optional (for promotion):
 
 # LOCAL RUN
 
+- Install NodeJS v.18
+
 ```bash
 export PUPPETEER_SKIP_DOWNLOAD=1 #for aarch64 
 npm install
