@@ -156,7 +156,7 @@ bot.on("message", async (msg) => {
                 return;
             }
         }
-        
+
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
         if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
@@ -390,7 +390,7 @@ const visualToText = async (chatId, msg) => {
         writeMoney(money);
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        if (msg.from?.language_code == "ru") {
+        if (msg.from?.language_code == "ru" && process.env.GOOGLE_KEY) {
             prompt = await translate(prompt, "ru");
         }
         if (prompt) {
@@ -411,7 +411,10 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
+    if (
+        process.env.GOOGLE_KEY &&
+        ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй"))
+    ) {
         text = await translate(text?.replace("ребенка", ""), "en");
     }
     if (!text) {
