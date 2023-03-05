@@ -1,4 +1,4 @@
-# chatgpt
+# CHATGPT
 
 Telegram Bot with OpenAI GPT-3.5-turbo connection, context, Stability AI painting and Google scraping
 
@@ -20,6 +20,14 @@ Optional (for promotion):
 -   ADMIN=Extender777
 -   ADMIN_ID=xxxx
 -   ADMIN2=
+
+# LOCAL RUN
+
+```bash
+export PUPPETEER_SKIP_DOWNLOAD=1 #for aarch64 
+npm install
+node index.js
+```
 
 # PROD
 
