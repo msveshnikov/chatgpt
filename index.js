@@ -112,44 +112,51 @@ bot.on("message", async (msg) => {
         trial[chatId] = (trial[chatId] ?? 0) + 1;
         writeTrial(trial);
 
-        if (!(new Date(opened[chatId]) > new Date())) {
-            bot.sendMessage(
-                chatId,
-                msg.from?.language_code == "ru"
-                    ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
-                    : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
-            )
-                .then(() => {})
-                .catch((e) => {
-                    console.error(e.message);
-                });
-            sendInvoice(chatId, msg.from?.language_code);
-            return;
+        if (process.env.STRIPE_KEY) {
+            if (!(new Date(opened[chatId]) > new Date())) {
+                bot.sendMessage(
+                    chatId,
+                    msg.from?.language_code == "ru"
+                        ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
+                        : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊 ${process.env.GROUP_EN}`
+                )
+                    .then(() => {})
+                    .catch((e) => {
+                        console.error(e.message);
+                    });
+                sendInvoice(chatId, msg.from?.language_code);
+                return;
+            }
+            if (
+                !PROMO.includes(String(chatId)) &&
+                ((chatId > 0 && money[chatId] > MAX_MONEY) || (chatId < 0 && money[chatId] > MAX_GROUP_MONEY))
+            ) {
+                console.error("Abuse detected for paid account", chatId);
+                bot.sendMessage(
+                    chatId,
+                    msg.from?.language_code == "ru"
+                        ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
+                        : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
+                );
+                bot.sendMessage(
+                    process.env.ADMIN_ID,
+                    "Abuse detected for paid account " +
+                        chatId +
+                        " trials= " +
+                        trial[chatId] +
+                        " money= " +
+                        money[chatId]
+                );
+                trial[chatId] = 0;
+                opened[chatId] = new Date();
+                money[chatId] = 0;
+                writeTrial(trial);
+                writeOpened(opened);
+                writeMoney(money);
+                return;
+            }
         }
-        if (
-            !PROMO.includes(String(chatId)) &&
-            ((chatId > 0 && money[chatId] > MAX_MONEY) || (chatId < 0 && money[chatId] > MAX_GROUP_MONEY))
-        ) {
-            console.error("Abuse detected for paid account", chatId);
-            bot.sendMessage(
-                chatId,
-                msg.from?.language_code == "ru"
-                    ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
-                    : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
-            );
-            bot.sendMessage(
-                process.env.ADMIN_ID,
-                "Abuse detected for paid account " + chatId + " trials= " + trial[chatId] + " money= " + money[chatId]
-            );
-            trial[chatId] = 0;
-            opened[chatId] = new Date();
-            money[chatId] = 0;
-            writeTrial(trial);
-            writeOpened(opened);
-            writeMoney(money);
-            return;
-        }
-
+        
         // Brain activity
         context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
         if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {

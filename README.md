@@ -2,13 +2,15 @@
 
 Telegram Bot with OpenAI GPT-3.5-turbo connection, context, Stability AI painting and Google scraping
 
-You have to get those APIs and set env variables:
+You have to get those APIs and set environment variables (or put to .env file):
 
+-   TELEGRAM_KEY - contact https://t.me/BotFather
 -   OPENAI_KEY - https://openai.com/api/ - $18 free credit, $0.002 per 1K tokens (1K Russian chars), ~$0.002 per response
 -   STABILITY_KEY - https://beta.dreamstudio.ai/membership?tab=apiKeys - $10 free credit https://api.stability.ai/docs, $0.002 per image
 -   REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - $0.02 per image
--   TELEGRAM_KEY - contact https://t.me/BotFather
--   STRIPE_KEY - Stripe Live payment token (for subscription payments)
+
+Optional (for payments and translation):
+-   STRIPE_KEY - Stripe Live payment token (for subscription payments, provided by BotFather https://core.telegram.org/bots/payments)
 -   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled
 -   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
 
