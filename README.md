@@ -11,8 +11,8 @@ You have to get those APIs and set environment variables (or put to .env file):
 
 Optional (for payments and translation):
 -   STRIPE_KEY - Stripe Live payment token (for subscription payments, provided by BotFather https://core.telegram.org/bots/payments)
--   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled
--   google.json - https://cloud.google.com/translate https://console.cloud.google.com/apis/credentials/key
+-   GOOGLE_KEY - key of Google Cloud Project with Translate API enabled https://cloud.google.com/translate
+-   google.json - https://console.cloud.google.com/apis/credentials/key
 
 Optional (for promotion):
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
