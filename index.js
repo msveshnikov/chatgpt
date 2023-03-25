@@ -3,7 +3,7 @@ import { TranslationServiceClient } from "@google-cloud/translate";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
-import google from "./search.js";
+import { google } from "./search.js";
 import {
     writeOpened,
     readOpened,
