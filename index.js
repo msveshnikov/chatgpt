@@ -25,23 +25,23 @@ import {
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
-let CONTEXT_SIZE = 400; // increase can negatively affect your bill, 1 Russian char == 1 token
-let MAX_TOKENS = 1000;
-let MAX_LENGTH = 300;
-let PREMIUM = 2.0;
+let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
+let MAX_TOKENS = 600;
+let MAX_LENGTH = 200;
+let PREMIUM = 3.0;
 
 let MAX_MONEY = 3;
 let MAX_GROUP_MONEY = 6;
 let PRICE = 5;
 let GROUP_PRICE = 10;
 
-let CONTEXT_TIMEOUT = 3600;
+let CONTEXT_TIMEOUT = 120;
 let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
 let OCR_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
-let PROMO_MAX_PER_HOUR = 5;
+let PROMO_MAX_PER_HOUR = 3;
 let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
@@ -585,7 +585,7 @@ let groupUsers = {};
 // once per hour clean groupUsers
 setInterval(() => {
     groupUsers = {};
-}, 1000 * 60 * 60);
+}, 1000 * 60 * 60 * 3);
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
@@ -594,7 +594,7 @@ const protection = (msg) => {
         d.setMonth(d.getMonth() + 1);
         opened[msg.chat.id] = d;
         writeOpened(opened);
-        groupUsers = {};
+        //  groupUsers = {};
         return false;
     }
 
@@ -619,6 +619,17 @@ const protection = (msg) => {
             msg?.text?.toLowerCase()?.startsWith("skip")
         ) {
             return true;
+        }
+
+        if (
+            msg?.text?.toLowerCase()?.startsWith("Нарисуй") ||
+            msg?.text?.toLowerCase()?.startsWith("Draw") ||
+            msg?.text?.toLowerCase()?.startsWith("Paint")
+        ) {
+            groupUsers["draw"] = (groupUsers["draw"] ?? 0) + 1;
+            if (groupUsers["draw"] > PROMO_MAX_PER_HOUR) {
+                return true;
+            }
         }
 
         groupUsers[msg?.from?.id] = (groupUsers[msg?.from?.id] ?? 0) + 1;
