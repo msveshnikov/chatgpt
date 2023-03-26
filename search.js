@@ -11,6 +11,12 @@ const userAgents = [
 ];
 
 export const google = async (term, lang) => {
+    const fetchData = async (term, lang) => {
+        const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=${lang}`, {
+            headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
+        });
+        return load(await result.text());
+    };
     const $ = await fetchData(term, lang);
     return (
         $(".UDZeY span")
@@ -22,17 +28,19 @@ export const google = async (term, lang) => {
     );
 };
 
-const fetchData = async (term, lang) => {
-    const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=${lang}`, {
-        headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
-    });
-    return load(await result.text());
-};
-
 //console.log(await google("Java", "en"));
 
 export const googleImages = async (term, lang) => {
-    const $ = await fetchImagesData(term, lang);
+    const fetchData = async (term, lang) => {
+        const result = await fetch(
+            `https://www.google.com/search?q=${term}&oq=${term}&hl=${lang}&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8`,
+            {
+                headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
+            }
+        );
+        return load(await result.text());
+    };
+    const $ = await fetchData(term, lang);
     let images_results = [];
     $("div.rg_bx").each((i, el) => {
         let json_string = $(el).find(".rg_meta").text();
@@ -50,14 +58,4 @@ export const googleImages = async (term, lang) => {
     return images_results;
 };
 
-const fetchImagesData = async (term, lang) => {
-    const result = await fetch(
-        `https://www.google.com/search?q=${term}&oq=${term}&hl=${lang}&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8`,
-        {
-            headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
-        }
-    );
-    return load(await result.text());
-};
-
-console.log(await googleImages("cat", "en"));
+//console.log(await googleImages("cat", "en"));

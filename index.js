@@ -38,7 +38,7 @@ let GROUP_PRICE = 10;
 let CONTEXT_TIMEOUT = 120;
 let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
-let OCR_PRICE = 0.02;
+let CV_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
 let PROMO_MAX_PER_HOUR = 3;
@@ -386,7 +386,7 @@ const visualToText = async (chatId, msg) => {
     clearInterval(intervalId);
     if (prompt) {
         // link between left and right hemisphere (computer vision)
-        money[chatId] = (money[chatId] ?? 0) + OCR_PRICE;
+        money[chatId] = (money[chatId] ?? 0) + CV_PRICE;
         writeMoney(money);
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
@@ -598,7 +598,7 @@ const protection = (msg) => {
         return false;
     }
 
-    if (msg?.text?.toLowerCase()?.startsWith("usage")) {
+    if (msg?.text?.toLowerCase()?.startsWith("/usage")) {
         return true;
     }
 
@@ -622,9 +622,9 @@ const protection = (msg) => {
         }
 
         if (
-            msg?.text?.toLowerCase()?.startsWith("Нарисуй") ||
-            msg?.text?.toLowerCase()?.startsWith("Draw") ||
-            msg?.text?.toLowerCase()?.startsWith("Paint")
+            msg?.text?.toLowerCase()?.startsWith("нарисуй") ||
+            msg?.text?.toLowerCase()?.startsWith("draw") ||
+            msg?.text?.toLowerCase()?.startsWith("paint")
         ) {
             groupUsers["draw"] = (groupUsers["draw"] ?? 0) + 1;
             if (groupUsers["draw"] > PROMO_MAX_PER_HOUR) {
