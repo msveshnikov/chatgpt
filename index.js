@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import { TranslationServiceClient } from "@google-cloud/translate";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
@@ -43,12 +42,10 @@ let CV_PRICE = 0.02;
 let PROMO_MAX_PER_MINUTE = 15;
 let PROMO_MAX_PER_HOUR = 3;
 let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
-let GOOGLE_PROJECT = `projects/${process.env.GOOGLE_KEY}/locations/global`;
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
 const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
-const translation = new TranslationServiceClient();
 
 const context = readContext();
 const skip = readSkip();
@@ -391,7 +388,7 @@ const visualToText = async (chatId, msg) => {
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
         if (msg.from?.language_code == "ru" && process.env.GOOGLE_KEY) {
-            prompt = await translate(prompt, "ru");
+            prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
         }
         if (prompt) {
             context[chatId] = context[chatId] + prompt;
@@ -415,7 +412,7 @@ const textToVisual = async (chatId, text, language_code) => {
         process.env.GOOGLE_KEY &&
         ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй"))
     ) {
-        text = await translate(text?.replace("ребенка", ""), "en");
+        text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
     }
     if (!text) {
         return;
@@ -637,21 +634,6 @@ const protection = (msg) => {
     }
 };
 
-const translate = async (text, target) => {
-    try {
-        const request = {
-            parent: GOOGLE_PROJECT,
-            contents: [text],
-            mimeType: "text/plain",
-            targetLanguageCode: target,
-        };
-
-        const [response] = await translation.translateText(request);
-        return response.translations[0]?.translatedText;
-    } catch (e) {
-        console.error(e.message);
-    }
-};
 
 const getReport = () => {
     let result = "";
@@ -681,4 +663,3 @@ const getReport = () => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
-process.env["GOOGLE_APPLICATION_CREDENTIALS"] = "./google.json";
