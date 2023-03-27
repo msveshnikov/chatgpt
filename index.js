@@ -408,10 +408,7 @@ const textToVisual = async (chatId, text, language_code) => {
         // link between right and left hemisphere (painting)
         text = last[chatId]?.replace("child", "");
     }
-    if (
-        process.env.GOOGLE_KEY &&
-        ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй"))
-    ) {
+    if ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
         text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
     }
     if (!text) {
@@ -598,7 +595,7 @@ const protection = (msg) => {
         if (msg.photo) {
             return true;
         }
-        
+
         //if msg contains оежим or сброс, return true
         if (
             msg?.text?.toLowerCase()?.startsWith("режим") ||
@@ -637,7 +634,6 @@ const protection = (msg) => {
         }
     }
 };
-
 
 const getReport = () => {
     let result = "";
