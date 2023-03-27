@@ -595,6 +595,10 @@ const protection = (msg) => {
             return true;
         }
 
+        if (msg.photo) {
+            return true;
+        }
+        
         //if msg contains оежим or сброс, return true
         if (
             msg?.text?.toLowerCase()?.startsWith("режим") ||
