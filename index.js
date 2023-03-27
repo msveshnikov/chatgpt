@@ -198,7 +198,7 @@ const processCommand = (chatId, msg, language_code) => {
         bot.sendMessage(
             chatId,
             language_code == "ru"
-                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nОтвечай\nРежим <притворись что ты ...>\nЧерез английский <запрос>\n/payment\n/terms\n/terms_group\n/status\n/support"
+                ? "Нарисуй <что-то>\nЗагугли/Погугли <что-то>\nСброс\nТемпература 36.5 - 41.5\nПропуск <x>\nОтвечай\nРежим <притворись что ты ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
                 : "Paint <some>\nDraw <some>\nGoogle <some>\nReset\nTemperature 36.5 - 41.5\nSkip <x>\nAnswer\nMode <pretend you are ...>\n/payment\n/terms\n/terms_group\n/status\n/support"
         );
         return true;
@@ -441,17 +441,12 @@ const textToText = async (chatId, msg) => {
         !(
             msg.text?.toLowerCase()?.startsWith("отвечай") ||
             msg.text?.toLowerCase()?.startsWith("ответь") ||
-            msg.text?.toLowerCase()?.startsWith("answer") ||
-            msg.text?.toLowerCase()?.startsWith("через английский")
+            msg.text?.toLowerCase()?.startsWith("answer")
         ) &&
         count[chatId] % (skip[chatId] ?? 1) != 0
     ) {
         trial[chatId] = trial[chatId] - 1;
         return;
-    }
-    const english = msg.from?.language_code != "en" && msg.text?.toLowerCase()?.startsWith("через английский");
-    if (english) {
-        msg.text = msg.text.slice(17);
     }
     bot.sendChatAction(chatId, "typing");
     const intervalId = setInterval(() => {
@@ -462,9 +457,6 @@ const textToText = async (chatId, msg) => {
             });
     }, 2000);
     let prompt = context[chatId] + chatSuffix[chatId] ?? "";
-    if (english) {
-        prompt = await translate(msg.text, "en");
-    }
     let response;
     if (prompt) {
         response = await getText(
@@ -473,9 +465,6 @@ const textToText = async (chatId, msg) => {
             MAX_TOKENS * premium(chatId),
             chatId
         );
-    }
-    if (english && response) {
-        response = await translate(response, msg.from?.language_code);
     }
     clearInterval(intervalId);
     if (response) {
