@@ -47,3 +47,4 @@ node index.js
 -   [x] Language from user.language_code
 -   [x] Parse tokens consumed to money.json
 -   [x] Docker
+-   [x] Remove Google Trans, save money
