@@ -387,7 +387,7 @@ const visualToText = async (chatId, msg) => {
         writeMoney(money);
         bot.sendChatAction(chatId, "typing");
         last[chatId] = prompt;
-        if (msg.from?.language_code == "ru" && process.env.GOOGLE_KEY) {
+        if (msg.from?.language_code == "ru") {
             prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
         }
         if (prompt) {
