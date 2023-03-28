@@ -40,6 +40,7 @@ let IMAGE_PRICE = 0.002;
 let CV_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
+let ALL_MAX_PER_MINUTE = 20;
 let PROMO_MAX_PER_HOUR = 3;
 let PROMO = [process.env.GROUP_RU_ID, process.env.GROUP_EN_ID];
 
@@ -564,11 +565,18 @@ const premium = (chatId) => {
 
 let callsTimestamps = [];
 let groupUsers = {};
+let allUsers = {};
 
-// once per hour clean groupUsers
+// once per 3 hours clean groupUsers
 setInterval(() => {
     groupUsers = {};
 }, 1000 * 60 * 60 * 3);
+
+// every minute clean allUsers
+setInterval(() => {
+    allUsers = {};
+}, 1000 * 60);
+
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
@@ -582,6 +590,12 @@ const protection = (msg) => {
     }
 
     if (msg?.text?.toLowerCase()?.startsWith("/usage")) {
+        return true;
+    }
+
+    // global rate limit
+    allUsers[msg.chat.id] = (allUsers[msg.chat.id] ?? 0) + 1;
+    if (allUsers[msg.chat.id] > ALL_MAX_PER_MINUTE) {
         return true;
     }
 
