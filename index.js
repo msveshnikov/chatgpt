@@ -380,27 +380,30 @@ const visualToText = async (chatId, msg) => {
             .catch((e) => {
                 console.error(e.message);
             });
-    }, 2000);
-    let prompt = await getPrompt(msg.photo);
-    clearInterval(intervalId);
-    if (prompt) {
-        // link between left and right hemisphere (computer vision)
-        money[chatId] = (money[chatId] ?? 0) + CV_PRICE;
-        writeMoney(money);
-        bot.sendChatAction(chatId, "typing");
-        last[chatId] = prompt;
-        if (msg.from?.language_code == "ru") {
-            prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
-        }
+    }, 5000);
+    try {
+        let prompt = await getPrompt(msg.photo);
         if (prompt) {
-            context[chatId] = context[chatId] + prompt;
-            writeContext(context);
-            bot.sendMessage(chatId, prompt)
-                .then(() => {})
-                .catch((e) => {
-                    console.error(e.message);
-                });
+            // link between left and right hemisphere (computer vision)
+            money[chatId] = (money[chatId] ?? 0) + CV_PRICE;
+            writeMoney(money);
+            bot.sendChatAction(chatId, "typing");
+            last[chatId] = prompt;
+            if (msg.from?.language_code == "ru") {
+                prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
+            }
+            if (prompt) {
+                context[chatId] = context[chatId] + prompt;
+                writeContext(context);
+                bot.sendMessage(chatId, prompt)
+                    .then(() => {})
+                    .catch((e) => {
+                        console.error(e.message);
+                    });
+            }
         }
+    } finally {
+        clearInterval(intervalId);
     }
 };
 
@@ -452,27 +455,30 @@ const textToText = async (chatId, msg) => {
             .catch((e) => {
                 console.error(e.message);
             });
-    }, 2000);
-    let prompt = context[chatId] + chatSuffix[chatId] ?? "";
-    let response;
-    if (prompt) {
-        response = await getText(
-            prompt,
-            ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
-            MAX_TOKENS * premium(chatId),
-            chatId
-        );
-    }
-    clearInterval(intervalId);
-    if (response) {
-        last[chatId] = response;
-        context[chatId] = context[chatId] + response;
-        writeContext(context);
-        bot.sendMessage(chatId, response)
-            .then(() => {})
-            .catch((e) => {
-                console.error(e.message);
-            });
+    }, 5000);
+    try {
+        let prompt = context[chatId] + chatSuffix[chatId] ?? "";
+        let response;
+        if (prompt) {
+            response = await getText(
+                prompt,
+                ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
+                MAX_TOKENS * premium(chatId),
+                chatId
+            );
+        }
+        if (response) {
+            last[chatId] = response;
+            context[chatId] = context[chatId] + response;
+            writeContext(context);
+            bot.sendMessage(chatId, response)
+                .then(() => {})
+                .catch((e) => {
+                    console.error(e.message);
+                });
+        }
+    } finally {
+        clearInterval(intervalId);
     }
 };
 
