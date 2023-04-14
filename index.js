@@ -425,7 +425,7 @@ const textToVisual = async (chatId, text, language_code) => {
         chatId > 0
     );
     if (photo) {
-        money[chatId] = (money[chatId] ?? 0) + chatId > 0 ? IMAGE_PRICE_XL : IMAGE_PRICE;
+        money[chatId] = (money[chatId] ?? 0) + (chatId > 0 ? IMAGE_PRICE_XL : IMAGE_PRICE);
         writeMoney(money);
         bot.sendPhoto(chatId, photo);
     }
