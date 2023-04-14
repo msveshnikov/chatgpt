@@ -37,7 +37,7 @@ let GROUP_PRICE = 10;
 let CONTEXT_TIMEOUT = 120;
 let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
-let IMAGE_PRICE_XL = 0.004;
+let IMAGE_PRICE_XL = 0.005;
 let CV_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
@@ -539,7 +539,7 @@ const getArt = async (prompt, xl) => {
                 height: 512,
                 width: 512,
                 samples: 1,
-                steps: 20,
+                steps: 30,
                 text_prompts: [
                     {
                         text: prompt,
