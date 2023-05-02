@@ -29,9 +29,9 @@ let MAX_TOKENS = 600;
 let MAX_LENGTH = 200;
 let PREMIUM = 3.0;
 
-let MAX_MONEY = 2;
+let MAX_MONEY = 3;
 let MAX_GROUP_MONEY = 6;
-let PRICE = 3;
+let PRICE = 5;
 let GROUP_PRICE = 10;
 
 let CONTEXT_TIMEOUT = 120;
