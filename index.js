@@ -37,7 +37,6 @@ let GROUP_PRICE = 10;
 let CONTEXT_TIMEOUT = 120;
 let OPENAI_PRICE = 0.002;
 let IMAGE_PRICE = 0.002;
-let IMAGE_PRICE_XL = 0.005;
 let CV_PRICE = 0.02;
 
 let PROMO_MAX_PER_MINUTE = 15;
@@ -424,11 +423,10 @@ const textToVisual = async (chatId, text, language_code) => {
         text +
             (text?.startsWith("draw")
                 ? ""
-                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration"),
-        chatId > 0
+                : ", deep focus, highly detailed, digital painting, artstation, 4K, smooth, sharp focus, illustration")
     );
     if (photo) {
-        money[chatId] = (money[chatId] ?? 0) + chatId > 0 ? IMAGE_PRICE_XL : IMAGE_PRICE;
+        money[chatId] = (money[chatId] ?? 0) + IMAGE_PRICE;
         writeMoney(money);
         bot.sendPhoto(chatId, photo);
     }
@@ -521,11 +519,9 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
     }
 };
 
-const getArt = async (prompt, xl) => {
+const getArt = async (prompt) => {
     const response = await fetch(
-        `https://api.stability.ai/v1/generation/${
-            xl ? "stable-diffusion-xl-beta-v2-2-2" : "stable-diffusion-512-v2-1"
-        }/text-to-image`,
+        "https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/text-to-image",
         {
             method: "POST",
             headers: {
@@ -586,6 +582,7 @@ setInterval(() => {
 setInterval(() => {
     allUsers = {};
 }, 1000 * 60);
+
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
