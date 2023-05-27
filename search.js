@@ -58,4 +58,21 @@ export const googleImages = async (term, lang) => {
     return images_results;
 };
 
-//console.log(await googleImages("cat", "en"));
+const cookie = `language=cs; pvc_visits_3[0]=1685090729b28; cc_cookie={"level":["necessary","performance","tracking"],"revision":0,"data":null,"rfc_cookie":false}; _fbp=fb.1.1684394896497.1689359607; SSESS8cc46d9546d5f41d63f434244f7db91b=jb4kcavmg8c7fehms7v08e8odp; _gid=GA1.2.402932138.1685087132; _gat_UA-52097878-1=1; _ga_98NQ5DH3GF=GS1.1.1685087131.8.1.1685087135.0.0.0; _ga=GA1.1.1798575518.1670080859`;
+
+export const a2 = async () => {
+    const fetchData = async () => {
+        const result = await fetch(`https://cestina-pro-cizince.cz/trvaly-pobyt/a2/online-prihlaska/?progress=1`, {
+            headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)], Cookie: cookie },
+        });
+        return load(await result.text());
+    };
+    const $ = await fetchData();
+    return (
+        (
+            $("li")
+                .text()
+                .match(/Obsazeno/g) || []
+        ).length < 21
+    );
+};

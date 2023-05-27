@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { Configuration, OpenAIApi } from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
-import { google } from "./search.js";
+import { a2, google } from "./search.js";
 import {
     writeOpened,
     readOpened,
@@ -520,31 +520,28 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
 };
 
 const getArt = async (prompt) => {
-    const response = await fetch(
-        "https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/text-to-image",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "image/png",
-                Authorization: process.env.STABILITY_KEY,
-            },
-            body: JSON.stringify({
-                cfg_scale: 7,
-                clip_guidance_preset: "FAST_BLUE",
-                height: 512,
-                width: 512,
-                samples: 1,
-                steps: 30,
-                text_prompts: [
-                    {
-                        text: prompt,
-                        weight: 1,
-                    },
-                ],
-            }),
-        }
-    );
+    const response = await fetch("https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/text-to-image", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "image/png",
+            Authorization: process.env.STABILITY_KEY,
+        },
+        body: JSON.stringify({
+            cfg_scale: 7,
+            clip_guidance_preset: "FAST_BLUE",
+            height: 512,
+            width: 512,
+            samples: 1,
+            steps: 30,
+            text_prompts: [
+                {
+                    text: prompt,
+                    weight: 1,
+                },
+            ],
+        }),
+    });
 
     if (!response.ok) {
         console.error(`Stability AI error: ${(await response.text())?.split("\n")?.[0]?.substring(0, 200)}`);
@@ -582,7 +579,6 @@ setInterval(() => {
 setInterval(() => {
     allUsers = {};
 }, 1000 * 60);
-
 
 const protection = (msg) => {
     //if user is admin, allow all and switch on server
@@ -683,3 +679,15 @@ const getReport = () => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
+
+let oldState = false;
+setInterval(async () => {
+    const newState = await a2();
+    if (newState !== oldState) {
+        const message =
+            `https://cestina-pro-cizince.cz/trvaly-pobyt/a2/online-prihlaska/?progress=1` + (newState ? " 😊" : " 😫");
+        bot.sendMessage(process.env.ADMIN_ID, message);
+        bot.sendMessage(process.env.ADMIN_ID2, message);
+    }
+    oldState = newState;
+}, 1000 * 60);
