@@ -48,3 +48,7 @@ node index.js
 -   [x] Parse tokens consumed to money.json
 -   [x] Docker
 -   [x] Remove Google Trans, save money
+
+[![Stargazers repo roster for @msveshnikov/chatgpt](https://reporoster.com/stars/msveshnikov/chatgpt)](https://github.com/msveshnikov/chatgpt/stargazers)
+
+[![Forkers repo roster for @msveshnikov/chatgpt](https://reporoster.com/forks/msveshnikov/chatgpt)](https://github.com/msveshnikov/chatgpt/network/members)
