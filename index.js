@@ -525,7 +525,7 @@ const getArt = async (prompt) => {
         headers: {
             "Content-Type": "application/json",
             Accept: "image/png",
-            Authorization: process.env.STABILITY_KEY
+            Authorization: process.env.STABILITY_KEY,
         },
         body: JSON.stringify({
             cfg_scale: 7,
@@ -537,10 +537,10 @@ const getArt = async (prompt) => {
             text_prompts: [
                 {
                     text: prompt,
-                    weight: 1
-                }
-            ]
-        })
+                    weight: 1,
+                },
+            ],
+        }),
     });
 
     if (!response.ok) {
