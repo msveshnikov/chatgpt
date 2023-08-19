@@ -12,10 +12,10 @@
     },
     "dependencies": {
         "cheerio": "^1.0.0-rc.12",
-        "dotenv": "^16.0.3",
-        "node-fetch": "^3.3.0",
+        "dotenv": "^16.3.1",
+        "node-fetch": "^3.3.2",
         "node-telegram-bot-api": "^0.61.0",
-        "openai": "^3.2.1",
+        "openai": "^4.0.1",
         "replicate-js": "github:nicholascelestin/replicate-js"
     }
 }
