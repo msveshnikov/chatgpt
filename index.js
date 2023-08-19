@@ -1,8 +1,8 @@
 import fetch from "node-fetch";
-import { Configuration, OpenAIApi } from "openai";
+import OpenAI from "openai";
 import TelegramBot from "node-telegram-bot-api";
 import Replicate from "replicate-js";
-import { a2, google } from "./search.js";
+import { google } from "./search.js";
 import {
     writeOpened,
     readOpened,
@@ -45,7 +45,7 @@ let PROMO_MAX_PER_HOUR = 3;
 let PROMO = [process.env.GROUP_RU_ID];
 
 const replicate = new Replicate({ token: process.env.REPLICATE_KEY });
-const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_KEY }));
+const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY });
 const bot = new TelegramBot(process.env.TELEGRAM_KEY, { polling: true });
 
 const context = readContext();
@@ -497,13 +497,13 @@ const textToGoogle = async (chatId, msg, language_code) => {
 
 const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
-        const completion = await openai.createChatCompletion({
+        const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }],
             max_tokens: max_tokens,
             temperature: temperature,
         });
-        const response = completion?.data?.choices?.[0]?.message?.content;
+        const response = completion.choices?.[0]?.message?.content;
         const spent = (completion?.data?.usage?.total_tokens / 1000) * OPENAI_PRICE;
         if (spent) {
             money[chatId] = (money[chatId] ?? 0) + spent;
@@ -525,7 +525,7 @@ const getArt = async (prompt) => {
         headers: {
             "Content-Type": "application/json",
             Accept: "image/png",
-            Authorization: process.env.STABILITY_KEY,
+            Authorization: process.env.STABILITY_KEY
         },
         body: JSON.stringify({
             cfg_scale: 7,
@@ -537,10 +537,10 @@ const getArt = async (prompt) => {
             text_prompts: [
                 {
                     text: prompt,
-                    weight: 1,
-                },
-            ],
-        }),
+                    weight: 1
+                }
+            ]
+        })
     });
 
     if (!response.ok) {
