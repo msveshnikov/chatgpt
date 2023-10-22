@@ -15,11 +15,8 @@ Optional:
 Optional (for promotion):
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
 -   GROUP_RU_ID=-1298741298749
--   GROUP_EN=https://t.me/maxsoft_chat_gpt_group_en
--   GROUP_EN_ID=-3987438235682
 -   ADMIN=Extender777
 -   ADMIN_ID=3498273578
--   ADMIN2=
 
 # LOCAL RUN
 
