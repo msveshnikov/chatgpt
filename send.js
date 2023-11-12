@@ -16,17 +16,21 @@ setInterval(() => {
     console.log(chatId);
     bot.sendMessage(
         chatId,
-        `📣 Exciting News! The highly anticipated SDXL 1.0 is finally here, exclusively released on Manga TV! 🎉🎉
+        `📣 Welcome to Manga TV! Here are the exciting additions from last week:
 
-        Are you ready to immerse yourself in a world of captivating stories and stunning visuals? Look no further than SDXL 1.0, powered by the cutting-edge GPT-4 AI comics generator from mangatv.shop. With just one prompt, prepare to witness an entire video story unfold before your eyes!
+        1. GPT-4 Turbo with April 2023 Cutoff: Prepare to be amazed by the power of storytelling! We are thrilled to introduce GPT-4 Turbo, with a cutoff date of April 2023. This cutting-edge AI model takes your manga creation to new heights, offering enhanced text generation, character development, and plot intricacy. Your stories will be more immersive and captivating than ever before.
+
+        2. OpenAI Voices: Take your manga narratives to the next level with realistic and expressive voices. Our platform now supports OpenAI voices, allowing you to infuse lifelike dialogues and character interactions into your manga stories. These voices add depth and emotion to your content, enriching the reading experience.
+
+        3. Price Drop and More Minutes: We have some great news for our users! To make Manga TV even more accessible, we’ve implemented a price drop, giving you more value for your subscription. Additionally, we’re extending the available minutes for all users, allowing you to create and enjoy even more content without breaking the bank.
+
+        4. Amazing SD XL v1.0 for All Users: Get ready for an amazing experience! We’ve released SD XL v1.0, and it’s now available to all users. This enhanced version offers superior performance, visuals, and storytelling capabilities, making manga creation and viewing an even more captivating experience for everyone.
+
+        These additions are part of our ongoing commitment to enhancing your manga creation and reading experience. We’re dedicated to providing you with the best tools and features to bring your stories to life.
+                
+        Happy manga-making!
         
-        Experience the next level of storytelling as SDXL 1.0 takes you on thrilling adventures, heartwarming tales, and epic battles. Each panel is meticulously crafted, ensuring the highest quality and attention to detail. You'll be amazed by the lifelike characters, intricate backgrounds, and dynamic action sequences that will leave you on the edge of your seat.
-        
-        Whether you're a long-time manga fan or new to the world of comics, SDXL 1.0 guarantees an unforgettable experience. Dive into a vast library of genres, including fantasy, sci-fi, romance, and more. Let your imagination run wild as you explore diverse worlds and meet fascinating characters brought to life by the incredible GPT-4 AI technology.
-        
-        With Manga TV's user-friendly interface, accessing SDXL 1.0 has never been easier. Simply visit mangatv.shop and prepare to be transported into a realm of unlimited possibilities. Get ready to lose yourself in the magic of storytelling like never before.
-        
-        Don't miss out on this groundbreaking release! Visit mangatv.shop now and witness the exceptional quality of SDXL 1.0. Get ready to embark on an extraordinary journey that will leave you craving for more. 🌟`
+        Best regards, The Manga TV Team ❤️`
     )
         .then(() => {})
         .catch((e) => {

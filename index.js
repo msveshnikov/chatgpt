@@ -682,15 +682,3 @@ const getReport = () => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
-
-// let oldState = false;
-// setInterval(async () => {
-//     const newState = await a2();
-//     if (newState !== oldState) {
-//         const message =
-//             `https://cestina-pro-cizince.cz/trvaly-pobyt/a2/online-prihlaska/?progress=1` + (newState ? " 😊" : " 😫");
-//         bot.sendMessage(process.env.ADMIN_ID, message);
-//         bot.sendMessage(process.env.ADMIN_ID2, message);
-//     }
-//     oldState = newState;
-// }, 1000 * 60);
