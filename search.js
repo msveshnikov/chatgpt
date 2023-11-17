@@ -12,14 +12,14 @@ const userAgents = [
 
 export const google = async (term, lang) => {
     const fetchData = async (term, lang) => {
-        const result = await fetch(`https://www.google.com/search?q=${encodeURIComponent(term)}&hl=${lang}`, {
+        const result = await fetch(`https://google.com/search?q=${encodeURIComponent(term)}&hl=${lang}`, {
             headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
         });
         return load(await result.text());
     };
     const $ = await fetchData(term, lang);
     return (
-        $(".UDZeY span")
+        $(".PZPZlf span")
             .map((i, element) => $(element).text())
             .get()
             .join(" ")
@@ -31,7 +31,7 @@ export const google = async (term, lang) => {
 export const googleImages = async (term, lang) => {
     const fetchData = async (term, lang) => {
         const result = await fetch(
-            `https://www.google.com/search?q=${term}&oq=${term}&hl=${lang}&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8`,
+            `https://google.com/search?q=${term}&oq=${term}&hl=${lang}&tbm=isch&asearch=ichunk&async=_id:rg_s,_pms:s,_fmt:pc&sourceid=chrome&ie=UTF-8`,
             {
                 headers: { "User-Agent": userAgents[Math.floor(Math.random() * userAgents.length)] },
             }
