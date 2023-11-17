@@ -504,7 +504,7 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
             temperature: temperature,
         });
         const response = completion.choices?.[0]?.message?.content;
-        const spent = (completion?.data?.usage?.total_tokens / 1000) * OPENAI_PRICE;
+        const spent = (completion?.usage?.total_tokens / 1000) * OPENAI_PRICE;
         if (spent) {
             money[chatId] = (money[chatId] ?? 0) + spent;
             writeMoney(money);
@@ -520,30 +520,27 @@ const getText = async (prompt, temperature, max_tokens, chatId) => {
 };
 
 const getArt = async (prompt, xl) => {
-    const response = await fetch(
-        `https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "image/png",
-                Authorization: process.env.STABILITY_KEY,
-            },
-            body: JSON.stringify({
-                cfg_scale: 7,
-                height: 1024,
-                width: 1024,
-                samples: 1,
-                steps: 30,
-                text_prompts: [
-                    {
-                        text: prompt,
-                        weight: 1,
-                    },
-                ],
-            }),
-        }
-    );
+    const response = await fetch(`https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "image/png",
+            Authorization: process.env.STABILITY_KEY,
+        },
+        body: JSON.stringify({
+            cfg_scale: 7,
+            height: 1024,
+            width: 1024,
+            samples: 1,
+            steps: 30,
+            text_prompts: [
+                {
+                    text: prompt,
+                    weight: 1,
+                },
+            ],
+        }),
+    });
 
     if (!response.ok) {
         console.error(`Stability AI error: ${(await response.text())?.split("\n")?.[0]?.substring(0, 200)}`);
