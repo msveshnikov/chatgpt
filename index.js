@@ -498,7 +498,7 @@ const textToGoogle = async (chatId, msg, language_code) => {
 const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo-1106",
+            model: "gpt-3.5-turbo",
             messages: [{ role: "user", content: prompt }],
             max_tokens: max_tokens,
             temperature: temperature,
