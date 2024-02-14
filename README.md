@@ -32,8 +32,7 @@ node index.js
 
 -   https://t.me/maxsoft_chat_bot
     -   https://t.me/maxsoft_chat_gpt_group
-    -   https://t.me/maxsoft_chat_gpt_group_en
-
+    
 # TODO
 
 -   [x] Temperature separated
