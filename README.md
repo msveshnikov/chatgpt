@@ -8,11 +8,15 @@ You have to get those APIs and set environment variables (or put to .env file):
 -   OPENAI_KEY - https://openai.com/api/ - $18 free credit, $0.002 per 1K tokens (1K Russian chars), ~$0.002 per response
 -   STABILITY_KEY - https://beta.dreamstudio.ai/membership?tab=apiKeys - $10 free credit https://api.stability.ai/docs, $0.002 per image
 -   REPLICATE_KEY - https://replicate.com/methexis-inc/img2prompt/api - $0.02 per image
+-   GOOGLE_KEY - key of Google Cloud Project with Vertex AI enabled
+-   google.json - https://console.cloud.google.com/apis/credentials/key
 
 Optional:
+
 -   STRIPE_KEY - Stripe Live payment token (for subscription payments, provided by BotFather https://core.telegram.org/bots/payments)
 
 Optional (for promotion):
+
 -   GROUP_RU=https://t.me/maxsoft_chat_gpt_group
 -   GROUP_RU_ID=-1298741298749
 -   ADMIN=Extender777
@@ -20,10 +24,10 @@ Optional (for promotion):
 
 # LOCAL RUN
 
-- Install NodeJS v.18
+-   Install NodeJS v.18
 
 ```bash
-export PUPPETEER_SKIP_DOWNLOAD=1 #for aarch64 
+export PUPPETEER_SKIP_DOWNLOAD=1 #for aarch64
 npm install
 node index.js
 ```
@@ -32,7 +36,7 @@ node index.js
 
 -   https://t.me/maxsoft_chat_bot
     -   https://t.me/maxsoft_chat_gpt_group
-    
+
 # TODO
 
 -   [x] Temperature separated
@@ -44,6 +48,7 @@ node index.js
 -   [x] Parse tokens consumed to money.json
 -   [x] Docker
 -   [x] Remove Google Trans, save money
+-   [x] Gemini Pro
 
 [![Stargazers repo roster for @msveshnikov/chatgpt](https://reporoster.com/stars/msveshnikov/chatgpt)](https://github.com/msveshnikov/chatgpt/stargazers)
 

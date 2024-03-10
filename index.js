@@ -21,6 +21,7 @@ import {
     writeMoney,
     readMoney,
 } from "./db.js";
+import { getTextGemini } from "./gemini.js";
 import dotenv from "dotenv";
 dotenv.config({ override: true });
 
@@ -389,7 +390,7 @@ const visualToText = async (chatId, msg) => {
             bot.sendChatAction(chatId, "typing");
             last[chatId] = prompt;
             if (msg.from?.language_code == "ru") {
-                prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
+                prompt = await getTextGemini("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
             }
             if (prompt) {
                 context[chatId] = context[chatId] + prompt;
@@ -413,7 +414,7 @@ const textToVisual = async (chatId, text, language_code) => {
         text = last[chatId]?.replace("child", "");
     }
     if ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
-        text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
+        text = await getTextGemini("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
     }
     if (!text) {
         return;
@@ -458,7 +459,7 @@ const textToText = async (chatId, msg) => {
         let prompt = context[chatId] + chatSuffix[chatId] ?? "";
         let response;
         if (prompt) {
-            response = await getText(
+            response = await getTextGemini(
                 prompt,
                 ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
                 MAX_TOKENS * premium(chatId),
@@ -678,3 +679,4 @@ const getReport = () => {
 
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
+process.env["GOOGLE_APPLICATION_CREDENTIALS"] = "./google.json";
