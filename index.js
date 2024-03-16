@@ -29,6 +29,7 @@ let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian c
 let MAX_TOKENS = 600;
 let MAX_LENGTH = 200;
 let PREMIUM = 3.0;
+let TRIAL_COUNT = 20;
 
 let MAX_MONEY = 3;
 let MAX_GROUP_MONEY = 6;
@@ -113,18 +114,20 @@ bot.on("message", async (msg) => {
 
         if (process.env.STRIPE_KEY) {
             if (!(new Date(opened[chatId]) > new Date())) {
-                bot.sendMessage(
-                    chatId,
-                    msg.from?.language_code == "ru"
-                        ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
-                        : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊`
-                )
-                    .then(() => {})
-                    .catch((e) => {
-                        console.error(e.message);
-                    });
-                sendInvoice(chatId, msg.from?.language_code);
-                return;
+                if (trial[chatId] > TRIAL_COUNT) {
+                    bot.sendMessage(
+                        chatId,
+                        msg.from?.language_code == "ru"
+                            ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
+                            : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊`
+                    )
+                        .then(() => {})
+                        .catch((e) => {
+                            console.error(e.message);
+                        });
+                    sendInvoice(chatId, msg.from?.language_code);
+                    return;
+                }
             }
             if (
                 !PROMO.includes(String(chatId)) &&
@@ -373,6 +376,9 @@ const sendInvoice = (chatId, language_code) => {
 };
 
 const visualToText = async (chatId, msg) => {
+    if (!(new Date(opened[chatId]) > new Date())) {
+        return;
+    }
     bot.sendChatAction(chatId, "typing");
     const intervalId = setInterval(() => {
         bot.sendChatAction(chatId, "typing")
@@ -408,6 +414,9 @@ const visualToText = async (chatId, msg) => {
 };
 
 const textToVisual = async (chatId, text, language_code) => {
+    if (!(new Date(opened[chatId]) > new Date())) {
+        return;
+    }
     bot.sendChatAction(chatId, "typing");
     if (text === "нарисуй" || text === "draw" || text === "paint") {
         // link between right and left hemisphere (painting)
