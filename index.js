@@ -23,6 +23,8 @@ import {
 } from "./db.js";
 import { getTextGemini } from "./gemini.js";
 import dotenv from "dotenv";
+import express from "express";
+import promClient from "prom-client";
 dotenv.config({ override: true });
 
 let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian char == 1 token
@@ -61,6 +63,47 @@ const chatSuffix = readChatSuffix();
 const last = {};
 const count = {};
 
+// Create a Registry which registers the metrics
+const register = new promClient.Registry();
+
+// Add a default metric for measuring uptime
+const uptime = new promClient.Gauge({
+    name: "node_uptime",
+    help: "Node.js uptime in seconds",
+    registers: [register],
+});
+
+// Add a custom metric for tracking Telegram bot requests
+const telegramRequests = new promClient.Counter({
+    name: "telegram_requests_total",
+    help: "Total number of Telegram bot requests",
+    registers: [register],
+});
+
+// Add a custom metric for tracking Telegram bot response time
+const responseTime = new promClient.Histogram({
+    name: "telegram_bot_response_time_seconds",
+    help: "Response time of the Telegram bot in seconds",
+    buckets: [0.1, 0.5, 1, 2, 5, 10], // Adjust these buckets as needed
+    registers: [register],
+});
+
+// Update the uptime metric every minute
+setInterval(() => {
+    uptime.set(process.uptime());
+}, 60000);
+
+// Expose metrics endpoint
+const app = express();
+app.get("/metrics", async (req, res) => {
+    res.set("Content-Type", register.contentType);
+    res.send(await register.metrics());
+});
+
+app.listen(11111, () => {
+    console.log("Metrics server started on port 11111");
+});
+
 bot.on("pre_checkout_query", async (query) => {
     if (query.total_amount < PRICE * 100) {
         bot.answerPreCheckoutQuery(query.id, false, {
@@ -73,125 +116,133 @@ bot.on("pre_checkout_query", async (query) => {
 });
 
 bot.on("message", async (msg) => {
+    // Increment the request counter
+    telegramRequests.inc();
+    // Track response time
+    const end = responseTime.startTimer();
     try {
-        if (protection(msg)) {
-            return;
-        }
-        // Technical stuff
-        const chatId = msg.chat.id;
-        const msgL = msg.text?.toLowerCase();
-        if (msgL) {
-            if (processCommand(chatId, msgL, msg.from?.language_code)) {
+        try {
+            if (protection(msg)) {
                 return;
             }
-        }
-        if (msg.successful_payment) {
-            console.log("Payment done for ", chatId, msg.successful_payment.invoice_payload);
-            var d = new Date();
-            d.setMonth(d.getMonth() + 1);
-            opened[msg.successful_payment.invoice_payload ?? chatId] = d;
-            writeOpened(opened);
-            bot.sendMessage(
-                msg.successful_payment.invoice_payload ?? chatId,
-                msg.from?.language_code == "ru"
-                    ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️"
-                    : "Payment complete! Thank you. This bot is now available for a period of one month ❤️"
-            );
-            bot.sendMessage(
-                process.env.ADMIN_ID,
-                "Произведена оплата от " +
-                    msg?.from?.username +
-                    " " +
-                    msg?.from?.id +
-                    " " +
-                    msg.successful_payment.invoice_payload
-            );
-            return;
-        }
-
-        trial[chatId] = (trial[chatId] ?? 0) + 1;
-        writeTrial(trial);
-
-        if (process.env.STRIPE_KEY) {
-            if (!(new Date(opened[chatId]) > new Date())) {
-                if (trial[chatId] > TRIAL_COUNT) {
-                    bot.sendMessage(
-                        chatId,
-                        msg.from?.language_code == "ru"
-                            ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
-                            : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊`
-                    )
-                        .then(() => {})
-                        .catch((e) => {
-                            console.error(e.message);
-                        });
-                    sendInvoice(chatId, msg.from?.language_code);
+            // Technical stuff
+            const chatId = msg.chat.id;
+            const msgL = msg.text?.toLowerCase();
+            if (msgL) {
+                if (processCommand(chatId, msgL, msg.from?.language_code)) {
                     return;
                 }
             }
-            if (
-                !PROMO.includes(String(chatId)) &&
-                ((chatId > 0 && money[chatId] > MAX_MONEY) || (chatId < 0 && money[chatId] > MAX_GROUP_MONEY))
-            ) {
-                console.error("Abuse detected for paid account", chatId);
+            if (msg.successful_payment) {
+                console.log("Payment done for ", chatId, msg.successful_payment.invoice_payload);
+                var d = new Date();
+                d.setMonth(d.getMonth() + 1);
+                opened[msg.successful_payment.invoice_payload ?? chatId] = d;
+                writeOpened(opened);
                 bot.sendMessage(
-                    chatId,
+                    msg.successful_payment.invoice_payload ?? chatId,
                     msg.from?.language_code == "ru"
-                        ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
-                        : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
+                        ? "Оплата произведена! Спасибо. Бот теперь доступен на один месяц ❤️"
+                        : "Payment complete! Thank you. This bot is now available for a period of one month ❤️"
                 );
                 bot.sendMessage(
                     process.env.ADMIN_ID,
-                    "Abuse detected for paid account " +
-                        chatId +
-                        " trials= " +
-                        trial[chatId] +
-                        " money= " +
-                        money[chatId]
+                    "Произведена оплата от " +
+                        msg?.from?.username +
+                        " " +
+                        msg?.from?.id +
+                        " " +
+                        msg.successful_payment.invoice_payload
                 );
-                trial[chatId] = 0;
-                opened[chatId] = new Date();
-                money[chatId] = 0;
-                writeTrial(trial);
-                writeOpened(opened);
-                writeMoney(money);
                 return;
             }
-        }
 
-        // Brain activity
-        context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
-        if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
-            context[chatId] = "";
-        }
-        time[chatId] = new Date();
-        writeTime(time);
-        writeContext(context);
+            trial[chatId] = (trial[chatId] ?? 0) + 1;
+            writeTrial(trial);
 
-        if (msg.photo) {
-            // visual hemisphere (left)
-            visualToText(chatId, msg);
-        }
-        if (!msg.text) {
-            return;
-        }
-
-        // console.log(chatId, msg?.from?.username, msg.text);
-
-        msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
-        if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
-            textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
-        } else {
-            if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
-                // visual hemisphere (left)
-                textToVisual(chatId, msgL, msg.from?.language_code);
-            } else {
-                // audio hemisphere (right)
-                textToText(chatId, msg);
+            if (process.env.STRIPE_KEY) {
+                if (!(new Date(opened[chatId]) > new Date())) {
+                    if (trial[chatId] > TRIAL_COUNT) {
+                        bot.sendMessage(
+                            chatId,
+                            msg.from?.language_code == "ru"
+                                ? `Полная функциональность появится после оплаты ❤️ Приглашаем вас присоединиться к нашей группе и попробовать бота в ней 😊 ${process.env.GROUP_RU}`
+                                : `Full functionality will appear after payment ❤️ We invite you to join our group to try the bot 😊`
+                        )
+                            .then(() => {})
+                            .catch((e) => {
+                                console.error(e.message);
+                            });
+                        sendInvoice(chatId, msg.from?.language_code);
+                        return;
+                    }
+                }
+                if (
+                    !PROMO.includes(String(chatId)) &&
+                    ((chatId > 0 && money[chatId] > MAX_MONEY) || (chatId < 0 && money[chatId] > MAX_GROUP_MONEY))
+                ) {
+                    console.error("Abuse detected for paid account", chatId);
+                    bot.sendMessage(
+                        chatId,
+                        msg.from?.language_code == "ru"
+                            ? "Привет! К сожалению, вы превысили лимит запросов 😏 Это не проблема - вы всегда можете приобрести новую подписку! ❤️"
+                            : "Hello! Unfortunately, you have exceeded your subscription request count 😏 That's not a problem - you can always purchase a new one! ❤️"
+                    );
+                    bot.sendMessage(
+                        process.env.ADMIN_ID,
+                        "Abuse detected for paid account " +
+                            chatId +
+                            " trials= " +
+                            trial[chatId] +
+                            " money= " +
+                            money[chatId]
+                    );
+                    trial[chatId] = 0;
+                    opened[chatId] = new Date();
+                    money[chatId] = 0;
+                    writeTrial(trial);
+                    writeOpened(opened);
+                    writeMoney(money);
+                    return;
+                }
             }
+
+            // Brain activity
+            context[chatId] = context[chatId]?.slice(-CONTEXT_SIZE * premium(chatId)) ?? "";
+            if (time[chatId] && new Date() - new Date(time[chatId]) > CONTEXT_TIMEOUT * 1000) {
+                context[chatId] = "";
+            }
+            time[chatId] = new Date();
+            writeTime(time);
+            writeContext(context);
+
+            if (msg.photo) {
+                // visual hemisphere (left)
+                visualToText(chatId, msg);
+            }
+            if (!msg.text) {
+                return;
+            }
+
+            // console.log(chatId, msg?.from?.username, msg.text);
+
+            msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
+            if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
+                textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
+            } else {
+                if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
+                    // visual hemisphere (left)
+                    textToVisual(chatId, msgL, msg.from?.language_code);
+                } else {
+                    // audio hemisphere (right)
+                    textToText(chatId, msg);
+                }
+            }
+        } catch (e) {
+            console.error(e.message);
         }
-    } catch (e) {
-        console.error(e.message);
+    } finally {
+        end(); // Stop the timer and observe the response time
     }
 });
 

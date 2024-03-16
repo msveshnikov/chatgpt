@@ -21,7 +21,7 @@ setInterval(() => {
         🌟 The Trial Period is BACK on ChatGPT bot! 🌟
         🚀 Gemini Pro 1.5 connected! Try it now ❤️
         
-        💬 Plus, NEW features added to Mnaga TV recently:
+        💬 Plus, NEW features added to Manga TV recently:
         
         ✨ Comments on Stories
         🎨 Google Studio voices
