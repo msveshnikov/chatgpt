@@ -31,7 +31,7 @@ let CONTEXT_SIZE = 200; // increase can negatively affect your bill, 1 Russian c
 let MAX_TOKENS = 600;
 let MAX_LENGTH = 200;
 let PREMIUM = 3.0;
-let TRIAL_COUNT = 20;
+let TRIAL_COUNT = 50;
 
 let MAX_MONEY = 3;
 let MAX_GROUP_MONEY = 6;
@@ -68,7 +68,7 @@ const register = new promClient.Registry();
 
 // Add a default metric for measuring uptime
 const uptime = new promClient.Gauge({
-    name: "node_uptime",
+    name: "telegram_node_uptime",
     help: "Node.js uptime in seconds",
     registers: [register],
 });
@@ -224,7 +224,7 @@ bot.on("message", async (msg) => {
                 return;
             }
 
-            // console.log(chatId, msg?.from?.username, msg.text);
+            console.log(chatId, msg?.from?.username, msg.text);
 
             msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
             if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
