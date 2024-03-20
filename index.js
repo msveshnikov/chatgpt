@@ -218,7 +218,7 @@ bot.on("message", async (msg) => {
 
             if (msg.photo) {
                 // visual hemisphere (left)
-                visualToText(chatId, msg);
+                await visualToText(chatId, msg);
             }
             if (!msg.text) {
                 return;
@@ -228,14 +228,14 @@ bot.on("message", async (msg) => {
 
             msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
             if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
-                textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
+                await textToGoogle(chatId, msg.text.slice(7), msg.from?.language_code);
             } else {
                 if (msgL.startsWith("нарисуй") || msgL.startsWith("draw") || msgL.startsWith("paint")) {
                     // visual hemisphere (left)
-                    textToVisual(chatId, msgL, msg.from?.language_code);
+                    await textToVisual(chatId, msgL, msg.from?.language_code);
                 } else {
                     // audio hemisphere (right)
-                    textToText(chatId, msg);
+                    await textToText(chatId, msg);
                 }
             }
         } catch (e) {
