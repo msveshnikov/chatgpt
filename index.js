@@ -224,7 +224,7 @@ bot.on("message", async (msg) => {
                 return;
             }
 
-            console.log(chatId, msg?.from?.username, msg.text);
+            // console.log(chatId, msg?.from?.username, msg.text);
 
             msg.text = msg.text?.substring(0, MAX_LENGTH * premium(chatId));
             if (msgL.startsWith("погугли") || msgL.startsWith("загугли") || msgL.startsWith("google")) {
