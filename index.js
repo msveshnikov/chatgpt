@@ -744,11 +744,12 @@ const gameUrls = {
     spacebubble: "https://allchat.online/landing/spacebubble.html",
     seabattle: "https://allchat.online/landing/seabattle.html",
     bejewelled: "https://allchat.online/landing/bejewelled.html",
+    women: "https://allchat.online/landing/women.html",
 };
 
 // Handle inline queries
 bot.on("inline_query", (query) => {
-    const gameShortNames = ["puzzle", "game2048", "spacebubble", "seabattle", "bejewelled"];
+    const gameShortNames = ["puzzle", "game2048", "spacebubble", "seabattle", "bejewelled", "women"];
 
     if (gameShortNames.includes(query.query)) {
         const result = gameShortNames.map((game, index) => ({
