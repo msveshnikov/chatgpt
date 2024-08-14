@@ -737,21 +737,25 @@ const getReport = () => {
     return result;
 };
 
-// Replace with your actual game URL
-const gameUrl = "https://allchat.online/landing/puzzle.html";
+// Game URLs
+const gameUrls = {
+    puzzle: "https://allchat.online/landing/puzzle.html",
+    game2048: "https://allchat.online/landing/2048.html",
+    spacebubble: "https://allchat.online/landing/spacebubble.html",
+    seabattle: "https://allchat.online/landing/seabattle.html",
+    bejewelled: "https://allchat.online/landing/bejewelled.html",
+};
 
 // Handle inline queries
 bot.on("inline_query", (query) => {
-    const gameShortName = "puzzle";
+    const gameShortNames = ["puzzle", "game2048", "spacebubble", "seabattle", "bejewelled"];
 
-    if (query.query === gameShortName) {
-        const result = [
-            {
-                type: "game",
-                id: "1",
-                game_short_name: gameShortName,
-            },
-        ];
+    if (gameShortNames.includes(query.query)) {
+        const result = gameShortNames.map((game, index) => ({
+            type: "game",
+            id: (index + 1).toString(),
+            game_short_name: game,
+        }));
 
         bot.answerInlineQuery(query.id, result);
     }
@@ -759,9 +763,10 @@ bot.on("inline_query", (query) => {
 
 // Handle game queries
 bot.on("callback_query", (callbackQuery) => {
-    if (callbackQuery.game_short_name === "puzzle") {
+    const gameShortName = callbackQuery.game_short_name;
+    if (gameUrls.hasOwnProperty(gameShortName)) {
         bot.answerCallbackQuery(callbackQuery.id, {
-            url: gameUrl,
+            url: gameUrls[gameShortName],
         });
     }
 });
