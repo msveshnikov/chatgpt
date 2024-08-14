@@ -737,6 +737,35 @@ const getReport = () => {
     return result;
 };
 
+// Replace with your actual game URL
+const gameUrl = "https://allchat.online/landing/game.html";
+
+// Handle inline queries
+bot.on("inline_query", (query) => {
+    const gameShortName = "puzzle";
+
+    if (query.query === gameShortName) {
+        const result = [
+            {
+                type: "game",
+                id: "1",
+                game_short_name: gameShortName,
+            },
+        ];
+
+        bot.answerInlineQuery(query.id, result);
+    }
+});
+
+// Handle game queries
+bot.on("callback_query", (callbackQuery) => {
+    if (callbackQuery.game_short_name === "puzzle") {
+        bot.answerCallbackQuery(callbackQuery.id, {
+            url: gameUrl,
+        });
+    }
+});
+
 process.env["NTBA_FIX_350"] = 1;
 process.env["NODE_NO_WARNINGS"] = 1;
 process.env["GOOGLE_APPLICATION_CREDENTIALS"] = "./google.json";
