@@ -738,7 +738,7 @@ const getReport = () => {
 };
 
 // Replace with your actual game URL
-const gameUrl = "https://allchat.online/landing/game.html";
+const gameUrl = "https://allchat.online/landing/puzzle.html";
 
 // Handle inline queries
 bot.on("inline_query", (query) => {
