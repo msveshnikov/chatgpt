@@ -447,7 +447,7 @@ const visualToText = async (chatId, msg) => {
             bot.sendChatAction(chatId, "typing");
             last[chatId] = prompt;
             if (msg.from?.language_code == "ru") {
-                prompt = await getTextGemini("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
+                prompt = await getText("Переведи на русский: " + prompt, 0.5, MAX_TOKENS, chatId);
             }
             if (prompt) {
                 context[chatId] = context[chatId] + prompt;
@@ -474,7 +474,7 @@ const textToVisual = async (chatId, text, language_code) => {
         text = last[chatId]?.replace("child", "");
     }
     if ((language_code == "ru" && !text?.startsWith("draw")) || text?.startsWith("нарисуй")) {
-        text = await getTextGemini("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
+        text = await getText("Translate to English: " + text?.replace("ребенка", ""), 0.5, MAX_TOKENS, chatId);
     }
     if (!text) {
         return;
@@ -519,7 +519,7 @@ const textToText = async (chatId, msg) => {
         let prompt = context[chatId] + chatSuffix[chatId] ?? "";
         let response;
         if (prompt) {
-            response = await getTextGemini(
+            response = await getText(
                 prompt,
                 ((temp[chatId] ?? 36.5) - 36.5) / 10 + 0.5,
                 MAX_TOKENS * premium(chatId),
@@ -559,7 +559,7 @@ const textToGoogle = async (chatId, msg, language_code) => {
 const getText = async (prompt, temperature, max_tokens, chatId) => {
     try {
         const completion = await openai.chat.completions.create({
-            model: "gpt-3.5-turbo",
+            model: "gpt-4o-mini",
             messages: [{ role: "user", content: prompt }],
             max_tokens: max_tokens,
             temperature: temperature,
